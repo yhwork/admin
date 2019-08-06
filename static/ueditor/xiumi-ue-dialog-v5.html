@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>XIUMI connect</title>
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        #xiumi {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: none;
+            box-sizing: border-box;
+        }
+    </style>
+    <link rel="stylesheet" href="xiumi-ue-v5.css">
+</head>
+                                                 
+<body>
+    <iframe id="xiumi" src="//xiumi.us/studio/v5#/paper">
+    </iframe>
+    <!-- static\ueditor\ -->
+    <script type="text/javascript" src="internal.js"></script>
+    <script>
+        var xiumi = document.getElementById('xiumi');
+        var xiumi_url = "http://xiumi.us";
+        xiumi.onload = function () {
+            console.log("postMessage");
+            xiumi.contentWindow.postMessage('ready', xiumi_url);
+        };
+        document.addEventListener("mousewheel", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        window.addEventListener('message', function (event) {
+            // 从秀米中拿到的数据
+            var datas =  event.data;
+            var myhttp =event.origin
+            console.log('http',myhttp,'秀米内容', datas);
+            localStorage.setItem('message_html', JSON.stringify(datas)); 
+            sessionStorage.setItem("message_html",JSON.stringify(datas));
+            if (event.origin == xiumi_url) {
+                editor.execCommand('insertHtml', event.data);
+                editor.fireEvent("catchRemoteImage");
+                editor.ready(function() {
+                    console.log('对话框关闭')
+                        //设置编辑器的内容
+                        editor.setContent(datas); 
+                })
+                dialog.close();
+            }else{
+                console.log('域名不匹配')
+            }
+        }, false);
+    </script>
+    <script>
+        // 监听页面关闭
+      window.addEventListener('beforeunload', function(event) {
+        console.log('I am the 1st one.');
+      });
+        // iframe  页面关闭时触发该事件
+      window.addEventListener('unload', function(event) {
+        console.log('关闭秀米界面');
+      });
+      
+    </script>
+</body>
+
+</html>
