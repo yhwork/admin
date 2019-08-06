@@ -128,35 +128,35 @@
                 <el-table :data="tablelist" ref="table" @cell-mouse-enter="hovertablein"
                     @cell-mouse-leave="hovertableout" @row-click='tableindex' header-row-class-name="headerclassname"
                     :row-class-name="changetable">
-                    <el-table-column label="教室名称" width="">
+                    <el-table-column label="教室名称" tooltip-effect='dark' :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.name }}</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="可容纳人数" width="">
+                    <el-table-column label="可容纳人数" tooltip-effect='dark' :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.num }}</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="所属门店" width="280">
+                    <el-table-column label="所属门店" tooltip-effect='dark' :show-overflow-tooltip="true" >
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.orgName }}</span>
                             </div>
                         </template>>
                     </el-table-column>
-                    <el-table-column label="创建人" width="200">
+                    <el-table-column label="创建人" tooltip-effect='dark' :show-overflow-tooltip="true"> 
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.addByStr }}</span>
                             </div>
                         </template>>
                     </el-table-column>
-                    <el-table-column label="创建时间" width="200">
+                    <el-table-column label="创建时间" tooltip-effect='dark' :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.addTime }}</span>

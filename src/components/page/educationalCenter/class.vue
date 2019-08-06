@@ -262,7 +262,7 @@
                 <el-table :data="tablelist" header-row-class-name="headerclassname" :cell-mouse-enter="hovertablein"
                     :cell-mouse-leave="hovertableout" style="width: 100%" @row-click='tableindex'
                     :row-class-name="changetable">
-                    <el-table-column label="班级名称" width="150">
+                    <el-table-column label="班级名称" tooltip-effect='dark' :show-overflow-tooltip="true" width="80">
                         <template slot-scope="scope">
                             <!-- <i class="el-icon-time"></i> -->
                             <!--  <span style="margin-left: 10px">{{ scope.row.date }}</span> -->
@@ -271,49 +271,49 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="可容纳人数" width="100">
+                    <el-table-column label="可容纳人数" tooltip-effect='dark' :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.num }}</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="所属门店" width="280">
+                    <el-table-column label="所属门店" :tooltip-effect='dark' :show-overflow-tooltip="true" >
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.orgName }}</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="开课校区" width="100">
+                    <el-table-column label="开课校区" tooltip-effect='dark' :show-overflow-tooltip="true" width="80">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">开课校区</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="开班日期" width="120">
+                    <el-table-column label="开班日期" tooltip-effect='dark' :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{scope.row.addTime}}</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="上课时间" width="120">
+                    <el-table-column label="上课时间" tooltip-effect='dark' :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{scope.row.addTime}}</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="招生状态" width="100">
+                    <el-table-column label="招生状态" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{}}</span>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="创建时间" width="100">
+                    <el-table-column label="创建时间" :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.foundertime }}</span>

@@ -239,13 +239,13 @@
             <!--管理-->
         <div class="mystyles">
             <el-table :data="tableData" :cell-mouse-enter="hovertablein" :cell-mouse-leave="hovertableout" style="width: 100%"
-                @row-click='tableindex' :row-class-name="changetable"  @selection-change="handleSelectionChange" tooltip-effect="dark"
+                @row-click='tableindex' :row-class-name="changetable"  @selection-change="handleSelectionChange" 
                >
                 <el-table-column
                     type="selection"
-                    width="55">
+                   >
                     </el-table-column>
-                <el-table-column label="课程名称" width="150">
+                <el-table-column  :show-overflow-tooltip="true" label="课程名称" >
                     <template slot-scope="scope">
                         <!-- <i class="el-icon-time"></i> -->
                         <!--  <span style="margin-left: 10px">{{ scope.row.date }}</span> -->
@@ -254,7 +254,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="课程类型" width="120" >
+                <el-table-column  :show-overflow-tooltip="true" label="课程类型"  >
                     <template slot-scope="scope">
                         <!-- <el-popover trigger="hover" placement="top">
                                             <p>姓名: {{ scope.row.name }}</p>
@@ -269,49 +269,49 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="授课模式" width="120">
+                <el-table-column label="授课模式" tooltip-effect='dark' :show-overflow-tooltip="true">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.coursemodule }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="适合年级" width="120">
+                <el-table-column label="适合年级" tooltip-effect='dark' :show-overflow-tooltip="true">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.scopegrade }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="开班数" width="80">
+                <el-table-column label="开班数" tooltip-effect='dark' :show-overflow-tooltip="true">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.begclassnum }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="关联线上人数" width="120">
+                <el-table-column label="关联线上人数" tooltip-effect='dark' :show-overflow-tooltip="true">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.relatedpersoncount }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" width="80">
+                <el-table-column label="状态" tooltip-effect='dark' :show-overflow-tooltip="true">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.coursestate }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="创建人" width="120">
+                <el-table-column label="创建人" tooltip-effect='dark' :show-overflow-tooltip="true" >
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.founder }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="创建时间" width="100" show-overflow-tooltip>
+                <el-table-column label="创建时间" tooltip-effect='dark' :show-overflow-tooltip="true"  >
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.cretetime }}</span>
