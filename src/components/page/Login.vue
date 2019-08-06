@@ -40,7 +40,7 @@
 
 
         <div class="login-btn">
-          <el-button type="primary" @click.prevent="submitForm('ruleForm')" :disabled="!checked">登录</el-button>
+          <el-button type="primary" @click.prevent="submitForm('ruleForm')">登录</el-button>
         </div>
         <div class="login-btn">
           <!-- <el-button type="primary" @click="register()">注册</el-button> -->
@@ -119,7 +119,7 @@ export default {
         .get("/store/captcha/getCaptchaCode")
         .then(res => {
           this.code_img = "data:image/jpeg;base64," + res.data.result.img;
-          sessionStorage.setItem("vrifyKey", res.data.result.vrifyKey);
+              sessionStorage.setItem("vrifyKey", res.data.result.vrifyKey);
         })
         .catch(error => {
           console.log("error", error);
@@ -128,6 +128,15 @@ export default {
     
     submitForm(formName) {
       const self = this;
+      var params={
+            password:self.ruleForm.password,
+            username:self.ruleForm.username,
+            vrifyCode:self.ruleForm.vrifyCode,
+            vrifyKey:sessionStorage.getItem("vrifyKey")
+      }
+      //  console.log('第一次点击',params)
+      // 13716583263 736602
+     
       self.$refs[formName].validate(valid => {
         if (valid) {
           // this.$axios
@@ -135,15 +144,21 @@ export default {
           this.$axios({
             method: "post",
             url: "/store/auth/storeUserLogin",
-            data: {
-              password:self.ruleForm.password,
-              username:self.ruleForm.username,
-              vrifyCode:self.ruleForm.vrifyCode,
-              vrifyKey:sessionStorage.getItem("vrifyKey")
-            }
+            data:params,
             // headers: { Authorization: sessionStorage.getItem("Authorization") }
           })
             .then(res => {   
+                if (res.data.errorCode == 200000) {
+                  
+                  sessionStorage.setItem("ms_username", self.ruleForm.username);
+                  sessionStorage.setItem(
+                    "Authorization",
+                    "Bearer " + res.data.result.token
+                  );
+                  console.log('咋不跳转呢')
+                  return this.$router.push("/");
+                
+                }
               if (res.data.errorCode == 200014) {
                 this.$message.error("账号或密码错误");
               } else if (res.data.errorCode == 200015) {
@@ -151,15 +166,8 @@ export default {
               } else if (res.data.errorCode == 200016) {
                 this.$message.error("验证码错误");
                 this.getCode();
-              } else if (res.data.errorCode == 200001) {
+              } else if(res.data.errorCode == 200001) {
                 this.$message.error("登录失败");
-              } else if (res.data.errorCode == 200000) {
-                self.$router.push("/");
-                sessionStorage.setItem("ms_username", self.ruleForm.username);
-                sessionStorage.setItem(
-                  "Authorization",
-                  "Bearer " + res.data.result.token
-                );
               }
             })
             .catch(error => {
@@ -196,7 +204,6 @@ export default {
   font-size: 20px;
   color: #fff;
   border-bottom: 1px solid #ddd;
-  
 }
 .ms-login {
   position: absolute;
