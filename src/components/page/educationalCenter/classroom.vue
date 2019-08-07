@@ -21,8 +21,8 @@
         margin: 0 1rem;
     }
 
-    .el_paginations {
-        margin: 2rem 3rem 0 0;
+    .el_paginations{
+        padding:1rem 1rem 0 1rem;
         display: flex;
         justify-content: flex-end;
     }

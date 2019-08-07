@@ -50,8 +50,8 @@
         min-width: 550px;
     }
 
-    .el_paginations {
-        margin: 2rem 3rem 0 0;
+    .el_paginations{
+        padding:1rem 1rem 0 1rem;
         display: flex;
         justify-content: flex-end;
     }
@@ -101,7 +101,7 @@
                 class="dialog_box" left :visible.sync="dialogFormVisible">
                 <el-form :model="form" :rules="rules">
                     <el-form-item label="命名规则" :label-width="formLabelWidth" prop="classname">
-                        <el-radio-group v-model="checkList" @change='changeradio'>
+                        <el-radio-group :disabled='true' v-model="checkList" @change='changeradio'>
                             <el-radio :label="3">自定义命名</el-radio>
                             <el-radio :label="6">规则命名</el-radio>
                         </el-radio-group>
@@ -145,17 +145,17 @@
                                 </el-option>
                             </el-select>
                             </div>
-                            <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse"
+                            <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(0)"
                                     class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div>
                         </div>
                     </el-form-item>
-                    <el-form-item label="开班日期" :label-width="formLabelWidth">
+                    <!-- <el-form-item label="开班日期" :label-width="formLabelWidth">
                         <div class="elrow ">
                             <el-date-picker v-model="form.clasStartTime" @blur='sumEndTime' type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日"
                             value-format="yyyy-MM-dd">
                             </el-date-picker>
                         </div>
-                    </el-form-item>
+                    </el-form-item> -->
                    
                     <el-form-item label="所属课程" :label-width="formLabelWidth" prop="department">
                         <div class="elrow ">
@@ -168,7 +168,7 @@
                                 </el-option>
                             </el-select>
                             </div>
-                            <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse"
+                            <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(1)"
                                     class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div>
                         </div>
                     </el-form-item>
@@ -182,7 +182,7 @@
                                     </el-option>
                                 </el-select>
                             </div>
-                            <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse"
+                            <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(2)"
                                     class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span>
                             </div>
                         </div>
@@ -190,13 +190,14 @@
                     <el-form-item label="容纳人数" :label-width="formLabelWidth" prop="galleryful">
                         <el-input v-model="form.num" placeholder="请输入班级最大容纳人数" auto-complete="off"></el-input>
                     </el-form-item>
-                    <el-form-item label="结班日期" :label-width="formLabelWidth">
+
+                    <!-- <el-form-item label="结班日期" :label-width="formLabelWidth">
                             <div class="elrow ">
                                 <el-date-picker v-model="form.clasEndTime" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日"
                                 value-format="yyyy-MM-dd">
                                 </el-date-picker>
                             </div>
-                        </el-form-item>
+                        </el-form-item> -->
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -212,11 +213,9 @@
                     </div>
                     <div class='elrow elmt-2'>
                         <el-form-item label="班级名称" prop="techername">
-                            <el-select v-model="ruleForm.id" value-key="id" placeholder="请选择" @change="changeCategory">
-                                <el-option v-for="item in ruleForm.categoryList" :label="item.name" :key="item.id"
-                                    :value="item.id">
-                                </el-option>
-                            </el-select>
+                            <div >
+                                <el-input v-model="ruleForm.name" placeholder="请输入班级名称" auto-complete="off"></el-input>
+                            </div>
                         </el-form-item>
                         <el-form-item label="所属门店" prop="department">
                             <el-select v-model="ruleForm.id" value-key="id" placeholder="请选择" @change="changeCategory">
@@ -278,7 +277,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="所属门店" :tooltip-effect='dark' :show-overflow-tooltip="true" >
+                    <el-table-column label="所属门店" tooltip-effect='dark' :show-overflow-tooltip="true" >
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.orgName }}</span>
@@ -356,12 +355,12 @@
                 pagesize: 10,
                 currentPage4: 1,
                 total_count: 60,
-                isclassname: false,
+                checkList: 3,
+                isclassname: true,  // 命名
                 tablelist: [],
                 iscreate: true,
                 formLabelWidth: "120px",
                 dialogFormVisible: false,
-                checkList: 6,
                 // 班级名称
                 setClassName: {
                     classname: '一年级',
@@ -749,8 +748,30 @@
                 this.iscreate = true;
             },
             // 新建
-            newcourse() {
+            newcourse(i) {
+                this.dialogFormVisible = false;
+                if(i==0){       // 新建门店
 
+                }
+                if(i==1){       // 新建课程
+                    let params={
+                        isnewcouse:true
+                    }
+                    // this.$router.replace() 
+                    this.$router.push({
+                        name: 'curriculum',
+                        params,
+                    })
+                    // this.$router.replace() 
+                    // this.$router.push({
+                    //     path: '/curriculum',
+                    //     query:params
+                    // })
+                }
+                if(i==2){       // 新建教室
+
+                }
+                
             },
             // 改变表格
             changetable(e) {

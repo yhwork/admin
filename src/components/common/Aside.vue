@@ -141,11 +141,11 @@ export default {
                 name:"教室",
                 path:"/classroom"
               },
-              // {
-              //   icon: null,
-              //   name: "课程表",
-              //   path: "/timetable"
-              // }
+              {
+                icon: null,
+                name: "课程表",
+                path: "/timetable"
+              }
             ],
             icon: null,
             name: "教务管理",

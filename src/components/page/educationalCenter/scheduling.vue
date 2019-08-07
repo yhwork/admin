@@ -53,8 +53,8 @@
         border-bottom: 1px solid rgba(0, 0, 0, .5);
     }
 
-    .el_paginations {
-        margin: 2rem 3rem 0 0;
+     .el_paginations{
+        padding:1rem 1rem 0 1rem;
         display: flex;
         justify-content: flex-end;
     }
@@ -359,6 +359,24 @@
         .searchcnt{
         margin-left:2rem;
     }
+    .fc-button-primary {
+        color: #fff;
+        background-color: rgb(154, 158, 161);
+        border-color: rgb(205, 220, 235);
+    }
+    .fc-button-primary:hover{
+        background-color: rgb(170, 197, 224);
+        border-color: rgb(175, 195, 216);
+    }
+.fc-button-primary:not(:disabled):active, .fc-button-primary:not(:disabled).fc-button-active{
+    color: #fff;
+    background-color:rgb(140, 185, 230);
+    border-color: rgb(140, 191, 243);
+}
+.fc-toolbar h2{
+    font-size: 1.2rem;
+    color: #696969;
+}
 </style>
 
 <template>
@@ -426,13 +444,15 @@
             <div class="container mystyles" >
                 <FullCalendar :plugins="calendarPlugins" :all-day-slot="false" 
                             :header="{
-                                left:'prev',
-                                center:'title',
-                                right: 'today ,next'
+                                left:'prev,next today',          
+                                center:'title myCustomButton',   
+                                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                             }"
-                           
                             aspectRatio ='2'
-                            :slot-event-overlap="false"
+                            slot-event-overlap="false"
+                            handleWindowResize='true'   
+                            :buttonText="buttonText"
+                            weekNumbers="true"
                             :events="monthdata"
                            :button-text="{
                             today: '今天'
@@ -468,80 +488,19 @@
                     @eventMouseLeave="handMouseLeave "
                     @dayClick="createcnt"
                      />
+                     <!-- <full-calendar
+                     :config="config"
+                     :events="events"
+                     :plugins="calendarPlugins"
+                    @selectAllow='handselectAllow'
+                    @eventClick="compilecnt"
+                    @dateClick="handleDateClick"
+                    @select="handleSelectdate"
+                    @eventMouseEnter="handMouseEnter"
+                    @eventMouseLeave="handMouseLeave "
+                    @dayClick="createcnt"
+                   ></full-calendar> -->
             </div>
-            <!-- 新建弹框 -->
-            <!-- <el-dialog title="新建日程" lock-scroll='true' class="dialog_box" left :visible.sync="dialogFormVisible">
-                    <el-form class="changesselect" :model="form" :rules="rules">
-                        <el-form-item label="课程名称" :label-width="formLabelWidth" prop="classname">
-                            <el-input v-model="form.name" placeholder="请输入教室名称" auto-complete="off"></el-input>
-                        </el-form-item>
-                        <el-form-item label="课程类别" :label-width="formLabelWidth" prop="department">
-                            <div class="elrow elwith">
-                                <el-select size='large' v-model="form.category" value-key="id" placeholder="请选择"
-                                    @change="newchangeCategory">
-                                    <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                                    </el-option>
-                                </el-select>
-                                
-                            </div>
-                        </el-form-item>
-                        <el-form-item label="课程类型" :label-width="formLabelWidth" prop="department">
-                            <div class="elrow elwith">
-                                <el-select size='large' v-model="form.category" value-key="id" placeholder="请选择"
-                                    @change="newchangeCategory">
-                                    <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                                    </el-option>
-                                </el-select>
-                                
-                            </div>
-                        </el-form-item>
-                        <el-form-item label="课程次数" :label-width="formLabelWidth" prop="department">
-                            <div class="elrow elwith">
-                                <el-select size='large' v-model="form.category" value-key="id" placeholder="请选择"
-                                    @change="newchangeCategory">
-                                    <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                                    </el-option>
-                                </el-select>
-                              
-                            </div>
-                        </el-form-item>
-                        <el-form-item label="适合年级" :label-width="formLabelWidth" prop="department">
-                            <div class="elrow elwith">
-                                <el-select size='large' v-model="form.category" value-key="id" placeholder="请选择"
-                                    @change="newchangeCategory">
-                                    <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                                    </el-option>
-                                </el-select>
-                              
-                            </div>
-                        </el-form-item>
-                        <el-form-item label="授课模式" :label-width="formLabelWidth" prop="galleryful">
-                            <template>
-                                <el-checkbox-group v-model="checkList">
-                                    <el-checkbox label="班级"></el-checkbox>
-                                    <el-checkbox label="一对一"></el-checkbox>
-                                  
-                                </el-checkbox-group>
-                            </template>
-                        </el-form-item>
-                        <el-form-item label="所属门店" :label-width="formLabelWidth" prop="department">
-                            <div class="elrow elwith">
-                                <el-select size='large' v-model="form.category" value-key="id" placeholder="请选择"
-                                    @change="newchangeCategory">
-                                    <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                                    </el-option>
-                                </el-select>
-                                <div class='flex1 elm-2 c_red'><span @click="newcourse" class='elm-1 color'>新增门店</span>|<span
-                                        class="elm-1 color">刷新</span></div>
-                            </div>
-                        </el-form-item>
-                    </el-form>
-                    <div slot="footer" class="dialog-footer">
-                        <el-button @click="dialogFormVisible = false">取 消</el-button>
-                        <el-button style="background:orange;border:1px solid orange;" type="primary"
-                            @click="dialogFormVisible = false">确 定</el-button>
-                    </div>
-                </el-dialog> -->
             <!-- 日程弹框 -->
             <el-dialog title="新建日程"  custom-class='dialog_course' top="25vh" width="35%" left
                     :visible.sync="dialogcourseVisible">
@@ -729,16 +688,28 @@
                 </div>
             </div>
             <!-- 课程提醒 -->
-
         </div>
         <!-- 新建日程 -->
         <div v-else class="content_box1">
             <el-form class="newcourse_box" :model="newDateForm" :rules="rules">
+
                 <el-form-item label="班级名称"  prop="classname">
-                    <div class="newcourse_box_item">
-                            <el-input v-model="newDateForm.classname" placeholder="请输入班级名称" auto-complete="off"></el-input>
-                            <div @click="newcourse" class='color'><span class="elm-1 color">新建</span>|<span class="elm-1 color">刷新</span></div>
-                    </div>
+                        <div class="newcourse_box_item">
+                            <el-select size='large' v-model="newDateForm.techername" value-key="id" placeholder="请选择"
+                                @change="newchangeCategory">
+                                <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                </el-form-item>
+                <el-form-item label="所属课程"  prop="classname">
+                        <div class="newcourse_box_item">
+                            <el-select size='large' disabled="true" v-model="newDateForm.techername" value-key="id" placeholder="请选择"
+                                @change="newchangeCategory">
+                                <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
                 </el-form-item>
                 <el-form-item label="开课日期"  prop="startDate">
                     <div class="newcourse_box_item">
@@ -757,7 +728,8 @@
                           </div>
                     </div>
                 </el-form-item>
-                <el-form-item label="开始时间" prop="startTime">
+
+                <el-form-item label="上课时间" prop="startTime">
                         <div class="newcourse_box_item">
                                 <el-date-picker
                                 v-model="newDateForm.startTime"
@@ -769,11 +741,13 @@
                               </el-date-picker>
                         </div>
                 </el-form-item>
+
                 <el-form-item label="课程次数" :label-width="formLabelWidth" prop="count">
                         <div class="newcourse_box_item">
                             <el-input v-model="newDateForm.count" @blur='outmoursecount' auto-complete="off"></el-input>
                         </div>
                 </el-form-item>
+
                 <el-form-item label="课程时长" :label-width="formLabelWidth" prop="coursetime">
                         <div class="newcourse_box_item">
                             <el-select size='large' v-model="newDateForm.coursetime" value-key="id" placeholder="请选择"
@@ -783,6 +757,7 @@
                             </el-select>
                         </div>
                 </el-form-item>
+
                 <el-form-item label="设置重复" :label-width="formLabelWidth" >
                     <div class="newcourse_box_item">
 
@@ -804,6 +779,7 @@
                            
                     </div>
                 </el-form-item>
+
                 <el-form-item label="结课日期"  prop="department" >
                         <div class="newcourse_box_item">
                                 <el-date-picker
@@ -820,7 +796,8 @@
                               </div>
                         </div>
                 </el-form-item>
-                <el-form-item label="结束时间"  prop="endTime">
+
+                <el-form-item label="下课时间"  prop="endTime">
                         <div class="newcourse_box_item">
                                 <el-date-picker
                                 v-model="newDateForm.endTime"
@@ -842,6 +819,7 @@
                       
                     </div>
                 </el-form-item>
+
                 <el-form-item label="上课教室" :label-width="formLabelWidth" prop="classroom">
                         <div class="newcourse_box_item">
                                 <el-select size='large' v-model="newDateForm.classroom" value-key="id" placeholder="请选择"
@@ -851,6 +829,7 @@
                                 </el-select>
                             </div>
                 </el-form-item>
+
                 <el-form-item label="授课讲师" :label-width="formLabelWidth" prop="techername">
                     <div class="newcourse_box_item">
                         <el-select size='large' v-model="newDateForm.techername" value-key="id" placeholder="请选择"
@@ -860,6 +839,7 @@
                         </el-select>
                     </div>
                 </el-form-item>
+
                 <el-form-item label="教师助理" :label-width="formLabelWidth" prop="helpTecher">
                         <div class="newcourse_box_item">
                             <el-select size='large' v-model="newDateForm.helpTecher" value-key="id" placeholder="请选择"
@@ -869,6 +849,7 @@
                             </el-select>
                         </div>
                 </el-form-item>
+
             </el-form>
             <div><vue-qr :text="downloadData.url" :margin="10" colorDark="#000" colorLight="#fff" :dotScale="1"  :logoScale="0.2" :size="200"/></div> 
             <div class="dialog-footer el_row_center m ">
@@ -882,6 +863,7 @@
     import moment from 'moment';
     import { Calendar } from '@fullcalendar/core';
     import FullCalendar from '@fullcalendar/vue'
+    // import { FullCalendar } from 'vue-full-calendar'
     import dayGridPlugin from '@fullcalendar/daygrid'
     import timeGridPlulgin from '@fullcalendar/timegrid'
     import '@fullcalendar/core/locales/zh-cn'           // 支持中文
@@ -893,6 +875,34 @@
         props: [],
         data() {
             return {
+                events: [{
+                    title: '事件内容',  // 事件内容
+                    start: '2019-08-7 09:00:00', // 事件开始时间
+                    end: '2019-08-7 12:00:00',   // 事件结束时间
+                    color: 'rgba(9, 9, 9, 0.2)'       // 事件的显示颜色
+                }],
+                config: {
+                    header: {  
+                        left: 'prev,next today',            //上一页、下一页、今天  
+                        center: 'title myCustomButton',     //居中：时间范围区间标题  
+                        right: 'month,agendaWeek,agendaDay,listWeek'    //右边：显示哪些视图  
+                    },  
+                    buttonText: { today: "今天", month: "月", week: "周", day: "日" },
+                    locale: "zh-cn",
+                    editable: true, //是否允许修改事件
+                    selectable: false,
+                    eventLimit: 4, //事件个数
+                    allDaySlot: false, //是否显示allDay
+                    defaultView: "month", //显示默认视图
+                    eventClick: this.eventClick, //点击事件
+                    dayClick: this.dayClick, //点击日程表上面某一天
+                },
+                buttonText: {
+                    today: '今天',
+                    month: '月',
+                    week: '周',
+                    day: '天' 
+                },
                 monthdata:[
                             {
                               title: '计算机学院小组会议',

@@ -23,10 +23,10 @@
         .table_border{
             border-bottom:1px solid rgba(0,0,0,.5);
         }
-        .el_paginations{
-            margin:2rem 3rem 0 0;
+        .el_pageselect{
+            padding:1rem 1rem 0 1rem;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
         }
         .bd{
             border: 1px solid red;
@@ -123,6 +123,14 @@
             border-bottom: 1px solid rgba(0, 0, 0, .5);
             background-color:#CAE1FF !important;
         }
+        /* .coursdata{
+            width:100px;
+            min-width: 100px;
+
+        } */
+        /* .curricu td{
+            width: auto !important;
+        } */
 </style>
 <template>
 <!--  课程  -->
@@ -231,21 +239,21 @@
                     </el-form-item>
                     <div class="elrow">
                       <div><el-button class="clearpadding" type="primary"  plain>筛选</el-button></div>
-                     <div class='clearselectall'>清楚筛选条件</div>
+                      <div><el-button class="clearpadding" type="primary"  plain>清除筛选条件</el-button></div>
                     </div>
                 </div>
             </el-form>
         </div>
             <!--管理-->
         <div class="mystyles">
-            <el-table :data="tableData" :cell-mouse-enter="hovertablein" :cell-mouse-leave="hovertableout" style="width: 100%"
-                @row-click='tableindex' :row-class-name="changetable"  @selection-change="handleSelectionChange" 
-               >
+            <el-table ref='multipleTable' :data="tablelist"  @cell-mouse-enter="hovertablein"
+                    @cell-mouse-leave="hovertableout" @row-click='tableindex' header-row-class-name="headerclassname"
+                    :row-class-name="changetable"  @selection-change="handleSelectionChange"> 
                 <el-table-column
                     type="selection"
                    >
                     </el-table-column>
-                <el-table-column  :show-overflow-tooltip="true" label="课程名称" >
+                <el-table-column   label="课程名称" :show-overflow-tooltip="true" width="100" >
                     <template slot-scope="scope">
                         <!-- <i class="el-icon-time"></i> -->
                         <!--  <span style="margin-left: 10px">{{ scope.row.date }}</span> -->
@@ -254,64 +262,64 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column  :show-overflow-tooltip="true" label="课程类型"  >
+                <el-table-column  label="课程类型" :show-overflow-tooltip="true" width="80" >
                     <template slot-scope="scope">
-                        <!-- <el-popover trigger="hover" placement="top">
+                        <!--<el-popover trigger="hover" placement="top">
                                             <p>姓名: {{ scope.row.name }}</p>
                                             <p>住址: {{ scope.row.address }}</p>
                                             <div slot="reference" class="name-wrapper">
                                                 <el-tag size="medium">{{ scope.row.name }}</el-tag>
                                             </div>
-                                            </el-popover>
-                                            -->
-                        <div>
+                            </el-popover>
+                        -->
+                        <div >
                             <span >{{ scope.row.coursetype }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="授课模式" tooltip-effect='dark' :show-overflow-tooltip="true">
+                <el-table-column label="授课模式" :show-overflow-tooltip="true">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.coursemodule }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="适合年级" tooltip-effect='dark' :show-overflow-tooltip="true">
+                <el-table-column label="适合年级" :show-overflow-tooltip="true" >
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.scopegrade }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="开班数" tooltip-effect='dark' :show-overflow-tooltip="true">
+                <el-table-column label="开班数" :show-overflow-tooltip="true" width="70">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.begclassnum }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="关联线上人数" tooltip-effect='dark' :show-overflow-tooltip="true">
+                <el-table-column label="关联线上销售" width="110">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.relatedpersoncount }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="状态" tooltip-effect='dark' :show-overflow-tooltip="true">
+                <el-table-column label="状态">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.coursestate }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="创建人" tooltip-effect='dark' :show-overflow-tooltip="true" >
+                <el-table-column label="创建人" :show-overflow-tooltip="true" width="80">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.founder }}</span>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="创建时间" tooltip-effect='dark' :show-overflow-tooltip="true"  >
+                <el-table-column label="创建时间">
                     <template slot-scope="scope">
                         <div>
                             <span >{{ scope.row.cretetime }}</span>
@@ -322,17 +330,21 @@
                     <template slot-scope="scope">
                         <div class="elrow">
                             <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                            <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">发布销售</el-button>
-                            <!-- |<el-button size="mini" type="success" @click="handleDelete(scope.$index, scope.row)">排布</el-button> -->
+                            <!-- <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">发布销售</el-button> -->
                            <el-button size="mini" type="warning" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                         </div>
                     </template>
                 </el-table-column>
             </el-table>
+
             <!-- 分页 -->
-            <div class="el_paginations">
+            <div class="el_pageselect">
+                    <div>
+                        <el-button size='medium' @click="btnselectall(tablelist)" type="primary">全选</el-button>
+                        <el-button size='medium' :disabled="isputaway" @click="btnputaway(0)" type="primary">上架</el-button>
+                        <el-button size='medium' :disabled="isputaway" @click="btnputaway(1)" type="primary">下架</el-button>
+                    </div>
                     <div class="block">
-                        <!-- <span class="demonstration">完整功能</span> -->
                         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
                             :current-page="currentPage4" :page-sizes="[10, 20, 30, 40]" :page-size="pagesize"
                             layout="total, sizes, prev, pager, next, jumper" :total="total_count">
@@ -432,6 +444,7 @@ export default {
     name:'curriculum',
     data() {
         return {
+            isputaway:true,
             // 多选框
             checkList: ['选中且禁用','一对一'],
             // 分页
@@ -444,48 +457,60 @@ export default {
             formLabelWidth:'120px',
             //表格数据
             tableData:[   
-                {
-                    id:1,
-                    coursename:'课程名称',
-                    coursetype:'授课类型',
-                    galleryful:'容纳人数',
-                    coursemodule:'授课模式',
-                    begclassnum:'开班数',
-                    scopegrade:'适合年级',
-                    relatedpersoncount:'关联线上人数',
-                    coursestate:'状态',
-                    founder:"创建人",
-                    cretetime:'创建时间'
-                },
-                {
-                    id:2,
-                    coursename:'课程名称',
-                    coursetype:'授课类型',
-                    galleryful:'容纳人数',
-                    coursemodule:'授课模式',
-                    begclassnum:'开班数',
-                    scopegrade:'适合年级',
-                    relatedpersoncount:'关联线上人数',
-                    coursestate:'状态',
-                    founder:"创建人",
-                    cretetime:'创建时间'
-                },
+                // {
+                //     id:1,
+                //     coursename:'课程名称',
+                //     coursetype:'授课类型',
+                //     galleryful:'容纳人数',
+                //     coursemodule:'授课模式',
+                //     begclassnum:'开班数',
+                //     scopegrade:'适合年级',
+                //     relatedpersoncount:'关联线上人数',
+                //     coursestate:'状态',
+                //     founder:"创建人",
+                //     cretetime:'创建时间'
+                // },
+                // {
+                //     id:2,
+                //     coursename:'课程名称',
+                //     coursetype:'授课类型',
+                //     galleryful:'容纳人数',
+                //     coursemodule:'授课模式',
+                //     begclassnum:'开班数',
+                //     scopegrade:'适合年级',
+                //     relatedpersoncount:'关联线上人数',
+                //     coursestate:'状态',
+                //     founder:"创建人",
+                //     cretetime:'创建时间'
+                // },
                 {
                     id:3,
                     coursename:'课程名称',
-                    coursetype:'授课类型',
-                    galleryful:'容纳人数',
-                    coursemodule:'授课模式',
-                    begclassnum:'开班数',
-                    scopegrade:'适合年级',
-                    relatedpersoncount:'关联线上人数',
-                    coursestate:'状态',
+                    coursetype:'2',
+                    galleryful:'2',
+                    coursemodule:'面授',
+                    begclassnum:'20',
+                    scopegrade:'一年级',
+                    relatedpersoncount:'是',
+                    coursestate:'已上线',
                     founder:"创建人",
                     cretetime:'创建时间'
                 },
             ],
             // 当前表格数据
-            tablelist:[],
+            tablelist:[{
+                    id:3,
+                    coursename:'课程名称',
+                    coursetype:'2',
+                    galleryful:'2',
+                    coursemodule:'面授',
+                    begclassnum:'20',
+                    scopegrade:'一年级',
+                    relatedpersoncount:'是',
+                    coursestate:'已上线',
+                    founder:"创建人",
+                    cretetime:'创建时间'
+                },],
             // 筛选
             ruleForm:{
                 cousename:'课程名称',
@@ -525,19 +550,38 @@ export default {
             },
             // table选项框
             tableselectlist:[
-                {
-
-                },
-                {
-
-                },
             ],
         }
     },
     created() {
-        // this.selsectdata();
+      
     },
+    mounted() {
+        if (window.history && window.history.pushState) {
+            // 向历史记录中插入了当前页
+            history.pushState(null, null, document.URL);
+            window.addEventListener('popstate', this.goBack, false);
+        }
+    },
+    destroyed () {
+        window.removeEventListener('popstate', this.goBack, false);
+    },
+    activated(){
+    // this.selsectdata();
+        var isNo = this.$route.params;
+            console.log('aaaaa',isNo)
+            if(isNo.hasOwnProperty('isnewcouse')){
+                    this.dialogFormVisible=isNo.isnewcouse;
+            }
+        },
     methods: {
+        goBack () {
+            // console.log("点击了浏览器的返回按钮");
+            sessionStorage.clear();
+            window.history.back();
+             // console.log("点击了浏览器的返回按钮");
+             history.pushState(null, null, document.URL);
+        },
         //查询教室
         selsectdata(){
                 this.$axios({
@@ -663,10 +707,6 @@ export default {
                     return "table_border"
                 }
         },
-        // 选项框
-        handleSelectionChange(e){
-            console.log('多选',e)
-        },
         // 计算
         sumcourse(){
             console.log('失去焦点')
@@ -749,6 +789,39 @@ export default {
         newchangeCategory(e){
 
         },
+        // table单选框
+        handleSelectionChange(e){
+            // console.log('多选',e)
+            this.tableselectlist=e;
+            if(this.tableselectlist.length==0){
+                this.isputaway=true
+            }else{
+                this.isputaway=false
+            }
+        },
+        // 全选
+        btnselectall(rows){
+            if (rows) {
+                rows.forEach(row => {
+                this.$refs.multipleTable.toggleRowSelection(row);
+                });
+            } else {
+                this.$refs.multipleTable.clearSelection();
+            }
+        },
+        // 上架/下架
+        btnputaway(a){
+            if(this.tableselectlist.length==0){
+                this.isputaway=true
+            }else{
+                this.isputaway=false
+            }
+            if(a== 0){
+                // this.isputaway=true
+            }else if(a==1){
+                // this.isputaway=false
+            }
+        }
     },
 }
 </script>

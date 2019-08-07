@@ -181,7 +181,7 @@ export default {
         this.$refs.multipleTable.clearSelection();
       }
     },
-
+    
     handleSelectionChange(val) {
       if (val != "") {
         this.goods_id = val[0].id;
