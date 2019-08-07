@@ -73,11 +73,13 @@ router.beforeEach((to, from, next) => {
         next()
     }
 })
+
 router.afterEach((to, from , next)=> {
     // sessionStorage.clear();
     console.log('路由离开')
     // next()
 })
+
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
