@@ -155,7 +155,8 @@ export default {
                     "Authorization",
                     "Bearer " + res.data.result.token
                   );
-                  console.log('咋不跳转呢')
+                  // 存到 store
+                  // console.log('咋不跳转呢')
                   return this.$router.push("/");
                 
                 }

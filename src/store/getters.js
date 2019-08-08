@@ -5,5 +5,12 @@ const getters = {
        name.demo='杨辉真帅'
        return  name
     }, // 异步获取 store的值
+    user:state =>{
+       let token = state.user.token;
+       if(token === ""){
+          console.warn('没有token请登录')
+       }
+       return token;
+    }
   }
   export default getters

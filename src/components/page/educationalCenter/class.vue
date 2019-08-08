@@ -344,6 +344,7 @@
     </div>
 </template>
 <script>
+    import {getInfo} from '@/api'
     import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
     import store from '@/store'
     export default {
@@ -477,14 +478,13 @@
             }
         },
         watch: {
-
         },
         computed: {
             ...mapState({
                 viewsCount: 'app/demo'
             }),
             ...mapGetters({
-                todosALise: 'demo' // demo 不是字符串，对应的是getter里面的一个方法名字 然后将这个方法名字重新取一个别名 todosALise
+                todosALise: 'user' // demo 不是字符串，对应的是getter里面的一个方法名字 然后将这个方法名字重新取一个别名 todosALise
             })
         },
         mounted() {
@@ -493,7 +493,23 @@
         created() {
             this.selsectdata();
             // this.getstores();
+             console.log(store)
             this.blogAdd('22');
+            getInfo().then((res)=>{
+                console.log(res.data)
+            })
+            // console.log('getter',this.todosALise)
+            // GET /class/getClassList
+            // 测试mock.js数据
+            //  this.$axios({
+            //         method: "get",
+            //         url: `/store/class/getClassList`,
+            //         headers: {
+            //             Authorization: sessionStorage.getItem("Authorization")
+            //         }
+            //     }).then(res => {
+            //         console.log('我要的mock数据',res)
+            //     })
         },
         methods: {
             // vuex的集合
@@ -506,6 +522,7 @@
             //查询教室-----参数不够
             // 获取vuex的方法和属性
             getstores(){
+                // console.log('gett',todosALise)
                 console.log(store)
                 // 获取子模块app的属性值
                var val =  this.$store.state.app.demo
@@ -751,7 +768,13 @@
             newcourse(i) {
                 this.dialogFormVisible = false;
                 if(i==0){       // 新建门店
+                    let params={
 
+                    }
+                    this.$router.push({
+                        name: 'register',
+                        params,
+                    })
                 }
                 if(i==1){       // 新建课程
                     let params={

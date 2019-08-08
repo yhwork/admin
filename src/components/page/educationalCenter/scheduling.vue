@@ -148,7 +148,7 @@
     /* .changesselect .el-input {
         width: 80%;
     } */
-/* 
+    /* 
     .changesselect:nth-child(1) .el-select {
         width: 80%;
     }
@@ -368,15 +368,34 @@
         background-color: rgb(170, 197, 224);
         border-color: rgb(175, 195, 216);
     }
-.fc-button-primary:not(:disabled):active, .fc-button-primary:not(:disabled).fc-button-active{
-    color: #fff;
-    background-color:rgb(140, 185, 230);
-    border-color: rgb(140, 191, 243);
-}
-.fc-toolbar h2{
-    font-size: 1.2rem;
-    color: #696969;
-}
+    .fc-button-primary:not(:disabled):active, .fc-button-primary:not(:disabled).fc-button-active{
+        color: #fff;
+        background-color:rgb(140, 185, 230);
+        border-color: rgb(140, 191, 243);
+    }
+    .fc-toolbar h2{
+        font-size: 1.2rem;
+        color: #696969;
+    }
+    .my-autocomplete {
+        li {
+            line-height: normal;
+            padding: 7px;
+
+            .name {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            }
+            .addr {
+            font-size: 12px;
+            color: #b4b4b4;
+            }
+
+            .highlighted .addr {
+            color: #ddd;
+            }
+        }
+    }
 </style>
 
 <template>
@@ -394,8 +413,8 @@
             <div>
                 <el-button size='medium' @click="btnnewclass" type="primary">新建日程</el-button>
             </div>
-            <!--  -->
-            <div class="mystyles">
+            <!-- 新建 -->
+        <div class="mystyles">
             <el-form :model="ruleForm" ref="ruleForm" label-width="100px">
                 <div class='elrow elmt-2 selectclass'>
                     <el-form-item label="班级名称">
@@ -435,7 +454,9 @@
                         <div>
                             <el-button class="clearpadding" type="primary" plain>清楚筛选条件</el-button>
                         </div>
-                         <div class="searchcnt"><el-button  type="primary" icon="el-icon-search" @click='searchcnt'>搜索</el-button></div>
+                         <div class="searchcnt">
+                            <el-button  type="primary" icon="el-icon-search" @click='searchcnt'>搜索</el-button>
+                        </div>
                     </div>
                 </div>
             </el-form>
@@ -549,7 +570,7 @@
                 <el-form class="edit_schedule" :model="form" :rules="rules">
                     <el-form-item label="班级/一对一：" :label-width="formLabelWidth" prop="techername">
                         <el-autocomplete popper-class="my-autocomplete" v-model="state3" :fetch-suggestions="querySearch"
-                            placeholder="请输入内容" @select="handleSelect">
+                            placeholder="请输入内容" @select="handleSelectinClass">
                             <i class="el-icon-edit el-input__icon" slot="suffix" @click="handleIconClick">
                             </i>
                             <template slot-scope="props">
@@ -693,20 +714,39 @@
         <div v-else class="content_box1">
             <el-form class="newcourse_box" :model="newDateForm" :rules="rules">
 
-                <el-form-item label="班级名称"  prop="classname">
+                <el-form-item label="班级名称" prop="classnames">
                         <div class="newcourse_box_item">
-                            <el-select size='large' v-model="newDateForm.techername" value-key="id" placeholder="请选择"
+                            <!-- <el-select size='large' v-model="newDateForm.techerName" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
-                                <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
+                                <el-option v-for="item in newDateForm.techerList" :label="item.techerName" :key="item.id" :value="item.techerId">
                                 </el-option>
-                            </el-select>
+                            </el-select> -->
+                            <el-autocomplete
+                                popper-class="my-autocomplete"
+                                v-model="newDateForm.className"
+                                :fetch-suggestions="querySearch"
+                                placeholder="请输入内容"
+                                @blur="outselectclass"
+                                @select="handleSelectClass">
+                                
+                                    <i
+                                        class="el-icon-search el-input__icon"
+                                        slot="suffix"
+                                        @click="handleIconClick">
+                                    </i>
+                                    <template slot-scope="props">
+                                        <div class="name">{{ props.item.value }}</div>
+                                        <span class="addr">{{ props.item.address }}</span>
+                                    </template>
+                            </el-autocomplete>
+
                         </div>
                 </el-form-item>
                 <el-form-item label="所属课程"  prop="classname">
                         <div class="newcourse_box_item">
-                            <el-select size='large' disabled="true" v-model="newDateForm.techername" value-key="id" placeholder="请选择"
+                            <el-select size='large' :disabled="true" v-model="newDateForm.cousreName" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
-                                <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
+                                <el-option v-for="item in categoryList" :label="item.cousreName" :key="item.id" :value="item.cousreId">
                                 </el-option>
                             </el-select>
                         </div>
@@ -719,26 +759,37 @@
                             placeholder="选择日期"
                             format="yyyy 年 MM 月 dd 日"
                             @change="newchangestartDate"
-                            @blur='outmourse'
+                            @blur='outmourse(1)'
                             value-format="yyyy-MM-dd">
                           </el-date-picker>
-                          <div class="inweekcourse">
+                          <!-- <div class="inweekcourse">
                               <div class="inweekcourse_nchild">星期数</div>
                               <el-input v-model="newDateForm.weekday" auto-complete="off"></el-input>
-                          </div>
+                          </div> -->
                     </div>
                 </el-form-item>
 
                 <el-form-item label="上课时间" prop="startTime">
                         <div class="newcourse_box_item">
-                                <el-date-picker
+                                <!-- <el-date-picker
                                 v-model="newDateForm.startTime"
                                 type="date"
                                 placeholder="选择日期"
                                 format="yyyy 年 MM 月 dd 日"
+                                @blur='outmourse(2)'
                                 @change="newchangestartTime"
                                 value-format="yyyy-MM-dd">
-                              </el-date-picker>
+                              </el-date-picker> -->
+                                <el-time-select
+                                    v-model="newDateForm.startTime"
+                                    :picker-options="{
+                                        start: '07:30',
+                                        step: '00:15',
+                                        end: '18:30'
+                                    }"
+                                    @blur='outmourse(2)'
+                                    placeholder="选择时间">
+                                </el-time-select>
                         </div>
                 </el-form-item>
 
@@ -760,7 +811,6 @@
 
                 <el-form-item label="设置重复" :label-width="formLabelWidth" >
                     <div class="newcourse_box_item">
-
                                 <el-radio-group class="newcourse_boxradios" v-model="newDateForm.checkList">
                                         <el-radio :label="0">每天</el-radio>
                                         <el-radio :label="1">每周</el-radio>
@@ -768,18 +818,8 @@
                                         <el-radio :label="3">每月</el-radio>
                                         <el-radio :label="4">不重复</el-radio>
                                 </el-radio-group>
-
-                            <!-- <el-checkbox-group v-model="newDateForm.checkList">
-                                    <el-checkbox label="每天"></el-checkbox>
-                                    <el-checkbox label="每周"></el-checkbox>
-                                    <el-checkbox label="每两周"></el-checkbox>
-                                    <el-checkbox label="每月"></el-checkbox>
-                                    <el-checkbox label="不重复"></el-checkbox>
-                            </el-checkbox-group> -->
-                           
                     </div>
                 </el-form-item>
-
                 <el-form-item label="结课日期"  prop="department" >
                         <div class="newcourse_box_item">
                                 <el-date-picker
@@ -799,16 +839,25 @@
 
                 <el-form-item label="下课时间"  prop="endTime">
                         <div class="newcourse_box_item">
-                                <el-date-picker
+                                <!-- <el-date-picker
                                 v-model="newDateForm.endTime"
                                 type="date"
                                 placeholder="选择日期"
                                 format="yyyy 年 MM 月 dd 日"
                                 value-format="yyyy-MM-dd">
-                              </el-date-picker>
+                              </el-date-picker> -->
+                                <el-time-select
+                                    placeholder="下课时间"
+                                    v-model="newDateForm.endTime"
+                                    :picker-options="{
+                                    start: '08:30',
+                                    step: '00:15',
+                                    end: '18:30',
+                                    minTime: startTime
+                                    }">
+                                </el-time-select>
                         </div>
                 </el-form-item>
-
                 <el-form-item label="上课门店" :label-width="formLabelWidth" prop="department">
                     <div class="newcourse_box_item">
                         <el-select size='large' v-model="newDateForm.courseShop" value-key="id" placeholder="请选择"
@@ -1005,7 +1054,7 @@
                         { required: true, message: "请输入产品名称", trigger: "blur" },
                         { max: 50, message: "最多50字" }
                     ],
-                    classname:  [{ required: true, message: "请输入教室名称", trigger: "blur" }],
+                    classnames:[{ required: true, message: "请输入教室名称", trigger: "blur" }],
                     galleryful: [{ required: true, message: "请输入最大容纳人数", trigger: "blur" }],
                     techername: [{ required: true, message: "请输入教师名称", trigger: "blur" }],
                     department: [{ required: true, message: "请输入所属门店", trigger: "blur" }],
@@ -1031,7 +1080,7 @@
                     // return (start <= end && start >= currentDate)
                     return true
                 },
-                // 内嵌弹框
+                // 班级全部列表
                 restaurants: [],
                 state3: '',
                 tableData2: [{
@@ -1051,14 +1100,16 @@
                     name: '王小虎',
                     address: '上海市普陀区金沙江路 1518 弄'
                 }],
+                timeout:null,
                 // 新建排课表单
                 newDateForm:{
-                    classname:'',     // 班级名称
+                    className:'',     // 班级名称
                     startDate:'',     // 开课时间
                     weekday:'',       // 星期数
+                    cousreName:'',    // 课程名称
                     startTime:'',
                     helpTecher:'',    // 助教
-                    techername:'',    // 老师
+                    techerName:'',    // 老师
                     classroom:'',     // 班级
                     courseShop:'',     //门店
                     endTime:'',        // 结束时间
@@ -1072,7 +1123,7 @@
         watch: {
         },
         mounted() {
-            this.restaurants = this.loadAll();
+            this.restaurants = this.loadClassAll();
         },
         created() {
             // document.addEventListener('DOMContentLoaded', function() {
@@ -1123,6 +1174,67 @@
                 'resourceRender'
                     */
         methods: {
+            // 新建班级查询
+            querySearch(queryString, cb) {
+                var restaurants = this.restaurants;
+                var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+                // 调用 callback 返回建议列表的数据
+                 clearTimeout(this.timeout);
+                    this.timeout = setTimeout(() => {
+                    cb(results);
+                }, 2000 * Math.random());
+            },
+            // 过滤班级
+            createFilter(queryString) {
+                return (restaurant) => {
+                return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                };
+            },
+            // 加载全部班级
+            loadClassAll() {
+                return [
+                { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号","course":'英语课' },
+                { "value": "Hot honey 首尔炸鸡（仙霞路）", "address": "上海市长宁区淞虹路661号" ,"course":'英语课'},
+                { "value": "新旺角茶餐厅", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" ,"course":'英语课'},
+                { "value": "泷千家(天山西路店)", "address": "天山西路438号","course":'英语课' },
+                { "value": "胖仙女纸杯蛋糕（上海凌空店）", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101","course":'英语课' },
+                { "value": "贡茶", "address": "上海市长宁区金钟路633号","course":'英语课' },
+                { "value": "豪大大香鸡排超级奶爸", "address": "上海市嘉定区曹安公路曹安路1685号" ,"course":'英语课'},
+                { "value": "茶芝兰（奶茶，手抓饼）", "address": "上海市普陀区同普路1435号","course":'英语课' },
+                { "value": "十二泷町", "address": "上海市北翟路1444弄81号B幢-107","course":'英语课' },
+                { "value": "星移浓缩咖啡", "address": "上海市嘉定区新郁路817号" ,"course":'英语课'},
+                { "value": "阿姨奶茶/豪大大", "address": "嘉定区曹安路1611号","course":'英语课' },
+              
+                ];
+            },
+            outselectclass(){
+                var time = null;
+                this.rules.classnames[0].required=false
+                time = setTimeout(()=>{  
+                      if(!this.newDateForm.className){
+                             return this.$message({
+                                type:'warning',
+                                message:'请选择班级'
+                            })
+                      }
+                },1000)
+               
+            },
+            handleSelectClass(item) {
+                // if(item){
+                //    this.rules.classnames.required=false
+                // }
+                 
+                  this.newDateForm.cousreName=item.course;
+                
+                // 此处把课程给输入内
+            },
+            handleSelectinClass(item) {
+                console.log(item);
+            },
+            handleIconClick(ev) {
+                console.log(ev);
+            },
             // 新建
             btnnewclass(a) {
                 console.log('a',a)
@@ -1172,16 +1284,30 @@
                 this.rules.endDate.required=false;
              }
             },
-            outmourse(){
+            outmourse(state){
+                console.log(state)
                 // console.log('失去焦点');
-             let a=this.newDateForm.startDate;
-             if(a== null || a=="" ||a==undefined){
-                this.rules.startDate.required=true
-             }else{
-                this.rules.startDate.required=false;
-             }
+                if(state==1){
+                    let a=this.newDateForm.startDate;
+                    if(a== null || a=="" ||a==undefined){
+                        this.rules.startDate.required=true
+                    }else{
+                        this.rules.startDate.required=false;
+                    }
+                }
+                if(state==2){
+                    let a=this.newDateForm.startTime;
+                    if(a== null || a=="" ||a==undefined){
+                        this.rules.startTime.required=true
+                    }else{
+                        this.rules.startTime.required=false;
+                    }
+                }
+               
             },
+            // 开课日期
             newchangestartDate(e){
+                 console.log('选择开课日期',e)
                 this.newDateForm.startDate=e;
             },
             newchangestartTime(e){
@@ -1218,41 +1344,6 @@
                     // if(techername==undefined || techername=="" ||departmen=="" ||departmen == undefined){
                         
                     // }
-            },
-            // 查询
-            querySearch(queryString, cb) {
-                var restaurants = this.restaurants;
-                var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
-                // 调用 callback 返回建议列表的数据
-                cb(results);
-            },
-            // 创建文件
-            createFilter(queryString) {
-                return (restaurant) => {
-                    return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-                };
-            },
-            // 加载所有
-            loadAll() {
-                return [
-                    { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号" },
-                    { "value": "Hot honey 首尔炸鸡（仙霞路）", "address": "上海市长宁区淞虹路661号" },
-                    { "value": "新旺角茶餐厅", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" },
-                    { "value": "泷千家(天山西路店)", "address": "天山西路438号" },
-                    { "value": "胖仙女纸杯蛋糕（上海凌空店）", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101" },
-                    { "value": "贡茶", "address": "上海市长宁区金钟路633号" },
-                    { "value": "爱茜茜里(西郊百联)", "address": "长宁区仙霞西路88号1305室" },
-                    { "value": "爱茜茜里(近铁广场)", "address": "上海市普陀区真北路818号近铁城市广场北区地下二楼N-B2-O2-C商铺" },
-
-                ];
-            },
-            // 选择的内容
-            handleSelect(item) {
-                console.log(item);
-            },
-            // 选中的图标
-            handleIconClick(ev) {
-                console.log(ev);
             },
             // 日历挂件
             toggleWeekends() {

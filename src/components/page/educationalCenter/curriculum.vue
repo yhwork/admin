@@ -6,10 +6,11 @@
         .elmt-2{
             margin-top:2rem;
         }
-        .color{
-            color:#409EFF;
-            font-size:0.78rem;
-        }
+    .color {
+        cursor: pointer;
+        color: #409EFF;
+        font-size: 0.78rem;
+    }
         .elm-1{
             margin:0 2px;
         }
@@ -140,22 +141,25 @@
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
                 <div><el-button size='medium' @click="btnnewclass" type="primary">新建课程</el-button></div>
                 <div class='elrow elmt-2 selectclass'>
+                   
                     <el-form-item label="课程名称" prop="techername">
-                        <el-select
+                        <!-- <el-select
                         class="ws20"
-                        v-model="ruleForm.cousename"
+                        v-model="ruleForm.couseName"
                         value-key="id"
                         placeholder="请选择"
                         @change="changeCategory"
                         >
                         <el-option
-                            v-for="item in ruleForm.categoryList"
+                            v-for="item in ruleForm.couseList"
                             :label="item.name"
                             :key="item.id"
                             :value="item.id"
                         ></el-option>
-                        </el-select>
+                        </el-select> -->
+                         <el-input v-model="form.courseName" placeholder="请输入课程名称" auto-complete="off"></el-input>
                     </el-form-item>
+
                     <el-form-item label="所属门店" prop="department">
                         <el-select
                          class="ws30"
@@ -165,13 +169,14 @@
                         @change="changeCategory"
                         >
                         <el-option
-                            v-for="item in ruleForm.categoryList"
+                            v-for="item in ruleForm.orgList"
                             :label="item.name"
                             :key="item.id"
                             :value="item.id"
                         ></el-option>
                         </el-select>
                     </el-form-item>
+
                     <el-form-item label="课程类型" prop="department">
                         <el-select
                         v-model="ruleForm.couseType"
@@ -180,7 +185,7 @@
                         @change="changeCategory"
                         >
                         <el-option
-                            v-for="item in ruleForm.categoryList"
+                            v-for="item in ruleForm.subject"
                             :label="item.name"
                             :key="item.id"
                             :value="item.id"
@@ -189,7 +194,7 @@
                     </el-form-item>
                 </div>
                 <div class='elrow changesselect'>
-                   <el-form-item label="授课模式" prop="techername">
+                   <!-- <el-form-item label="授课模式" prop="techername">
                         <el-select
                         size="large"
                         v-model="ruleForm.category"
@@ -204,17 +209,17 @@
                             :value="item.id"
                         ></el-option>
                         </el-select>
-                    </el-form-item>
+                    </el-form-item> -->
                     <el-form-item label="课程状态" prop="department">
                         <el-select
                         size="large"
-                        v-model="ruleForm.category"
+                        v-model="ruleForm.states"
                         value-key="id"
                         placeholder="请选择"
                         @change="changeCategory"
                         >
                         <el-option
-                            v-for="item in ruleForm.categoryList"
+                            v-for="item in ruleForm.stateList"
                             :label="item.name"
                             :key="item.id"
                             :value="item.id"
@@ -224,13 +229,13 @@
                     <el-form-item label="适合年级" prop="department">
                         <el-select
                         size="large"
-                        v-model="ruleForm.category"
+                        v-model="ruleForm.grade"
                         value-key="id"
                         placeholder="请选择"
                         @change="changeCategory"
                         >
                         <el-option
-                            v-for="item in ruleForm.categoryList"
+                            v-for="item in ruleForm.gradeList"
                             :label="item.name"
                             :key="item.id"
                             :value="item.id"
@@ -353,17 +358,17 @@
             </div>
         </div>
             <!-- 弹框 -->
-            <el-dialog :title="iscreate==true?'新建课程':'编辑课程'"  custom-class='maxdialogclass' class="dialog_box" left :visible.sync="dialogFormVisible">
+            <el-dialog :title="iscreate==true?'新建课程':'编辑课程'" :close-on-click-modal='false'  custom-class='maxdialogclass' class="dialog_box" left :visible.sync="dialogFormVisible">
                 <el-form class="changesselect" :model="form" :rules="rules">
                     <div class="column_couse">
                         <el-form-item label="课程名称" :label-width="formLabelWidth" prop="classname">
-                            <el-input v-model="form.name" placeholder="请输入教室名称" auto-complete="off"></el-input>
+                            <el-input v-model="form.courseName" placeholder="请输入教室名称" auto-complete="off"></el-input>
                         </el-form-item>
                         <el-form-item label="课程类别" :label-width="formLabelWidth" prop="department">
                             <div class="elrow elwith">
-                                <el-select size='large' v-model="form.category" value-key="id" placeholder="请选择"
+                                <el-select size='large' v-model="form.courseType" value-key="id" placeholder="请选择"
                                     @change="newchangeCategory">
-                                    <el-option v-for="item in form.categoryList" :label="item.name" :key="item.id" :value="item.id">
+                                    <el-option v-for="item in form.courseTypeList" :label="item.courseTypeName" :key="item.id" :value="item.courseTypeId">
                                     </el-option>
                                 </el-select>
                                     <!-- <div class='flex1 elm-2 c_red'><span @click="newcourse" class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div> -->
@@ -371,65 +376,64 @@
                         </el-form-item>
                     </div>
                     <div class="column_couse">
-                        <el-form-item label="课程类型" :label-width="formLabelWidth" prop="department">
+                        <!-- <el-form-item label="课程类型" :label-width="formLabelWidth" prop="department">
                             <div class="elrow elwith actives">
                                 <el-select :disabled="iscreate?false:true" size='large' v-model="form.category" value-key="id" placeholder="请选择"
                                     @change="newchangeCategory">
                                     <el-option v-for="item in form.categoryList" :label="item.name" :key="item.id" :value="item.id">
                                     </el-option>
                                 </el-select>
-                                <!-- <div class='flex1 elm-2 c_red'><span @click="newcourse" class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div> -->
                             </div>
-                        </el-form-item>
+                        </el-form-item> -->
+                        <el-form-item label="课时数量" :label-width="formLabelWidth" >
+                                    <el-input :disabled="iscreate?false:true" type="number" v-model.number="form.courseCount" placeholder="请输入总课时数量" auto-complete="off"></el-input>
+                                </el-form-item>
                         <el-form-item label="适合年级" :label-width="formLabelWidth" prop="department">
                                 <div class="elrow elwith">
-                                    <el-select size='large' v-model="form.category" value-key="id" placeholder="请选择"
+                                    <el-select size='large' v-model="form.grade" value-key="id" placeholder="请选择"
                                         @change="newchangeCategory">
-                                        <el-option v-for="item in form.categoryList" :label="item.name" :key="item.id" :value="item.id">
+                                        <el-option v-for="item in form.gradeList" :label="item.name" :key="item.id" :value="item.id">
                                         </el-option>
                                     </el-select>
                                     <!-- <div class='flex1 elm-2 c_red'><span @click="newcourse" class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div> -->
                                 </div>
                             </el-form-item>
+                             
                     </div>
                     <div class="column_couse">
-                            <el-form-item label="课时数量" :label-width="formLabelWidth" >
-                                    <el-input :disabled="iscreate?false:true" type="number" v-model.number="form.courseCount" placeholder="请输入总课时数量" auto-complete="off"></el-input>
-                                </el-form-item>
+                               
                                 <el-form-item label="课时时长" :label-width="formLabelWidth" >
                                     <el-input  :disabled="iscreate?false:true" v-model="form.courseTime" placeholder="请输入每课时时间" auto-complete="off"></el-input>
                                 </el-form-item>
-                    </div>
-                    <div class="column_couse">
-                            <el-form-item label="每次课时" :label-width="formLabelWidth" >
+                                <el-form-item label="每次课时" :label-width="formLabelWidth" >
                                 <el-input :disabled="iscreate?false:true" type="number" @blur="sumcourse" v-model.number="form.Number" placeholder="请输入课时数" auto-complete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="课程次数" :label-width="formLabelWidth" >
-                                <el-input :disabled="true" v-model="form.coursesum" placeholder="课程总次数" auto-complete="off"></el-input>
-                            </el-form-item>
                     </div>
-                    <el-form-item label="授课模式" :label-width="formLabelWidth" prop="galleryful">
-                        <template>
-                            <el-checkbox-group v-model="checkList">
-                                <el-checkbox label="班级"></el-checkbox>
-                                <el-checkbox label="一对一"></el-checkbox>
-                                <!-- <el-checkbox label="复选框 C"></el-checkbox> -->
-                                <!-- <el-checkbox label="禁用" disabled></el-checkbox> -->
-                                <!-- <el-checkbox label="选中且禁用" disabled></el-checkbox> -->
-                            </el-checkbox-group>
-                        </template>
-                    </el-form-item>
-                    <el-form-item label="所属门店" :label-width="formLabelWidth" prop="department">
+                    <div class="column_couse">
+                            <el-form-item label="所属门店" :label-width="formLabelWidth" prop="department">
                         <div class="elrow elwith">
                             <el-select size='large' :disabled="iscreate?false:true" v-model="form.category" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
-                                <el-option v-for="item in form.categoryList" :label="item.name" :key="item.id" :value="item.id">
+                                <el-option v-for="(item,index) in form.orgList" :label="item.orgName" :key="index" :value="item.orgId">
                                 </el-option>
                             </el-select>
-                            <div class='flex1 elm-2 c_red'><span @click="newcourse" class='elm-1 color'>新增门店</span>|<span
+                            <div class='flex1 elm-2 c_red'><span @click="newcourse(0)" class='elm-1 color'>新增门店</span>|<span
                                     class="elm-1 color">刷新</span></div>
                         </div>
                     </el-form-item>
+                           
+                    </div>
+                    <el-form-item label="课程类型" :label-width="formLabelWidth" prop="galleryful">
+                        <template>
+                            <el-radio-group v-model="form.courseTypes">
+                                <el-radio :label="3">班级</el-radio>
+                                <el-radio :label="6">一对一</el-radio>
+                            </el-radio-group>
+                        </template>
+                    </el-form-item>
+                     <el-form-item label="课程次数" :label-width="formLabelWidth" >
+                                <el-input :disabled="true" v-model="form.coursesum" placeholder="课程总次数" auto-complete="off"></el-input>
+                            </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -445,8 +449,6 @@ export default {
     data() {
         return {
             isputaway:true,
-            // 多选框
-            checkList: ['选中且禁用','一对一'],
             // 分页
             currentPage4:1,
             pagesize:10,
@@ -513,29 +515,54 @@ export default {
                 },],
             // 筛选
             ruleForm:{
-                cousename:'课程名称',
+                states:'',
+                stateList:[
+                    {name:'待开课',id:'1'},
+                    {name:'已开课',id:'2'},
+                    {name:'已结课',id:'3'}
+                ], // 状态列表
+                grade:'',     
+                gradeList:[
+                    {name:'幼儿园小班',id:'1'},
+                    {name:'幼儿园中班',id:'2'},
+                    {name:'幼儿园大班',id:'3'},
+                    {name:'一年级',id:'4'},
+                    {name:'二年级',id:'5'},
+                    {name:'三年级',id:'6'},
+                ], //年级列表
+                couseName:'课程名称',
+                couseList:[], // 课程列表
                 couseType:'课程类型',
                 orgName:'门店名称',
+                orgList:[],   // 门店列表
                 techername:'教师名称',
                 department:'所属门店',
                 categoryList:[],
             }, 
             // 对话框
             form: {
-                name: "",
-                coursesum:'',   // 课程次数
-                Number:'',      // 每次课时
-                courseTime:'',  // 课时时长
-                courseCount:'', // 课时数量
-                region: "",
-                date1: "",
-                date2: "",
-                delivery: false,
-                type: [],
-                resource: "",
-                desc: "",
-                categoryList:[],
-                category:[]
+                courseName: "",  
+                courseType:'',
+                courseTypeId:'',
+                courseTypeName:'',
+                courseTypeList:[
+                    
+                ],  // 课程类别
+                // 多选框
+                courseTypes:3,
+                gradeList:[
+                    {name:'幼儿园小班',id:1},
+                    {name:'幼儿园中班',id:2},
+                    {name:'幼儿园大班',id:3},
+                    {name:'一年级',id:4},
+                    {name:'二年级',id:5},
+                    {name:'三年级',id:6},
+                ], //年级列表
+                grade:2,
+                coursesum:'',       // 课程次数
+                Number:'',          // 每次课时
+                courseTime:'',      // 课时时长
+                courseCount:'',     // 课时数量
             },
             // 验证
             rules: {
@@ -575,13 +602,15 @@ export default {
             }
         },
     methods: {
+        // 
         goBack () {
-            // console.log("点击了浏览器的返回按钮");
+            console.log("点击了浏览器的返回按钮");
             sessionStorage.clear();
             window.history.back();
              // console.log("点击了浏览器的返回按钮");
-             history.pushState(null, null, document.URL);
+            //  history.pushState(null, null, document.URL);
         },
+
         //查询教室
         selsectdata(){
                 this.$axios({
@@ -723,8 +752,15 @@ export default {
             }
         },
         // 新建其他
-        newcourse(){
-        // 跳转
+        newcourse(i){
+            // 跳转
+            if(i===0){
+                this.$router.push({
+                    name: 'register',
+                    params:''
+                })
+            }
+            
         },
         hovertablein(row, column, cell, event){
             // console.log(row, column, cell, event)

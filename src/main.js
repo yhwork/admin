@@ -13,6 +13,10 @@ import '../static/ueditor/ueditor.all.js'
 import '../static/ueditor/lang/zh-cn/zh-cn.js'
 import '../static/ueditor/jquery-2.2.3.min.js'
 
+//模拟数据
+require('./mock'); //引入mock数据，关闭则注释该行
+// process.env.MOCK && require('@/mock')  // 根据环境判断是否使用mock
+
 //引入vuex
 import store from './store'
 
