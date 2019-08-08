@@ -344,7 +344,7 @@
     </div>
 </template>
 <script>
-    import {getInfo} from '@/api'
+    import {getInfo} from '@/api/demo'
     import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
     import store from '@/store'
     export default {

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
-import { getToken } from '@/api/cookies'
+import { getToken } from './cookie'
 
 // create an axios instance
 const service = axios.create({
@@ -15,7 +15,7 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-    console.log('请求参数拦截',config.data)
+    console.log('请求参数拦截',config)
     if (store.getters.user) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
@@ -23,6 +23,9 @@ service.interceptors.request.use(
       config.headers['Authorization'] = sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization") :store.getters.user
       // config.headers['X-Token'] = getToken()
     }
+
+
+
     return config
   },
   error => {
@@ -48,7 +51,7 @@ service.interceptors.response.use(
     const res = response.data
     console.log('响应数据拦截',res);
     // 判断相应的状态码
-    if (res.errorCode !== 0) {
+    if (res.code !== 0 ) {
       Message({
         message: res.errorMessage || 'Error',
         type: 'error',
