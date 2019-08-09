@@ -90,6 +90,12 @@ export default {
     var that = this;
     that.getCode();
     // that.geytList()
+    document.onkeydown = function(e) {
+      var key = window.event.keyCode;
+      if (key == 13) {
+        that.submitForm('ruleForm');
+      }
+    }
   },
   methods: {
 
@@ -127,6 +133,7 @@ export default {
     },
     
     submitForm(formName) {
+      console.log(formName)
       const self = this;
       var params={
             password:self.ruleForm.password,

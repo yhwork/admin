@@ -164,6 +164,14 @@ export default {
       }
     };
   },
+  created() {
+    document.onkeydown = function(e) {
+      var key = window.event.keyCode;
+      if (key == 13) {
+        that.onSubmit('ruleForm');
+      }
+    }
+  },
   methods: {
     getCode() {
       //倒计时
