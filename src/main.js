@@ -74,15 +74,22 @@ router.beforeEach((to, from, next) => {
         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
         role === 'admin' ? next() : next('/403');
     } else {
+        console.log('路由监控',to,from);
+        // 把路由的来源和去像存起来
+        to.params.router={
+            path:to.name,
+            from:from.name
+        }
         next()
     }
 })
 
-router.afterEach((to, from , next)=> {
-    // sessionStorage.clear();
-    console.log('路由离开')
-    // next()
-})
+// router.afterEach((to, from , next)=> {
+
+//     // sessionStorage.clear();
+//     console.log('路由监控',to,from)
+//     // next()
+// })
 
 /* eslint-disable no-new */
 new Vue({

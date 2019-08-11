@@ -51,14 +51,14 @@ service.interceptors.response.use(
     const res = response.data
     console.log('响应数据拦截',res);
     // 判断相应的状态码
-    if (res.code !== 0 ) {
+    if (res.errorCode != 0 ) {
       Message({
         message: res.errorMessage || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.errorCode === 100001 || res.cerrorCodeode === 100005 || res.errorCode === 300000 ) {
+      if (res.errorCode == 100001 || res.cerrorCodeode == 100005 || res.errorCode == 300000 ) {
         // to re-login
         MessageBox.confirm('服务器错误', '请重新登录', {
           confirmButtonText: '去登录',

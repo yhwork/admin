@@ -12,16 +12,16 @@ const Mock = require("mockjs")
 //     },
 //     "msg": "success"
 // })
-
-Mock.mock('/store/class/getClassList', "get", {
-    "code": 0,
-    "data": {
-      "fullName": "@CNAME", // 随机生成中文人名
-      "userId": 1000234234001,
-      "username": "zhangsan"
-    },
-    "msg": "success"
-})
+// 
+// Mock.mock('/store/class/getClassList', "get", {
+//     "code": 0,
+//     "data": {
+//       "fullName": "@CNAME", // 随机生成中文人名
+//       "userId": 1000234234001,
+//       "username": "zhangsan"
+//     },
+//     "msg": "success"
+// })
 
 //格式： Mock.mock( url, post/get , 返回的数据)；
 // Mock.mock('/user/userInfo', 'get', require('./json/userInfo'));
