@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar" :class="{'sidebar2':collapse}">
-    <el-menu class="sidebar-el-menu" :default-active="activeIndex" :collapse="collapse" background-color="#324157" text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router >
+    <el-menu class="sidebar-el-menu" :default-active="$route.path" :collapse="collapse" background-color="#324157" text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router >
 <!-- 左边菜单栏 -->
       <template v-for="item in menuList">
         <!-- 判断是否有嵌套的子路由-->
@@ -154,10 +154,10 @@ export default {
       })
           }
     },
-    $route(newValue, oldValue) {
-      // console.log('路由变换啦',newValue)
-      this.activeIndex = newValue.path.replace("/",'')
-    }
+    // $route(newValue, oldValue) {
+    //   // console.log('路由变换啦',newValue)
+    //   this.activeIndex = newValue.path.replace("/",'')
+    // }
   },
   computed: {
     //当前激活菜单的 name名称
@@ -169,7 +169,7 @@ export default {
     // }
   },
   created() {
-    this.activeIndex=this.$route.path.replace("/", "");
+    // this.activeIndex=this.$route.path.replace("/", "");
     // 通过 Event Bus 进行组件间通信，来折叠侧边栏
     bus.$on("collapse", msg => {
       this.collapse = msg;
