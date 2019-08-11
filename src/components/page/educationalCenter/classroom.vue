@@ -188,7 +188,7 @@
                 </div>
             </div>
             <!-- 弹框 -->
-            <el-dialog class="myclassroom" :title="iscreate==true?'创建教室':'编辑教室'" left :visible.sync="dialogFormVisible">
+            <el-dialog class="myclassroom" :close-on-click-modal='false' :title="iscreate==true?'创建教室':'编辑教室'" left :visible.sync="dialogFormVisible">
                 <el-form :model="form" :rules="rules">
                     <el-form-item label="所属门店" :label-width="formLabelWidth" prop="department">
                         <div class="elrow">
@@ -277,6 +277,9 @@
                 },
                 tb_idnex: '',
                 orgalllist: [],
+                router:{},
+                router_back:false,
+                mycontent:'', //暂时存放数据
             }
         },
         watch: {
@@ -285,6 +288,23 @@
         created() {
             this.selsectdata()  // 查询
             this.getorglist()   // 获取门店
+          
+        },
+        activated(){
+            console.log(this.$route.params);
+            let params = this.$route.params;
+            if(params.hasOwnProperty('isnewcouse')){
+                this.dialogFormVisible = params.isnewcouse;   // 控制显示弹框
+                this.router_back= params.router_back;         // 是否返回原页面
+                this.mycontent = params.dialog_cnt;
+            }else{
+                console.log('不是别的过来新建的')
+            }
+            if(params.hasOwnProperty('router')){
+                this.router=params.router;
+            }else{
+                console.log('路由不为空')
+            }
         },
         methods: {
             // 改变表格
@@ -544,14 +564,31 @@
                         }
                     }).then(res => {
                         if (res.data.errorCode == 0) {
-                            this.$message('创建教室成功');
-                            this.selsectdata()
-                            console.log('info', res.data)
-                            this.dialogFormVisible = false;
-                            this.form.name = "";
-                            this.form.sum = "";
-                            this.from.orgId = "";
-
+                           
+                            if(this.router_back){
+                                this.$message('创建教室成功,即将返回');
+                                let route =this.router;
+                                let params ={
+                                    mycontent:this.mycontent,
+                                    isnewcouse:true,
+                                    router_back:false
+                                }
+                                let times =null;
+                                    clearTimeout(times);
+                                    times = setTimeout(()=>{
+                                        this.$router.push({
+                                        name: route.from,
+                                        params
+                                    })
+                                },500)
+                            }else{
+                                this.$message('创建教室成功');
+                                this.selsectdata()
+                            }
+                                this.dialogFormVisible = false;
+                                this.form.name = "";
+                                this.form.sum = "";
+                                this.from.orgId = "";
                         } else {
                             return this.$message('请求失败1')
                         }

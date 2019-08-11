@@ -444,6 +444,8 @@
     </div>
 </template>
 <script>
+// 请求自定义数据
+import {addCurriculum,getCurriculumList,getSelectRes,ideaCurriculum,getInfo,demo2} from '@/api/demo'
 export default {
     name:'curriculum',
     data() {
@@ -578,10 +580,25 @@ export default {
             // table选项框
             tableselectlist:[
             ],
+            router_back:false,
+            mycontent:'',
+            router:''
         }
     },
     created() {
-      
+        var params= {
+            name:'杨辉'
+        }
+        getInfo().then((res)=>{
+            console.log('demo结果',res)
+        });
+
+        // ideaCurriculum().then(res=>{
+        //     console.log('列表结果',res)
+        // })
+        demo2().then((res)=>{
+            console.log('demo2结果',res)
+        })
     },
     mounted() {
         if (window.history && window.history.pushState) {
@@ -595,12 +612,20 @@ export default {
     },
     activated(){
     // this.selsectdata();
-        var isNo = this.$route.params;
-            console.log('aaaaa',isNo)
-            if(isNo.hasOwnProperty('isnewcouse')){
-                    this.dialogFormVisible=isNo.isnewcouse;
-            }
-        },
+        let params = this.$route.params;
+        if(params.hasOwnProperty('isnewcouse')){
+            this.dialogFormVisible = params.isnewcouse;   // 控制显示弹框
+            this.router_back= params.router_back;         // 是否返回原页面
+            this.mycontent = params.dialog_cnt;
+        }else{
+            console.log('不是别的过来新建的')
+        }
+        if(params.hasOwnProperty('router')){
+            this.router=params.router;
+        }else{
+            console.log('路由不为空')
+        }
+    },
     methods: {
         // 
         goBack () {

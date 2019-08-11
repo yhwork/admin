@@ -243,15 +243,15 @@
                         </el-form-item>
                         <div class="elrow">
                             <div class='clearselectall'>
-                                <el-button class="clearpadding" type="primary" plain>筛选</el-button>
+                                <el-button class="clearpadding" icon="el-icon-search" @click='searchcnt' type="primary" plain>筛选</el-button>
                             </div>
                             <div class='clearselectall'>
                                 <el-button @click='clearchoose' class="clearpadding" type="primary" plain>清除筛选条件
                                 </el-button>
                             </div>
-                            <div class="searchcnt">
+                            <!-- <div class="searchcnt">
                                 <el-button type="primary" icon="el-icon-search" @click='searchcnt'>搜索</el-button>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </el-form>
@@ -511,6 +511,21 @@
             //         console.log('我要的mock数据',res)
             //     })
         },
+        activated(){
+            console.log(this.$route.params);
+            let params = this.$route.params;
+            if(params.hasOwnProperty('isnewcouse')){
+                this.dialogFormVisible = params.isnewcouse;   // 控制显示弹框
+                this.state_id= params.state_id;
+            }else{
+                console.log('不是别的过来新建的')
+            }
+            if(params.hasOwnProperty('router')){
+                this.router=params.router;
+            }else{
+                console.log('路由不为空')
+            }
+        },
         methods: {
             // vuex的集合
             ...mapMutations({
@@ -766,20 +781,23 @@
             },
             // 新建
             newcourse(i) {
-                this.dialogFormVisible = false;
+                this.dialogFormVisible = false;  
+                /**
+                 * 关闭当前对话框
+                 * 传值  是否打开新的对话框  对话框内容   是否返回到原页面
+                 * 
+                */
+                var params={
+                    isnewcouse:false,  // 打开新弹框
+                    dialog_cnt:'',
+                    router_back:false
+                }
                 if(i==0){       // 新建门店
-                    let params={
-
-                    }
                     this.$router.push({
-                        name: 'register',
-                        params,
+                        name: 'register'
                     })
                 }
                 if(i==1){       // 新建课程
-                    let params={
-                        isnewcouse:true
-                    }
                     // this.$router.replace() 
                     this.$router.push({
                         name: 'curriculum',
@@ -792,7 +810,13 @@
                     // })
                 }
                 if(i==2){       // 新建教室
-
+                    params.isnewcouse = true;
+                    params.router_back = true;
+                    params.dialog_cnt = JSON.parse(JSON.stringify(this.form))
+                     this.$router.push({
+                        name: 'classroom',
+                        params,
+                    })
                 }
                 
             },
