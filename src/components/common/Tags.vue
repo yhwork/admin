@@ -7,7 +7,7 @@
         :class="{'active': isActive(item.path)}"
         :key="index"
       >
-        <router-link :to="item.path" class="tags-li-title">{{item.title}}</router-link>
+        <div  @click='linkTo(item.path)' class="tags-li-title">{{item.title}}</div>
         <span class="tags-li-icon" @click="closeTags(index)">
           <i class="el-icon-close"></i>
         </span>
@@ -40,6 +40,12 @@ export default {
   methods: {
     isActive(path) {
       return path === this.$route.fullPath;
+    },
+    linkTo(path){
+      console.log(path);
+      bus.$emit("tagindex", path);
+      this.$router.push({path});
+     
     },
     // 关闭单个标签
     closeTags(index) {
@@ -97,9 +103,7 @@ export default {
     }
   },
   created() {
-    
     console.log('tab标签',this.tagsList);
-
     this.setTags(this.$route);
     // 监听关闭当前页面的标签页
     bus.$on("close_current_tags", () => {
@@ -114,7 +118,6 @@ export default {
             this.$router.push("/");
           }
           this.tagsList.splice(i, 1);
-          console.log('tab标签',this.tagsList);
         }
       }
     });
