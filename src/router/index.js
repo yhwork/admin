@@ -18,6 +18,7 @@ export default new Router({
     {
       path: '/',
       redirect: '/public_info',
+      meta: {allowBack: false}
     },
       //  {
       //   path: '/example',
@@ -44,7 +45,7 @@ export default new Router({
     {
       path: '/',
       component: resolve => require(['../components/common/Main.vue'], resolve),
-      meta: { title: '主页面', isLogin: true },
+      meta: { title: '主页面', isLogin: true},
       children: [
         {
           path: '/classroom',
@@ -88,8 +89,9 @@ export default new Router({
         },
         {
           path: '/public_info',
+          name:'public_info',
           component: resolve => require(['../components/page/PublicInfo.vue'], resolve),
-          meta: { title: '工作台' }
+          meta: { title: '工作台',allowBack: false }
         },
         {
           path: '/department',

@@ -74,13 +74,26 @@ router.beforeEach((to, from, next) => {
         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
         role === 'admin' ? next() : next('/403');
     } else {
-        console.log('路由监控',to,from);
+        // console.log('路由监控',to,from);
         // 把路由的来源和去像存起来
         to.params.router={
             path:to.name,
             from:from.name
         }
-        next()
+        next();
+        var allowBack = true  //    给个默认值true
+        // console.log('你又是个啥',to)
+        if (to.meta.allowBack !== undefined) {
+            allowBack = to.meta.allowBack
+        }
+        // console.log('你到底是个啥',allowBack)
+        if (!allowBack) {
+            history.pushState(null, null, location.href)
+        }   
+ //   updateAppSetting 只是store里面的一个action， 用来改变store里的allowBack的值的，具体怎么改这个值 要根据各位的实际情况而定
+        store.dispatch('user/updateAppSetting', {    
+            allowBack
+        })
     }
 })
 
