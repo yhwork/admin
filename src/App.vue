@@ -7,7 +7,7 @@
 <script>
 export default {
   name: "App",
-   provide () {
+   provide () {   // 父元素中定义  变量  子元素课以获取到  inject['reload']  可以获取到
     return {
       reload: this.reload
     }
@@ -18,10 +18,13 @@ export default {
     }
   },
   methods: {
+
     reload () {
-      this.isRouterAlive = false
-      this.$nextTick(function() {
-         this.isRouterAlive = true
+      // 重新加载
+      // this.isRouterAlive = false
+      this.$nextTick(function() {  //监听 dom树渲染   
+        console.log('我又渲染了dom')
+        //  this.isRouterAlive = true
       })
     }
   }

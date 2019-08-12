@@ -61,11 +61,13 @@ export default {
     },
     // 关闭全部标签
     closeAll() {
+      // 赋值为空
       this.tagsList = [];
       this.$router.push("/");
     },
     // 关闭其他标签
     closeOther() {
+      // 返回只等于指自己的值
       const curItem = this.tagsList.filter(item => {
         return item.path === this.$route.fullPath;
       });
@@ -73,9 +75,11 @@ export default {
     },
     // 设置标签
     setTags(route) {
+      console.log('路由执行几次',route)
       const isExist = this.tagsList.some(item => {
         return item.path === route.fullPath;
       });
+
       if (!isExist) {
         if (this.tagsList.length >= 8) {
           this.tagsList.shift();
@@ -103,7 +107,7 @@ export default {
     }
   },
   created() {
-    console.log('tab标签',this.tagsList);
+    // console.log('tab标签',this.tagsList);
     this.setTags(this.$route);
     // 监听关闭当前页面的标签页
     bus.$on("close_current_tags", () => {

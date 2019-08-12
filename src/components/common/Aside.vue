@@ -172,6 +172,7 @@ export default {
     // this.activeIndex=this.$route.path.replace("/", "");
     // 通过 Event Bus 进行组件间通信，来折叠侧边栏
     bus.$on("collapse", msg => {
+      console.log(msg)
       this.collapse = msg;
     });
     bus.$on('tagindex',(path)=>{
