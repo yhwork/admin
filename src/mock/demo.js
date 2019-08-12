@@ -1,6 +1,6 @@
 const Mock = require("mockjs")
 import ApiPath from '@/api/config'
-console.log('全部地址', ApiPath)
+// console.log('全部地址', ApiPath)
 // 对这个请求进行拦截
 // Mock.mock(ApiPath.user.getUserInfo, "get", {
 //     "code": 0,

@@ -23,9 +23,6 @@ service.interceptors.request.use(
       config.headers['Authorization'] = sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization") :store.getters.user
       // config.headers['X-Token'] = getToken()
     }
-
-
-
     return config
   },
   error => {
@@ -60,14 +57,17 @@ service.interceptors.response.use(
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.errorCode == 100001 || res.cerrorCodeode == 100005 || res.errorCode == 300000 ) {
         // to re-login
+        // if(){}
         MessageBox.confirm('服务器错误', '请重新登录', {
           confirmButtonText: '去登录',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          store.dispatch('/login').then(() => {
-            location.reload()
-          })
+          setTimeout(()=>{
+            store.dispatch('/login').then(() => {
+              location.reload()
+            })
+          },1500)
         })
       }
       return Promise.reject(new Error(res.errorMessage || 'Error'))
