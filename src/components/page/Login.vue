@@ -156,13 +156,13 @@ export default {
           })
             .then(res => {   
                 if (res.data.errorCode == 200000) {
-                  
                   sessionStorage.setItem("ms_username", self.ruleForm.username);
                   sessionStorage.setItem(
                     "Authorization",
                     "Bearer " + res.data.result.token
                   );
                   // 存到 store
+                  
                   // console.log('咋不跳转呢')
                   return this.$router.push("/");
                 
