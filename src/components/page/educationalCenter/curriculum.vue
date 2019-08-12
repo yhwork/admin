@@ -158,7 +158,7 @@
                             :value="item.id"
                         ></el-option>
             </el-select>-->
-            <el-input v-model="form.courseName" placeholder="请输入课程名称" auto-complete="off"></el-input>
+            <el-input v-model="ruleForm.courseName" placeholder="请输入课程名称" auto-complete="off"></el-input>
           </el-form-item>
 
           <el-form-item label="所属门店" prop="department">
@@ -178,15 +178,15 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="课程类型" prop="department">
+          <el-form-item label="课程类别" prop="department">
             <el-select
-              v-model="ruleForm.couseType"
+              v-model="ruleForm.courseTypeId"
               value-key="id"
               placeholder="请选择"
               @change="changeCategory"
             >
               <el-option
-                v-for="item in ruleForm.subject"
+                v-for="item in ruleForm.courseTypeList"
                 :label="item.name"
                 :key="item.id"
                 :value="item.id"
@@ -399,10 +399,10 @@
                 @change="newchangeCategory"
               >
                 <el-option
-                  v-for="item in form.courseTypeList"
-                  :label="item.courseTypeName"
-                  :key="item.id"
-                  :value="item.courseTypeId"
+                  v-for="(item,index) in form.courseTypeList"
+                  :label="item.name"
+                  :key="index"
+                  :value="item.id"
                 ></el-option>
               </el-select>
               <!-- <div class='flex1 elm-2 c_red'><span @click="newcourse" class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div> -->
@@ -474,16 +474,16 @@
               <el-select
                 size="large"
                 :disabled="iscreate?false:true"
-                v-model="form.category"
+                v-model="form.orgName"
                 value-key="id"
                 placeholder="请选择"
                 @change="newchangeCategory"
               >
                 <el-option
                   v-for="(item,index) in form.orgList"
-                  :label="item.orgName"
+                  :label="item.nmae"
                   :key="index"
-                  :value="item.orgId"
+                  :value="item.id"
                 ></el-option>
               </el-select>
               <div class="flex1 elm-2 c_red">
@@ -495,7 +495,7 @@
         </div>
         <el-form-item label="课程类型" :label-width="formLabelWidth" prop="galleryful">
           <template>
-            <el-radio-group v-model="form.courseTypes">
+            <el-radio-group v-model="form.courseTypeId">
               <el-radio :label="3">班级</el-radio>
               <el-radio :label="6">一对一</el-radio>
             </el-radio-group>
@@ -546,32 +546,6 @@ export default {
       formLabelWidth: "120px",
       //表格数据
       tableData: [
-        // {
-        //     id:1,
-        //     coursename:'课程名称',
-        //     coursetype:'授课类型',
-        //     galleryful:'容纳人数',
-        //     coursemodule:'授课模式',
-        //     begclassnum:'开班数',
-        //     scopegrade:'适合年级',
-        //     relatedpersoncount:'关联线上人数',
-        //     coursestate:'状态',
-        //     founder:"创建人",
-        //     cretetime:'创建时间'
-        // },
-        // {
-        //     id:2,
-        //     coursename:'课程名称',
-        //     coursetype:'授课类型',
-        //     galleryful:'容纳人数',
-        //     coursemodule:'授课模式',
-        //     begclassnum:'开班数',
-        //     scopegrade:'适合年级',
-        //     relatedpersoncount:'关联线上人数',
-        //     coursestate:'状态',
-        //     founder:"创建人",
-        //     cretetime:'创建时间'
-        // },
         {
           id: 3,
           coursename: "课程名称",
@@ -604,40 +578,14 @@ export default {
       ],
       // 筛选
       ruleForm: {
-        states: "",
+        states:2,    // 课程状态
         stateList: [
-          { name: "待开课", id: "1" },
-          { name: "已开课", id: "2" },
-          { name: "已结课", id: "3" }
+          { name: "待开课", id: 1 },
+          { name: "已开课", id: 2 },
+          { name: "已结课", id: 3 }
         ], // 状态列表
-        grade: "",
-        gradeList: [
-          { name: "幼儿园小班", id: "1" },
-          { name: "幼儿园中班", id: "2" },
-          { name: "幼儿园大班", id: "3" },
-          { name: "一年级", id: "4" },
-          { name: "二年级", id: "5" },
-          { name: "三年级", id: "6" }
-        ], //年级列表
-        couseName: "课程名称",
-        couseList: [], // 课程列表
-        couseType: "课程类型",
-        orgName: "门店名称",
-        orgList: [], // 门店列表
-        techername: "教师名称",
-        department: "所属门店",
-        categoryList: []
-      },
-      // 对话框
-      form: {
-        courseName: "",
-        courseType: "",
-        courseTypeId: "",
-        courseTypeName: "",
-        courseTypeList: [], // 课程类别
-        // 多选框
-        courseTypes: 3,
-        gradeList: [
+        grade: 2,                     // 年级
+        gradeList: [                  //年级列表
           { name: "幼儿园小班", id: 1 },
           { name: "幼儿园中班", id: 2 },
           { name: "幼儿园大班", id: 3 },
@@ -645,11 +593,75 @@ export default {
           { name: "二年级", id: 5 },
           { name: "三年级", id: 6 }
         ], //年级列表
-        grade: 2,
+        courseName: "JAVA设计",
+        courseTypeId:3,     // 课程类别
+        courseTypeList:[    // 课程类别
+           {name:'小程序',id:1},
+          {name:'移动app',id:2},
+          {name:'h5开发',id:3},
+          {name:'web响应式开发',id:4},
+          {name:'公众号',id:5},
+        ],
+        orgList: [], // 门店列表
+        techername: "教师名称",
+        orgName:'北大青鸟',
+        orgList:[
+          {
+            name:'北大青鸟教育中心',
+            id:1
+          },
+          {
+            name:'传智播客教育中心',
+            id:2
+          },
+          {
+            name:'达内教育集团',
+            id:3
+          }
+        ]
+      },
+      // 对话框
+      form: {
+        courseName: "课程名称",
         coursesum: "", // 课程次数
-        Number: "", // 每次课时
-        courseTime: "", // 课时时长
-        courseCount: "" // 课时数量
+        Number: 2, // 每次课时
+        courseTime:45, // 课时时长
+        courseCount: 20, // 课时数量
+        courseTypeId:3, // 课程类型
+        courseType: 2, // 课程类别
+        courseTypeList: [   // 课程类别
+          {name:'小程序',id:1},
+          {name:'移动app',id:2},
+          {name:'h5开发',id:3},
+          {name:'web响应式开发',id:4},
+          {name:'公众号',id:5},
+        ],          
+        courseTypeId: 3,               // 多选框
+        orgName:'北大青鸟',
+        orgList:[
+          {
+            name:'北大青鸟教育中心',
+            id:1
+          },
+          {
+            name:'传智播客教育中心',
+            id:2
+          },
+          {
+            name:'达内教育集团',
+            id:3
+          }
+        ],
+        grade: 2,                     // 年级
+        gradeList: [                  //年级列表
+          { name: "幼儿园小班", id: 1 },
+          { name: "幼儿园中班", id: 2 },
+          { name: "幼儿园大班", id: 3 },
+          { name: "一年级", id: 4 },
+          { name: "二年级", id: 5 },
+          { name: "三年级", id: 6 }
+        ], 
+       
       },
       // 验证
       rules: {
@@ -745,66 +757,66 @@ export default {
     //创建教室 // 编辑教室
     createroom() {
       console.log("保存信息", this.form);
-      var { orgId, name, num, id } = this.form;
-      console.log(orgId, name, num, id);
-      if (this.iscreate) {
-        if (
-          orgId == "" ||
-          orgId == undefined ||
-          name == "" ||
-          name == undefined ||
-          num == "" ||
-          num == undefined
-        ) {
-          return this.$message("请填写完整信息");
-        }
-        this.$axios({
-          method: "post",
-          url: `/store/room/addRoom?orgId=${orgId}&name=${name}&num=${num}`,
-          data: this.form,
-          headers: {
-            Authorization: sessionStorage.getItem("Authorization")
-          }
-        })
-          .then(res => {
-            if (res.data.errorCode == 0) {
-              this.selsectdata();
-              console.log("info", res.data);
-              this.dialogFormVisible = false;
+      // var { orgId, name, num, id } = this.form;
+      // console.log(orgId, name, num, id);
+        // if (this.iscreate) {
+        //   if (
+        //     orgId == "" ||
+        //     orgId == undefined ||
+        //     name == "" ||
+        //     name == undefined ||
+        //     num == "" ||
+        //     num == undefined
+        //   ) {
+        //     return this.$message("请填写完整信息");
+        //   }
+        //   this.$axios({
+        //     method: "post",
+        //     url: `/store/room/addRoom?orgId=${orgId}&name=${name}&num=${num}`,
+        //     data: this.form,
+        //     headers: {
+        //       Authorization: sessionStorage.getItem("Authorization")
+        //     }
+        //   })
+        //     .then(res => {
+        //       if (res.data.errorCode == 0) {
+        //         this.selsectdata();
+        //         console.log("info", res.data);
+        //         this.dialogFormVisible = false;
 
-              this.$message("创建教室成功");
-              this.form.name = "";
-              this.form.sum = "";
-              this.from.orgId = "";
-            }
-          })
-          .catch(err => {
-            this.$message("请求失败");
-          });
-      } else {
-        this.$axios({
-          method: "put",
-          url: `/store/room/updateRoom`,
-          data: this.form,
-          headers: {
-            Authorization: sessionStorage.getItem("Authorization")
-          }
-        })
-          .then(res => {
-            if (res.data.errorCode == 0) {
-              this.selsectdata();
-              console.log("info", res.data);
-              this.dialogFormVisible = false;
-              this.$message("编辑教室成功");
-              this.form.name = "";
-              this.form.sum = "";
-              this.from.orgId = "";
-            } else {
-              this.$message("请求失败");
-            }
-          })
-          .catch(err => {});
-      }
+        //         this.$message("创建教室成功");
+        //         this.form.name = "";
+        //         this.form.sum = "";
+        //         this.from.orgId = "";
+        //       }
+        //     })
+        //     .catch(err => {
+        //       this.$message("请求失败");
+        //     });
+        // } else {
+        //   this.$axios({
+        //     method: "put",
+        //     url: `/store/room/updateRoom`,
+        //     data: this.form,
+        //     headers: {
+        //       Authorization: sessionStorage.getItem("Authorization")
+        //     }
+        //   })
+        //     .then(res => {
+        //       if (res.data.errorCode == 0) {
+        //         this.selsectdata();
+        //         console.log("info", res.data);
+        //         this.dialogFormVisible = false;
+        //         this.$message("编辑教室成功");
+        //         this.form.name = "";
+        //         this.form.sum = "";
+        //         this.from.orgId = "";
+        //       } else {
+        //         this.$message("请求失败");
+        //       }
+        //     })
+        //     .catch(err => {});
+        // }
     },
 
     //  删除
