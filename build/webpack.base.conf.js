@@ -31,6 +31,11 @@ module.exports = {
   },
   module: {
     rules: [
+      // 加载scss
+      {
+        test:/\.scss$/,
+        loaders:['style','css','sass','scss']
+      },
       {
         test: /\.vue$/,
         loader: 'vue-loader',
@@ -57,11 +62,7 @@ module.exports = {
           name: utils.assetsPath('media/[name].[hash:7].[ext]')
         }
       },
-      // 加载scss
-      {
-        test:/\.scss$/,
-        loaders:['style','css','sass','scss']
-      },
+
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
         loader: 'url-loader',

@@ -5,6 +5,7 @@ const state = {
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
     withoutAnimation: false
   },
+  allowBack:false,
   token: sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization"):"",
   demo: '测试内容'
 }
@@ -16,12 +17,20 @@ const mutations = {
     setstore:(state,data)=>{
         state.demo=data
         console.log('修改后内容为',state.demo)
+    },
+    stopBack:(state,data)=>{
+      state.allowBack=data
+      // console.log('修改后内容为',state.allowBack)
     }
 }
 
 const actions = {
     asyncgettoken({commit}){
         commit("gettoken")
+    },
+    updateAppSetting({commit},{state}){
+      // console.log('你是个啥？',state)
+      commit("stopBack",state)
     },
     // 获取兄弟模块中的方法和store
     getdemofun:(store,data)=>{

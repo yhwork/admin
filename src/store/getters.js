@@ -9,8 +9,11 @@ const getters = {
        let token = state.user.token;
        if(token === ""){
           console.warn('没有token请登录')
+       }else{
+         // console.warn('不用登录',token)
+         return token;
        }
-       return token;
+      
     }
   }
   export default getters
