@@ -47,34 +47,34 @@
 .flex5 {
   flex: 5;
 }
-.ws10 input {
-  padding: 0 60px;
-  margin-right: 5px;
-}
-.ws30 input {
-  padding: 0 80px;
-  margin-right: 5px;
-}
-.ws20 input {
-  padding: 0 70px;
-  margin-right: 5px;
-}
-.ws40 input {
-  padding: 0 100px;
-  margin-right: 5px;
-}
-.w70 input {
-  width: 70%;
-  margin-right: 5px;
-}
-.w80 input {
-  width: 80%;
-  margin-right: 5px;
-}
-.w90 input {
-  width: 90%;
-  margin-right: 5px;
-}
+// .ws10 input {
+//   padding: 0 60px;
+//   margin-right: 5px;
+// }
+// .ws30 input {
+//   padding: 0 80px;
+//   margin-right: 5px;
+// }
+// .ws20 input {
+//   padding: 0 70px;
+//   margin-right: 5px;
+// }
+// .ws40 input {
+//   padding: 0 100px;
+//   margin-right: 5px;
+// }
+// .w70 input {
+//   width: 70%;
+//   margin-right: 5px;
+// }
+// .w80 input {
+//   width: 80%;
+//   margin-right: 5px;
+// }
+// .w90 input {
+//   width: 90%;
+//   margin-right: 5px;
+// }
 /* element UI css updata*/
 .el-select .el-select--large {
   width: 100%;
@@ -144,27 +144,13 @@
         </div>
         <div class="elrow elmt-2 selectclass">
           <el-form-item label="课程名称" prop="techername">
-            <!-- <el-select
-                        class="ws20"
-                        v-model="ruleForm.couseName"
-                        value-key="id"
-                        placeholder="请选择"
-                        @change="changeCategory"
-                        >
-                        <el-option
-                            v-for="item in ruleForm.couseList"
-                            :label="item.name"
-                            :key="item.id"
-                            :value="item.id"
-                        ></el-option>
-            </el-select>-->
             <el-input v-model="ruleForm.courseName" placeholder="请输入课程名称" auto-complete="off"></el-input>
           </el-form-item>
 
           <el-form-item label="所属门店" prop="department">
             <el-select
               class="ws30"
-              v-model="ruleForm.orgName"
+              v-model="ruleForm.orgId"
               value-key="id"
               placeholder="请选择"
               @change="changeCategory"
@@ -173,17 +159,17 @@
                 v-for="item in ruleForm.orgList"
                 :label="item.name"
                 :key="item.id"
-                :value="item.id"
+                :value="item.orgId"
               ></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item label="课程类别" prop="department">
             <el-select
-              v-model="ruleForm.courseTypeId"
+              v-model="ruleForm.courseType"
               value-key="id"
               placeholder="请选择"
-              @change="changeCategory"
+              @change="changecourseType"
             >
               <el-option
                 v-for="item in ruleForm.courseTypeList"
@@ -245,14 +231,14 @@
           </el-form-item>
           <div class="elrow">
             <div>
-              <el-button class="clearpadding" type="primary" plain>筛选</el-button>
+              <el-button  @click='searchcnt' class="clearpadding" type="primary" plain>筛选</el-button>
             </div>
             <div>
-              <el-button class="clearpadding" type="primary" plain>清除筛选条件</el-button>
+              <el-button class="clearpadding"  @click='clearchoose' type="primary" plain>清除筛选条件</el-button>
             </div>
           </div>
         </div>
-      </el-form>
+      </el-form>   
     </div>
     <!--管理-->
     <div class="mystyles">
@@ -272,7 +258,7 @@
             <!-- <i class="el-icon-time"></i> -->
             <!--  <span style="margin-left: 10px">{{ scope.row.date }}</span> -->
             <div>
-              <span>{{ scope.row.coursename }}</span>
+              <span>{{ scope.row.courseName }}</span>
             </div>
           </template>
         </el-table-column>
@@ -287,28 +273,28 @@
                             </el-popover>
             -->
             <div>
-              <span>{{ scope.row.coursetype }}</span>
+              <span>{{ scope.row.courseType }}</span>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="授课模式" :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <div>
-              <span>{{ scope.row.coursemodule }}</span>
+              <span>{{ scope.row.courseTypeName }}</span>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="适合年级" :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <div>
-              <span>{{ scope.row.scopegrade }}</span>
+              <span>{{ scope.row.grade }}</span>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="开班数" :show-overflow-tooltip="true" width="70">
           <template slot-scope="scope">
             <div>
-              <span>{{ scope.row.begclassnum }}</span>
+              <span>{{ scope.row.courseCount }}</span>
             </div>
           </template>
         </el-table-column>
@@ -386,7 +372,7 @@
     >
       <el-form class="changesselect" :model="form" :rules="rules">
         <div class="column_couse">
-          <el-form-item label="课程名称" :label-width="formLabelWidth" prop="classname">
+          <el-form-item label="课程名称" :label-width="formLabelWidth" prop="courseName">
             <el-input v-model="form.courseName" placeholder="请输入教室名称" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="课程类别" :label-width="formLabelWidth" prop="department">
@@ -396,7 +382,7 @@
                 v-model="form.courseType"
                 value-key="id"
                 placeholder="请选择"
-                @change="newchangeCategory"
+      
               >
                 <el-option
                   v-for="(item,index) in form.courseTypeList"
@@ -419,7 +405,7 @@
                                 </el-select>
                             </div>
           </el-form-item>-->
-          <el-form-item label="课时数量" :label-width="formLabelWidth">
+          <el-form-item label="课时数量" :label-width="formLabelWidth" :required='true'>
             <el-input
               :disabled="iscreate?false:true"
               type="number"
@@ -449,10 +435,11 @@
           </el-form-item>
         </div>
         <div class="column_couse">
-          <el-form-item label="课时时长" :label-width="formLabelWidth">
+          <el-form-item label="课时时长" :label-width="formLabelWidth" :required='true'>
             <el-input
               :disabled="iscreate?false:true"
-              v-model="form.courseTime"
+              type="number"
+              v-model.number="form.courseTime"
               placeholder="请输入每课时时间"
               auto-complete="off"
             ></el-input>
@@ -474,16 +461,16 @@
               <el-select
                 size="large"
                 :disabled="iscreate?false:true"
-                v-model="form.orgName"
+                v-model="form.orgId"
                 value-key="id"
                 placeholder="请选择"
                 @change="newchangeCategory"
               >
                 <el-option
                   v-for="(item,index) in form.orgList"
-                  :label="item.nmae"
+                  :label="item.name"
                   :key="index"
-                  :value="item.id"
+                  :value="item.orgId"
                 ></el-option>
               </el-select>
               <div class="flex1 elm-2 c_red">
@@ -495,9 +482,9 @@
         </div>
         <el-form-item label="课程类型" :label-width="formLabelWidth" prop="galleryful">
           <template>
-            <el-radio-group v-model="form.courseTypeId">
-              <el-radio :label="3">班级</el-radio>
-              <el-radio :label="6">一对一</el-radio>
+            <el-radio-group v-model="form.courseTypeId" @change='checkradios'>
+              <el-radio :label="1">班级</el-radio>
+              <el-radio :label="2">一对一</el-radio>
             </el-radio-group>
           </template>
         </el-form-item>
@@ -511,11 +498,11 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="createroom(false)">取 消</el-button>
         <el-button
           style="background:orange;border:1px solid orange;"
           type="primary"
-          @click="createroom"
+          @click="createroom(true)"
         >确 定</el-button>
       </div>
     </el-dialog>
@@ -525,7 +512,7 @@
 // 请求自定义数据
 import {
   addCurriculum,
-  getCurriculumList,
+  getCourseList,
   getSelectRes,
   ideaCurriculum,
   getInfo,
@@ -551,29 +538,42 @@ export default {
           coursename: "课程名称",
           coursetype: "2",
           galleryful: "2",
-          coursemodule: "面授",
+          coursemodule: "面授",   
           begclassnum: "20",
-          scopegrade: "一年级",
+          grade: "一年级",
           relatedpersoncount: "是",
           coursestate: "已上线",
           founder: "创建人",
-          cretetime: "创建时间"
+          cretetime: "创建时间",
+          
+          courseTypeId:1, // 课程类型
         }
       ],
       // 当前表格数据
       tablelist: [
         {
           id: 3,
-          coursename: "课程名称",
-          coursetype: "2",
-          galleryful: "2",
-          coursemodule: "面授",
-          begclassnum: "20",
-          scopegrade: "一年级",
-          relatedpersoncount: "是",
-          coursestate: "已上线",
-          founder: "创建人",
-          cretetime: "创建时间"
+          courseName: "课程名称",
+          courseType:'h5开发', // 课程类别
+          courseTypeList: [   // 课程类别
+            {name:'小程序',id:1},
+            {name:'移动app',id:2},
+            {name:'h5开发',id:3},
+            {name:'web响应式开发',id:4},
+            {name:'公众号',id:5},
+          ],
+          coursemodule: "面授",        // 授课模式
+          begclassnum: "20",           // 开班数
+          grade: "一年级",        // 适合年级
+          relatedpersoncount: "是",   // 关联线上销售
+          coursestate: "已上线",      // 状态
+          founder: "创建人",          // 创建人
+          cretetime: "创建时间" ,      // 创建时间
+          coursesum: "", // 课程次数
+          Number: 2, // 每次课时
+          courseTime:45, // 课时时长
+          courseCount: 20, // 课时数量
+          courseTypeId:1, // 课程类型
         }
       ],
       // 筛选
@@ -594,7 +594,7 @@ export default {
           { name: "三年级", id: 6 }
         ], //年级列表
         courseName: "JAVA设计",
-        courseTypeId:3,     // 课程类别
+        courseType:'web响应式开发', // 课程类别
         courseTypeList:[    // 课程类别
            {name:'小程序',id:1},
           {name:'移动app',id:2},
@@ -604,19 +604,19 @@ export default {
         ],
         orgList: [], // 门店列表
         techername: "教师名称",
-        orgName:'北大青鸟',
+        orgId:'北大青鸟',
         orgList:[
           {
             name:'北大青鸟教育中心',
-            id:1
+            orgId:1
           },
           {
             name:'传智播客教育中心',
-            id:2
+            orgId:2
           },
           {
             name:'达内教育集团',
-            id:3
+            orgId:3
           }
         ]
       },
@@ -627,8 +627,8 @@ export default {
         Number: 2, // 每次课时
         courseTime:45, // 课时时长
         courseCount: 20, // 课时数量
-        courseTypeId:3, // 课程类型
-        courseType: 2, // 课程类别
+        courseTypeId:1, // 课程类型
+        courseType:'公众号', // 课程类别
         courseTypeList: [   // 课程类别
           {name:'小程序',id:1},
           {name:'移动app',id:2},
@@ -636,20 +636,19 @@ export default {
           {name:'web响应式开发',id:4},
           {name:'公众号',id:5},
         ],          
-        courseTypeId: 3,               // 多选框
-        orgName:'北大青鸟',
+        orgId:1,
         orgList:[
           {
             name:'北大青鸟教育中心',
-            id:1
+            orgId:1
           },
           {
             name:'传智播客教育中心',
-            id:2
+            orgId:2
           },
           {
             name:'达内教育集团',
-            id:3
+            orgId:3
           }
         ],
         grade: 2,                     // 年级
@@ -660,8 +659,7 @@ export default {
           { name: "一年级", id: 4 },
           { name: "二年级", id: 5 },
           { name: "三年级", id: 6 }
-        ], 
-       
+        ],
       },
       // 验证
       rules: {
@@ -669,7 +667,7 @@ export default {
           { required: true, message: "请输入产品名称", trigger: "blur" },
           { max: 50, message: "最多50字" }
         ],
-        classname: [
+        courseName: [
           { required: true, message: "请输入教室名称", trigger: "blur" }
         ],
         galleryful: [
@@ -682,6 +680,7 @@ export default {
           { required: true, message: "请输入所属门店", trigger: "blur" }
         ]
       },
+      
       // table选项框
       tableselectlist: [],
       router_back: false,
@@ -693,16 +692,17 @@ export default {
     var params = {
       name: "杨辉"
     };
-    getInfo().then(res => {
-      console.log("demo结果", res);
-    });
+     this.selsectdata();
+    // getInfo().then(res => {
+    //   console.log("demo结果", res);
+    // });
 
     // ideaCurriculum().then(res=>{
     //     console.log('列表结果',res)
     // })
-    demo2().then(res => {
-      console.log("demo2结果", res);
-    });
+    // demo2().then(res => {
+    //   console.log("demo2结果", res);
+    // });
   },
     activated() {
         // this.selsectdata();
@@ -721,102 +721,159 @@ export default {
         }
     },
   methods: {
+    lieave(){
+      if(this.form.courseName.trim() !==''){
+        // this.rules.classname[0].required=false;
+      }else{
+        // this.rules.classname[0].required=true;
+      }
+
+    },
     //查询教室
     selsectdata() {
-      this.$axios({
-        method: "get",
-        url: `/store//room/getRoomList`,
-        headers: {
-          Authorization: sessionStorage.getItem("Authorization")
-        }
-      }).then(res => {
-        console.log("info", res.data);
-        if (res.data.errorCode == 0) {
-          let arr = res.data.result;
-          if (arr) {
-            arr.map(item => {
-              item.addTime = item.addTime.split(" ")[0];
-            });
-            for (let i = 0; i < 100; i++) {
-              arr.push(arr[i]);
-            }
-            this.tableData = JSON.parse(JSON.stringify(arr));
-            this.tablelist = this.pagination(
-              this.currentPage4,
-              this.pagesize,
-              arr
-            );
-            this.total_count = arr.length;
+        getCourseList().then((res)=>{
+           console.log("info", res.result);
+           if(res.errorCode == 0 && res.result !== undefined){
+            // 所属课程类别赋值
+              this.ruleForm.courseType = res.result.courseSubject[0].id;  // 默认选择第一个
+              this.form.courseType = res.result.courseSubject[0].id;
+              this.form.courseTypeList = res.result.courseSubject;
+              this.ruleForm.courseTypeList = res.result.courseSubject;
+            // 所属机构赋值 
+              this.ruleForm.orgId = res.result.orgList[0].orgId;  // 默认选择第一个
+              this.form.orgId = res.result.orgList[0].orgId;  // 默认选择第一个
+              this.form.orgList = res.result.orgList;
+              this.ruleForm.orgList = res.result.orgList;
+            // 列表渲染
+
+              let arr =JSON.parse(JSON.stringify(res.result.list));
+              let tableDatas=[];
+              let gradeList =this.ruleForm.gradeList
+              console.log(gradeList)
+              arr.map(item=>{
+                let obj = {};
+                obj.cretetime =item.addTime.split(' ')[0] +" "+ item.addTime.split(' ')[1].split(':').splice(0,2).join(':'); // 创建时间
+                obj.founder =  item.addByStr;            // 创建人
+                obj.coursestate = item.status;           // 状态
+                obj.grade = gradeList.find(i=>item.grade===i.id).name; // 班级
+                obj.courseName =item.name;               // 姓名
+                obj.courseCount= item.classNum;          // 课程数
+                obj.courseTypeId =item.courseType;  // 课程类别 
+                obj.courseTypeName=item.courseTypeName;  // 课程类型
+                obj.id =item.id;
+                obj.courseType = item.courseSubjectName; // 课程类别
+                obj.courseTypeList =  res.result.courseSubject;
+                obj.relatedpersoncount =item.ishelf;     //线上状态
+                obj.coursesum = item.num;    // 次数
+                obj.Number= item.onceTime;   // 每次课
+                obj.courseTime = item.lessonTime; // 
+                obj.courseCount = item.lessonNum;
+                obj.orgName = item.orgName;
+                obj.orgId=item.orgId;
+                obj.orgList = res.result.orgList;
+                obj.gradeList=[                  //年级列表
+                  { name: "幼儿园小班", id: 1 },
+                  { name: "幼儿园中班", id: 2 },
+                  { name: "幼儿园大班", id: 3 },
+                  { name: "一年级", id: 4 },
+                  { name: "二年级", id: 5 },
+                  { name: "三年级", id: 6 }
+                ], 
+                tableDatas.push(obj)
+              })
+              this.tableData= JSON.parse(JSON.stringify(tableDatas))
+              this.tablelist = this.pagination(
+                this.currentPage4,
+                this.pagesize,
+                tableDatas
+              )
+            
+              // 总长度
+              this.total_count = this.tableData.length;
+          } else {
+            this.$message("暂无数据");
           }
-        } else {
-          this.$message("暂无数据");
-        }
-      });
+        })
     },
-
+    // 清楚筛选条件;
+    clearchoose(){
+        this.ruleForm.courseName=''
+        this.ruleForm.courseType=''
+        this.ruleForm.grade=""
+        this.ruleForm.states="";
+        this.ruleForm.orgId='';
+    },
     //创建教室 // 编辑教室
-    createroom() {
+    createroom(states) {
+      if(!states){
+        console.log('取消')
+        this.form.courseName='';this.form.coursesum=''; this.form.courseTime='';this.form.orgId='';this.form.Number='';this.form.courseCount='';
+        this.dialogFormVisible=false
+        return
+      }
       console.log("保存信息", this.form);
-      // var { orgId, name, num, id } = this.form;
-      // console.log(orgId, name, num, id);
-        // if (this.iscreate) {
-        //   if (
-        //     orgId == "" ||
-        //     orgId == undefined ||
-        //     name == "" ||
-        //     name == undefined ||
-        //     num == "" ||
-        //     num == undefined
-        //   ) {
-        //     return this.$message("请填写完整信息");
-        //   }
-        //   this.$axios({
-        //     method: "post",
-        //     url: `/store/room/addRoom?orgId=${orgId}&name=${name}&num=${num}`,
-        //     data: this.form,
-        //     headers: {
-        //       Authorization: sessionStorage.getItem("Authorization")
-        //     }
-        //   })
-        //     .then(res => {
-        //       if (res.data.errorCode == 0) {
-        //         this.selsectdata();
-        //         console.log("info", res.data);
-        //         this.dialogFormVisible = false;
-
-        //         this.$message("创建教室成功");
-        //         this.form.name = "";
-        //         this.form.sum = "";
-        //         this.from.orgId = "";
-        //       }
-        //     })
-        //     .catch(err => {
-        //       this.$message("请求失败");
-        //     });
-        // } else {
-        //   this.$axios({
-        //     method: "put",
-        //     url: `/store/room/updateRoom`,
-        //     data: this.form,
-        //     headers: {
-        //       Authorization: sessionStorage.getItem("Authorization")
-        //     }
-        //   })
-        //     .then(res => {
-        //       if (res.data.errorCode == 0) {
-        //         this.selsectdata();
-        //         console.log("info", res.data);
-        //         this.dialogFormVisible = false;
-        //         this.$message("编辑教室成功");
-        //         this.form.name = "";
-        //         this.form.sum = "";
-        //         this.from.orgId = "";
-        //       } else {
-        //         this.$message("请求失败");
-        //       }
-        //     })
-        //     .catch(err => {});
-        // }
+      // 过滤信息
+      let { courseName,courseTypeId,courseType, coursesum, courseTime, grade,id,orgId,Number,courseCount} =this.form;
+      if(courseName==undefined || courseName==''){return this.$message({type:'warning',message:'请输入课程名称'})}
+      if(courseType==undefined || courseType==''){return this.$message({type:'warning',message:'请选择课程类别'})}
+      if(courseTypeId==undefined || courseTypeId==''){return this.$message({type:'warning',message:'请选择课程类型'})}
+      if(coursesum==undefined || coursesum==''){return this.$message({type:'warning',message:'请输入课程总次数'})}
+      if(courseTime==undefined || courseTime==''){return this.$message({type:'warning',message:'请输入每课时的时间'})}
+      if(grade==undefined || grade==''){return this.$message({type:'warning',message:'请输入适合班级'})}
+      if(orgId==undefined || orgId==''){return this.$message({type:'warning',message:'请选择所属机构'})}
+      if(Number==undefined || Number==''){return this.$message({type:'warning',message:'请输入每次课的课时数'})}
+      if(courseCount==undefined || courseCount==''){return this.$message({type:'warning',message:'请输入总课时数量'})}
+      let params={
+        courseName, courseType, coursesum, courseTime, grade,id,orgId,Number,courseCount,courseTypeId,id
+      }
+      console.log('参数',params);
+        if (this.iscreate) {
+          this.$axios({
+            method: "post",
+            url: `/store/room/addRoom?orgId=${orgId}&name=${name}&num=${num}`,
+            data: this.form,
+            headers: {
+              Authorization: sessionStorage.getItem("Authorization")
+            }
+          }).then(res => {
+              if (res.data.errorCode == 0) {
+                this.selsectdata();
+                console.log("info", res.data);
+                this.dialogFormVisible = false;
+                this.$message("创建教室成功");
+                let arr=[]
+                this.form.name = []
+              }
+            })
+            .catch(err => {
+              this.$message("请求失败");
+            });
+        } else {
+          this.$axios({
+            method: "put",
+            url: `/store/room/updateRoom`,
+            data: this.form,
+            headers: {
+              Authorization: sessionStorage.getItem("Authorization")
+            }
+          })
+            .then(res => {
+              if (res.data.errorCode == 0) {
+                this.selsectdata();
+                console.log("info", res.data);
+                this.dialogFormVisible = false;
+                this.$message("编辑教室成功");
+                this.form.name = "";
+                this.form.sum = "";
+                this.from.orgId = "";
+              } else {
+                this.$message("请求失败");
+              }
+            })
+            .catch(err => {});
+        }
+        // 赋值为空
+         this.form.courseName='';this.form.coursesum=''; this.form.courseTime='';this.form.orgId='';this.form.Number='';this.form.courseCount='';
     },
 
     //  删除
@@ -847,7 +904,62 @@ export default {
     changeCategory(e) {
       console.log(e);
     },
+    // 搜索
+    searchcnt() {
+        var data = JSON.parse(JSON.stringify(this.ruleForm));
+        console.log('搜索内容',data)
+         let { courseName,courseType,grade,states,orgId} =data;
 
+          
+          if (courseName == null || courseName == undefined) {
+              courseName = ''
+          }
+          if (courseType == null || courseType == undefined) {
+              courseType = ''
+          }
+          let params ={
+             courseName,courseType,grade,states,orgId
+          }
+          console.log('搜索参数',params)
+          // this.$axios({
+          //     method: "get",
+          //     url: `/store/room/getRoomList?orgId=${orgId}&name=${techername}`,
+          //     data: params,
+          //     headers: {
+          //         Authorization: sessionStorage.getItem("Authorization")
+          //     }
+          // }).then(res => {
+          //     console.log('info', res.data);
+          //     if (res.data.errorCode == 0) {
+          //         let arr = res.data.result;
+          //         if (arr) {
+          //             arr.map(item => {
+          //                 item.addTime = item.addTime.split(' ')[0];
+          //             })
+          //             for (let i = 0; i < 100; i++) {
+          //                 arr.push(arr[i])
+          //             }
+          //             this.tableData = JSON.parse(JSON.stringify(arr))
+          //             this.tablelist = this.pagination(this.currentPage4, this.pagesize, arr);
+          //             this.total_count = arr.length;
+          //         } else {
+          //             return this.$message('没有该门店')
+          //         }
+
+          //     } else {
+          //         this.$message('暂无数据');
+          //     }
+
+          // })
+    },
+    changecourseType(e){
+      console.log(e)
+    },
+    // 单选
+    checkradios(e){
+      console.log('单选为',e)
+      this.form.courseTypeId =e;
+    },
     // 改变表格
     changetable(e) {
       // console.log(e);
@@ -898,26 +1010,22 @@ export default {
     // 编辑
     handleEdit(index, row) {
       console.log(index, row);
-      // let arr = JSON.parse(JSON.stringify( this.tablelist));
-      // if(arr){
-      //     // 打开新建框
-      this.dialogFormVisible = true;
-      this.iscreate = false; //编辑教室
-      //     // 赋值
-      // this.form=arr[index];
-      // console.log('编辑',this.form)
-      // }
+      let arr = JSON.parse(JSON.stringify( this.tablelist));
+      if(arr){
+        // 打开新建框
+        this.dialogFormVisible = true;
+        this.iscreate = false; //编辑教室
+        // 赋值
+        this.form=arr[index];
+        console.log('编辑',this.form)
+      }
     },
     // 每页显示几天数据
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pagesize = val;
-      // this.tablelist =this.tableData.slice(0,this.pagesize)
-      this.tablelist = this.pagination(
-        this.currentPage4,
-        this.pagesize,
-        this.tableData
-      );
+       var a = JSON.parse(JSON.stringify(this.tableData));
+      this.tablelist = this.pagination(this.currentPage4,this.pagesize,a);
     },
     // 当前第几页
     handleCurrentChange(val) {
@@ -948,7 +1056,9 @@ export default {
     // 选择教师名称
     changeCategory(e) {},
     // 下拉选择内容
-    newchangeCategory(e) {},
+    newchangeCategory(e) {
+
+    },
     // table单选框
     handleSelectionChange(e) {
       // console.log('多选',e)

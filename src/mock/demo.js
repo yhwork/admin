@@ -12,45 +12,48 @@ import ApiPath from '@/api/config'
 //     "msg": "success"
 // })
 // 测试
-Mock.mock(ApiPath.demo, "get",
-    {
-        "errorCode": "0",
-        "result": {
-            "name": '小豆包课程表一班',
-            "type": '音乐1',
-            "curriculum": 'demo1'
-        },
-        "errorMessage": "认证成功",
-})
-// 测试2
-Mock.mock(ApiPath.demo2, "post",
-    {
-        "errorCode": "0",
-        "result": {
-            "name": '小豆包课程表一班',
-            "type": '音乐2',
-            "curriculum": 'demo2'
-        },
-        "errorMessage": "认证成功",
-})
-// 课程添加
-Mock.mock(ApiPath.addCurriculum, "get",
-    {
-        "errorCode": "0",
-        "result": {},
-        "errorMessage": "认证成功",
-    })
+// Mock.mock(ApiPath.demo, "get",
+//     {
+//         "errorCode": "0",
+//         "result": {
+//             "name": '小豆包课程表一班',
+//             "type": '音乐1',
+//             "curriculum": 'demo1'
+//         },
+//         "errorMessage": "认证成功",
+// })
+// // 测试2
+// Mock.mock(ApiPath.demo2, "post",
+//     {
+//         "errorCode": "0",
+//         "result": {
+//             "name": '小豆包课程表一班',
+//             "type": '音乐2',
+//             "curriculum": 'demo2'
+//         },
+//         "errorMessage": "认证成功",
+// })
+// // 课程添加
+// Mock.mock(ApiPath.addCurriculum, "get",
+//     {
+//         "errorCode": "0",
+//         "result": {},
+//         "errorMessage": "认证成功",
+//     })
+// 找到不存在的可能回拦截
+
+ 
 // 获取课程列表
-Mock.mock(ApiPath.getCurriculumList, "post",
-    {
-        "errorCode": "0",
-        "result": {
-            "name": '小豆包课程表一班',
-            type: '音乐',
-            curriculum: '列表222'
-        },
-        "errorMessage": "认证成功",
-    })
+// Mock.mock(ApiPath.getCurriculumList, "post",
+//     {
+//         "errorCode": "0",
+//         "result": {
+//             "name": '小豆包课程表一班',
+//             type: '音乐',
+//             curriculum: '列表222'
+//         },
+//         "errorMessage": "认证成功",
+//     })
 
 // 编辑条件
 Mock.mock(ApiPath.ideaCurriculum, "get",

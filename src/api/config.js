@@ -7,7 +7,7 @@ const ApiUrl ={
     // 课程添加
     addCurriculum:'/store/cousre/addCurriculum',
     // 获取课程列表
-    getCurriculumList:'/store/cousre/getCurriculumList',
+    getCourseList:'/store/course/getCourseList',
     // 筛选条件进行搜索
     getSelectRes:'/store/cousre/getSelectRes',
     // 编辑条件
@@ -15,6 +15,7 @@ const ApiUrl ={
     // 测试1号  get
     demo:'/store/class/getClassList',
     // 测试2号  post
-    demo2:'/store/room/addRoom'
+    demo2:'/store/room/addRoom',
+
 }
 export default ApiUrl

@@ -133,7 +133,7 @@ export default {
     },
     
     submitForm(formName) {
-      console.log(formName)
+      console.log(formName)   //formName
       const self = this;
       var params={
             password:self.ruleForm.password,
@@ -141,13 +141,12 @@ export default {
             vrifyCode:self.ruleForm.vrifyCode,
             vrifyKey:sessionStorage.getItem("vrifyKey")
       }
-      //  console.log('第一次点击',params)
+       console.log('第一次点击',params)
       // 13716583263 736602
      
       self.$refs[formName].validate(valid => {
+        console.log(valid)
         if (valid) {
-          // this.$axios
-          //   .post("/store/auth/storeUserLogin", self.ruleForm)
           this.$axios({
             method: "post",
             url: "/store/auth/storeUserLogin",
@@ -155,6 +154,7 @@ export default {
             // headers: { Authorization: sessionStorage.getItem("Authorization") }
           })
             .then(res => {   
+              console.log(res)
                 if (res.data.errorCode == 200000) {
                   sessionStorage.setItem("ms_username", self.ruleForm.username);
                   sessionStorage.setItem(

@@ -25,11 +25,11 @@ export function addCurriculum() {
   })
 }
 // 获取课程列表
-export function getCurriculumList(data) {
+export function getCourseList(data) {
   console.log('请求参数',data)
   return axios({
-    url: ApiPath.getCurriculumList,
-    method: 'post',
+    url: ApiPath.getCourseList,
+    method: 'get',
     params: {data} 
   })
 }

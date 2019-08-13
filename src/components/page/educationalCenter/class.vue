@@ -207,51 +207,48 @@
             </el-dialog>
             <!-- 刷选条件 -->
             <div class="mystyles">
-                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+                <el-form :model="ruleForm"  :rules="rules" ref="ruleFormwhere" label-width="100px">
                     <div>
                         <el-button size='medium' @click="btnnewclass" type="primary">新建班级</el-button>
                     </div>
                     <div class='elrow elmt-2'>
                         <el-form-item label="班级名称" prop="techername">
                             <div >
-                                <el-input v-model="ruleForm.name" placeholder="请输入班级名称" auto-complete="off"></el-input>
+                                <el-input v-model="ruleForm.className" placeholder="请输入班级名称" auto-complete="off"></el-input>
                             </div>
                         </el-form-item>
                         <el-form-item label="所属门店" prop="department">
-                            <el-select v-model="ruleForm.id" value-key="id" placeholder="请选择" @change="changeCategory">
-                                <el-option v-for="item in ruleForm.categoryList" :label="item.name" :key="item.id"
-                                    :value="item.id">
+                            <el-select v-model="ruleForm.orgId" value-key="id" placeholder="请选择" @change="changeCategory">
+                                <el-option v-for="item in ruleForm.orgList" :label="item.name" :key="item.id"
+                                    :value="item.orgId">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                     </div>
                     <div class='elrow'>
-                        <el-form-item label="教师名称" prop="department">
-                            <el-select v-model="ruleForm.id" value-key="id" placeholder="请选择" @change="changeCategory">
-                                <el-option v-for="item in ruleForm.categoryList" :label="item.name" :key="item.id"
+                        <el-form-item label="教师名称"  prop="department">
+                            <el-select v-model="ruleForm.techerId" value-key="id" placeholder="请选择" @change="changeCategory">
+                                <el-option v-for="item in ruleForm.techerList" :label="item.name" :key="item.id"
                                     :value="item.id">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="教室" prop="techername">
-                            <el-select size="large" v-model="ruleForm.id" value-key="id" placeholder="请选择"
+                            <el-select size="large" v-model="ruleForm.roomId" value-key="id" placeholder="请选择"
                                 @change="changeCategory">
-                                <el-option v-for="item in ruleForm.categoryList" :label="item.name" :key="item.id"
+                                <el-option v-for="item in ruleForm.roomList" :label="item.name" :key="item.id"
                                     :value="item.id">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                         <div class="elrow">
                             <div class='clearselectall'>
-                                <el-button class="clearpadding" icon="el-icon-search" @click='searchcnt' type="primary" plain>筛选</el-button>
+                                <el-button class="clearpadding" icon="el-icon-search" @click='searchcnt("ruleFormwhere")' type="primary" plain>筛选</el-button>
                             </div>
                             <div class='clearselectall'>
-                                <el-button @click='clearchoose' class="clearpadding" type="primary" plain>清除筛选条件
+                                <el-button @click="clearchoose('ruleFormwhere')" class="clearpadding" type="primary" plain>清除筛选条件
                                 </el-button>
                             </div>
-                            <!-- <div class="searchcnt">
-                                <el-button type="primary" icon="el-icon-search" @click='searchcnt'>搜索</el-button>
-                            </div> -->
                         </div>
                     </div>
                 </el-form>
@@ -339,7 +336,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </template>
@@ -424,19 +420,34 @@
                 },
                 // 筛选条件
                 ruleForm: {
-                    techername: '教师名称',
-                    department: '所属门店',
-                    id: 1,
-                    categoryList: [
+                    className: '班级名称', // 班级名称
+                    orgId:1,        // 机构id
+                    orgList:[{
+                        name:'小豆包测试',
+                        orgId:1,
+                    },{
+                        name:'小豆包测试2',
+                        orgId:2,
+                    }],
+                    techerId: 1,    // 老师id
+                    techerList:[{
+                        name:'杨老师',
+                        id:1
+                    },{
+                        name:'李老师',
+                        id:2
+                    }],
+                    roomId: 1,      // 教室id
+                    roomList: [
                         {
-                            name: "默认值",
-                            id: 0
-                        }, {
-                            name: '测试1',
+                            name: "教室1",
                             id: 1
                         }, {
-                            name: '测试2',
+                            name: '教室2',
                             id: 2
+                        }, {
+                            name: '教室3',
+                            id: 3
                         },
                     ],  // 多选列表
                 },  // 所有数据
@@ -463,7 +474,6 @@
                         foundertime: '创建时间'
                     },
                 ],
-
                 rules: {
                     title: [
                         { required: true, message: "请输入产品名称", trigger: "blur" },
@@ -724,10 +734,34 @@
                 this.form.clasEndTime =a.join('-');
             },
             // 清楚筛选条件
-            clearchoose() {
+            clearchoose(voids) {
                 // 赋值为空
+                // this.$refs[voids].validate(valid => {
+                //     this.$refs[voids].clearValidate();
+                // })
+                this.ruleForm.orgId='';
+                this.ruleForm.techerId="";
+                this.ruleForm.techerId="";
+                this.ruleForm.roomId="";
+                this.ruleForm.className="";
                 console.log('清楚筛选');
-                this.ruleForm.id = 0
+                // className: '班级名称', // 班级名称
+                //     orgId:1,        // 机构id
+                //     orgList:[{
+                //         name:'小豆包测试',
+                //         orgId:1,
+                //     },{
+                //         name:'小豆包测试2',
+                //         orgId:2,
+                //     }],
+                //     techerId: 1,    // 老师id
+                //     techerList:[{
+                //         name:'杨老师',
+                //         id:1
+                //     },{
+                //         name:'李老师',
+                //         id:2
+                //     }
             },
             // 单选框
             changeradio(e) {
@@ -769,9 +803,16 @@
             },
             // 搜索
             searchcnt() {
+                
                 let a = { ...this.ruleForm };
-                let { techername, departmen } = a;
-
+                let { className, orgId,techerId,roomId } = a;
+                if(className==undefined){className='' }
+                if(orgId==undefined){ orgId=''}
+                if(techerId==undefined){techerId='' }
+                if(roomId==undefined){roomId='' }
+                var params={ className, orgId,techerId,roomId 
+                }
+                console.log('参数',params)
             },
 
             // 新建课表

@@ -338,7 +338,6 @@
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
                 this.pagesize = val;
-                // this.tablelist =this.tableData.slice(0,this.pagesize)
                 this.tablelist = this.pagination(this.currentPage4, this.pagesize, this.tableData);
             },
             // 当前第几页
