@@ -741,7 +741,7 @@
                 <div class="goods_title">{{ruleForm.title}}</div>
                 <div class="goods_info">{{ruleForm.subtitle}}</div>
                 <div class="lable_box">
-                  <div class="label_item" v-for="item in this.ruleForm.lable">{{item}}</div>
+                  <div class="label_item" v-for="(item,index) in this.ruleForm.lable" :key="index">{{item}}</div>
                 </div>
                 <div>
                   <span class="o_price">¥{{ruleForm.disPrice}}</span>

@@ -756,7 +756,7 @@
           headers: { Authorization: sessionStorage.getItem("Authorization") }
         })
           .then(res => {
-
+            
             if (res.data.errorCode != "400001") {
               console.log("userinfo", res, res.data.errorCode);
               sessionStorage.setItem("id", res.data.result.userInfo.id);

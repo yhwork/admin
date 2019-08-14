@@ -55,7 +55,7 @@ service.interceptors.response.use(
         duration: 5 * 1000
       })
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.errorCode == 100001 || res.cerrorCodeode == 100005 || res.errorCode == 300000 ) {
+      if (res.errorCode == 100001||res.errorCode==400001 || res.cerrorCodeode == 100005 || res.errorCode == 300000 ) {
         // to re-login
         // if(){}
         MessageBox.confirm('服务器错误', '请重新登录', {
@@ -64,9 +64,7 @@ service.interceptors.response.use(
           type: 'warning'
         }).then(() => {
           setTimeout(()=>{
-            store.dispatch('/login').then(() => {
-              location.reload()
-            })
+            this.$router.push('/login');
           },1500)
         })
       }

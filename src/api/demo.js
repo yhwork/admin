@@ -1,5 +1,9 @@
 import axios from './index'
 import ApiPath from './config'
+
+
+
+
 export function getInfo(data) {
   console.log('请求参数',data)
   return axios({
@@ -8,6 +12,7 @@ export function getInfo(data) {
     params: { data }
   })
 }
+
 export function demo2(data) {
   console.log('请求参数',data)
   return axios({
@@ -16,21 +21,84 @@ export function demo2(data) {
     params: {data} 
   })
 }
+
+
+
+export function addClass(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: ApiPath.addClass,
+    method: 'post',
+    data
+  })
+}
+
+export function updateClass(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: ApiPath.updateClass,
+    method: 'put',
+    data
+  })
+}
+
+export function getClassList(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: ApiPath.getClassList,
+    method: 'get',
+    data
+  })
+}
+
+export function deleteClass(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: ApiPath.deleteClass,
+    method: 'delete',
+    data
+  })
+}
+
+
+
+
+
 // 课程添加
-export function addCurriculum() {
+export function addCurriculum(params) {
   return axios({
     url: ApiPath.addCurriculum,
     method: 'post',
     params
   })
 }
-// 获取课程列表
-export function getCourseList(data) {
+// 课程上架
+export function courseUp(data) {
   console.log('请求参数',data)
+  return axios({
+    url: ApiPath.courseUp,
+    method: 'post',
+    data
+  })
+}
+
+// 课程下架
+export function courseDown(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: ApiPath.courseDown,
+    method: 'post',
+    data
+  })
+}
+
+// 获取课程列表
+export function getCourseList(params) {
+  console.log('请求参数',params)
   return axios({
     url: ApiPath.getCourseList,
     method: 'get',
-    params: {data} 
+    params
   })
 }
 // 筛选条件进行搜索

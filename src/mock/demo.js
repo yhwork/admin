@@ -1,5 +1,5 @@
-const Mock = require("mockjs")
-import ApiPath from '@/api/config'
+// const Mock = require("mockjs")
+// import ApiPath from '@/api/config'
 // console.log('全部地址', ApiPath)
 // 对这个请求进行拦截
 // Mock.mock(ApiPath.user.getUserInfo, "get", {
@@ -56,16 +56,16 @@ import ApiPath from '@/api/config'
 //     })
 
 // 编辑条件
-Mock.mock(ApiPath.ideaCurriculum, "get",
-    {
-        "errorCode": "0",
-        "result": {},
-        "errorMessage": "认证成功",
-    })
-// 筛选条件
-Mock.mock(ApiPath.getSelectRes, "get",
-    {
-        "errorCode": "0",
-        "result": {},
-        "errorMessage": "认证成功",
-    })
+// Mock.mock(ApiPath.ideaCurriculum, "get",
+//     {
+//         "errorCode": "0",
+//         "result": {},
+//         "errorMessage": "认证成功",
+//     })
+// // 筛选条件
+// Mock.mock(ApiPath.getSelectRes, "get",
+//     {
+//         "errorCode": "0",
+//         "result": {},
+//         "errorMessage": "认证成功",
+//     })

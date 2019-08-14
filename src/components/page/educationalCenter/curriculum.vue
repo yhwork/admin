@@ -11,16 +11,16 @@
   color: #409eff;
   font-size: 0.78rem;
 }
-.elm-1 {
-  margin: 0 2px;
-}
-.elm-2 {
-  margin: 0 1rem;
-}
-.elwith {
-  width: 100%;
-  max-width: 100%;
-}
+// .elm-1 {
+//   margin: 0 2px;
+// }
+// .elm-2 {
+//   margin: 0 1rem;
+// }
+// .elwith {
+//   width: 100%;
+//   max-width: 100%;
+// }
 .table_border {
   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
 }
@@ -253,16 +253,14 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection"></el-table-column>
-        <el-table-column label="课程名称" :show-overflow-tooltip="true" width="100">
+        <el-table-column label="课程名称" :show-overflow-tooltip="true" >
           <template slot-scope="scope">
-            <!-- <i class="el-icon-time"></i> -->
-            <!--  <span style="margin-left: 10px">{{ scope.row.date }}</span> -->
             <div>
               <span>{{ scope.row.courseName }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="课程类型" :show-overflow-tooltip="true" width="80">
+        <el-table-column label="课程类型" :show-overflow-tooltip="true" >
           <template slot-scope="scope">
             <!--<el-popover trigger="hover" placement="top">
                                             <p>姓名: {{ scope.row.name }}</p>
@@ -277,24 +275,24 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="授课模式" :show-overflow-tooltip="true">
+        <el-table-column label="授课模式" tooltip-effect='dark' :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <div>
               <span>{{ scope.row.courseTypeName }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="适合年级" :show-overflow-tooltip="true">
+        <el-table-column label="适合年级"  tooltip-effect='dark' :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <div>
               <span>{{ scope.row.grade }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="开班数" :show-overflow-tooltip="true" width="70">
+        <el-table-column label="开班数" tooltip-effect='dark' :show-overflow-tooltip="true" width='70' >
           <template slot-scope="scope">
             <div>
-              <span>{{ scope.row.courseCount }}</span>
+              <span>{{ scope.row.classNum }}</span>
             </div>
           </template>
         </el-table-column>
@@ -312,14 +310,14 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="创建人" :show-overflow-tooltip="true" width="80">
+        <el-table-column label="创建人" :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <div>
               <span>{{ scope.row.founder }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间">
+        <el-table-column label="创建时间" :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <div>
               <span>{{ scope.row.cretetime }}</span>
@@ -329,11 +327,15 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <div class="elrow">
-              <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="primary"
+               :disabled='scope.row.status==2?true:false'
+               :type="scope.row.status==2?'info':'primary'"
+               @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
               <!-- <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">发布销售</el-button> -->
               <el-button
                 size="mini"
-                type="warning"
+                :disabled='scope.row.status==2?true:false'
+                 :type="scope.row.status==2?'info':'danger'"
                 @click="handleDelete(scope.$index, scope.row)"
               >删除</el-button>
             </div>
@@ -345,8 +347,8 @@
       <div class="el_pageselect">
         <div>
           <el-button size="medium" @click="btnselectall(tablelist)" type="primary">全选</el-button>
-          <el-button size="medium" :disabled="isputaway" @click="btnputaway(0)" type="primary">上架</el-button>
-          <el-button size="medium" :disabled="isputaway" @click="btnputaway(1)" type="primary">下架</el-button>
+          <el-button size="medium" :disabled="isputawayUp" @click="btnputaway(0)" type="primary">上架</el-button>
+          <el-button size="medium" :disabled="isputawayDown" @click="btnputaway(1)" type="primary">下架</el-button>
         </div>
         <div class="block">
           <el-pagination
@@ -369,7 +371,7 @@
       class="dialog_box"
       left
       :visible.sync="dialogFormVisible"
-    >
+      >
       <el-form class="changesselect" :model="form" :rules="rules">
         <div class="column_couse">
           <el-form-item label="课程名称" :label-width="formLabelWidth" prop="courseName">
@@ -439,6 +441,7 @@
             <el-input
               :disabled="iscreate?false:true"
               type="number"
+               @blur="sumcourse"
               v-model.number="form.courseTime"
               placeholder="请输入每课时时间"
               auto-complete="off"
@@ -516,13 +519,16 @@ import {
   getSelectRes,
   ideaCurriculum,
   getInfo,
-  demo2
+  demo2,
+  courseUp,
+  courseDown
 } from "@/api/demo";
 export default {
   name: "curriculum",
   data() {
     return {
-      isputaway: true,
+      isputawayUp: true,
+      isputawayDown:true,
       // 分页
       currentPage4: 1,
       pagesize: 10,
@@ -539,7 +545,7 @@ export default {
           coursetype: "2",
           galleryful: "2",
           coursemodule: "面授",   
-          begclassnum: "20",
+          classNum: "20",
           grade: "一年级",
           relatedpersoncount: "是",
           coursestate: "已上线",
@@ -554,7 +560,7 @@ export default {
         {
           id: 3,
           courseName: "课程名称",
-          courseType:'h5开发', // 课程类别
+          courseType:0, // 课程类别
           courseTypeList: [   // 课程类别
             {name:'小程序',id:1},
             {name:'移动app',id:2},
@@ -563,7 +569,7 @@ export default {
             {name:'公众号',id:5},
           ],
           coursemodule: "面授",        // 授课模式
-          begclassnum: "20",           // 开班数
+          classNum: "20",           // 开班数
           grade: "一年级",        // 适合年级
           relatedpersoncount: "是",   // 关联线上销售
           coursestate: "已上线",      // 状态
@@ -578,14 +584,16 @@ export default {
       ],
       // 筛选
       ruleForm: {
-        states:2,    // 课程状态
+        states:0,    // 课程状态
         stateList: [
+          { name: '默认', id: 0 },
           { name: "待开课", id: 1 },
           { name: "已开课", id: 2 },
           { name: "已结课", id: 3 }
         ], // 状态列表
         grade: 2,                     // 年级
         gradeList: [                  //年级列表
+         { name: '请选择', id: 0 },
           { name: "幼儿园小班", id: 1 },
           { name: "幼儿园中班", id: 2 },
           { name: "幼儿园大班", id: 3 },
@@ -594,9 +602,10 @@ export default {
           { name: "三年级", id: 6 }
         ], //年级列表
         courseName: "JAVA设计",
-        courseType:'web响应式开发', // 课程类别
+        courseType:0, // 课程类别
         courseTypeList:[    // 课程类别
-           {name:'小程序',id:1},
+          { name: '请选择', id: 0 },
+          {name:'小程序',id:1},
           {name:'移动app',id:2},
           {name:'h5开发',id:3},
           {name:'web响应式开发',id:4},
@@ -604,8 +613,9 @@ export default {
         ],
         orgList: [], // 门店列表
         techername: "教师名称",
-        orgId:'北大青鸟',
+        orgId:0,
         orgList:[
+          { name: '请选择', orgId: 0 },
           {
             name:'北大青鸟教育中心',
             orgId:1
@@ -627,16 +637,17 @@ export default {
         Number: 2, // 每次课时
         courseTime:45, // 课时时长
         courseCount: 20, // 课时数量
-        courseTypeId:1, // 课程类型
-        courseType:'公众号', // 课程类别
+        courseTypeId:0, // 课程类型
+        courseType:0, // 课程类别
         courseTypeList: [   // 课程类别
+         { name: '请选择', id: 0 },
           {name:'小程序',id:1},
           {name:'移动app',id:2},
           {name:'h5开发',id:3},
           {name:'web响应式开发',id:4},
           {name:'公众号',id:5},
         ],          
-        orgId:1,
+        orgId:0,
         orgList:[
           {
             name:'北大青鸟教育中心',
@@ -651,8 +662,9 @@ export default {
             orgId:3
           }
         ],
-        grade: 2,                     // 年级
+        grade: 0,                     // 年级
         gradeList: [                  //年级列表
+          { name: '请选择', id: 0 },
           { name: "幼儿园小班", id: 1 },
           { name: "幼儿园中班", id: 2 },
           { name: "幼儿园大班", id: 3 },
@@ -708,9 +720,10 @@ export default {
         // this.selsectdata();
         let params = this.$route.params;
         if (params.hasOwnProperty("isnewcouse")) {
+          console.log(params)
         this.dialogFormVisible = params.isnewcouse; // 控制显示弹框
-        this.router_back = params.router_back; // 是否返回原页面
-        this.mycontent = params.dialog_cnt;
+        this.router_back = params.router_back;      // 是否返回原页面
+        this.mycontent = params.dialog_cnt;         // 原内容
         } else {
         console.log("不是新建的");
         }
@@ -730,23 +743,33 @@ export default {
 
     },
     //查询教室
-    selsectdata() {
-        getCourseList().then((res)=>{
+    selsectdata(myparams) {
+        if(myparams==undefined){
+           myparams=""
+        }
+        getCourseList(myparams).then((res)=>{
            console.log("info", res.result);
            if(res.errorCode == 0 && res.result !== undefined){
-            // 所属课程类别赋值
-              this.ruleForm.courseType = res.result.courseSubject[0].id;  // 默认选择第一个
-              this.form.courseType = res.result.courseSubject[0].id;
-              this.form.courseTypeList = res.result.courseSubject;
-              this.ruleForm.courseTypeList = res.result.courseSubject;
-            // 所属机构赋值 
-              this.ruleForm.orgId = res.result.orgList[0].orgId;  // 默认选择第一个
-              this.form.orgId = res.result.orgList[0].orgId;  // 默认选择第一个
-              this.form.orgList = res.result.orgList;
-              this.ruleForm.orgList = res.result.orgList;
-            // 列表渲染
+            // 所属课程类别 赋值
+              var puts =res.result
+                puts.courseSubject.unshift({name: "请选择", id:0})
+                puts.orgList.unshift({
+                  alias: "测试测试",
+                  logo: null,
+                  name: "请选择",
+                  orgId: 0,
+                  tel: null,
+                  type: 0,
+                })
 
-              let arr =JSON.parse(JSON.stringify(res.result.list));
+              this.form.courseTypeList = puts.courseSubject;
+              this.ruleForm.courseTypeList =puts.courseSubject;
+            // 所属机构 赋值 
+              this.form.orgList = puts.orgList;
+              this.ruleForm.orgList = puts.orgList;
+            // 列表渲染
+              
+              let arr =JSON.parse(JSON.stringify(puts.list));
               let tableDatas=[];
               let gradeList =this.ruleForm.gradeList
               console.log(gradeList)
@@ -754,10 +777,11 @@ export default {
                 let obj = {};
                 obj.cretetime =item.addTime.split(' ')[0] +" "+ item.addTime.split(' ')[1].split(':').splice(0,2).join(':'); // 创建时间
                 obj.founder =  item.addByStr;            // 创建人
-                obj.coursestate = item.status;           // 状态
+                obj.coursestate = item.statusName;           // 状态
+                obj.status = item.status;
                 obj.grade = gradeList.find(i=>item.grade===i.id).name; // 班级
                 obj.courseName =item.name;               // 姓名
-                obj.courseCount= item.classNum;          // 课程数
+                obj.classNum= item.classNum;     // 班级数
                 obj.courseTypeId =item.courseType;  // 课程类别 
                 obj.courseTypeName=item.courseTypeName;  // 课程类型
                 obj.id =item.id;
@@ -787,7 +811,6 @@ export default {
                 this.pagesize,
                 tableDatas
               )
-            
               // 总长度
               this.total_count = this.tableData.length;
           } else {
@@ -797,11 +820,11 @@ export default {
     },
     // 清楚筛选条件;
     clearchoose(){
-        this.ruleForm.courseName=''
-        this.ruleForm.courseType=''
-        this.ruleForm.grade=""
-        this.ruleForm.states="";
-        this.ruleForm.orgId='';
+        this.ruleForm.courseName=""
+        this.ruleForm.courseType=0
+        this.ruleForm.grade=0
+        this.ruleForm.states=0;
+        this.ruleForm.orgId=0;
     },
     //创建教室 // 编辑教室
     createroom(states) {
@@ -823,15 +846,42 @@ export default {
       if(orgId==undefined || orgId==''){return this.$message({type:'warning',message:'请选择所属机构'})}
       if(Number==undefined || Number==''){return this.$message({type:'warning',message:'请输入每次课的课时数'})}
       if(courseCount==undefined || courseCount==''){return this.$message({type:'warning',message:'请输入总课时数量'})}
-      let params={
-        courseName, courseType, coursesum, courseTime, grade,id,orgId,Number,courseCount,courseTypeId,id
-      }
-      console.log('参数',params);
+
+     
         if (this.iscreate) {
+            // private int id;
+            // private String name;
+            // private String descr;
+            // private Integer orgId;
+            // private Integer courseSubjectId;
+            // private Integer courseType;
+            // private Integer grade;
+
+            // private Integer lessonNum;
+            // private String lessonTime;
+            // private String onceTime;
+            // private Integer num;
+
+            // private Long addBy;
+            // private String addByStr;
+            // private Long updateBy;
+            // private String updateByStr;
+          let params={
+            name:courseName,
+            courseSubjectId:courseType,
+            num:coursesum,
+            lessonTime:courseTime,
+            grade,
+            orgId,
+            onceTime:Number,
+            lessonNum:courseCount,
+            courseType:courseTypeId
+          }
+          console.log('添加参数',params);
           this.$axios({
             method: "post",
-            url: `/store/room/addRoom?orgId=${orgId}&name=${name}&num=${num}`,
-            data: this.form,
+            url: `/store/course/addCourse`,
+            data:params,
             headers: {
               Authorization: sessionStorage.getItem("Authorization")
             }
@@ -840,19 +890,52 @@ export default {
                 this.selsectdata();
                 console.log("info", res.data);
                 this.dialogFormVisible = false;
-                this.$message("创建教室成功");
-                let arr=[]
-                this.form.name = []
+                this.$message("创建课程成功");
+                          if(this.router_back){
+                                this.$message('创建课程成功,即将返回');
+                                let route =this.router;
+                                let params ={
+                                    mycontent:this.mycontent,  // 带着内容
+                                    isnewcouse:true,           // 是否打开新建框
+                                    router_back:false          // 是否返回
+                                }
+                                let times =null;
+                                    clearTimeout(times);
+                                    times = setTimeout(()=>{
+                                        this.$router.push({
+                                        name: route.from,
+                                        params
+                                    })
+                                },500)
+                          }else{
+                                this.$message('创建课程成功');
+                                this.selsectdata()
+                          }
+                 // 赋值为空
+                  this.form.courseName='';this.form.coursesum=''; this.form.courseTime='';this.form.orgId='';this.form.Number='';this.form.courseCount='';
               }
             })
             .catch(err => {
               this.$message("请求失败");
             });
         } else {
+           let params={
+           name:courseName,
+            courseSubjectId:courseType,
+            num:coursesum,
+            lessonTime:courseTime,
+            grade,
+            orgId,
+            id,
+            onceTime:Number,
+            lessonNum:courseCount,
+            courseType:courseTypeId
+          }
+           console.log('编辑参数',params);
           this.$axios({
             method: "put",
-            url: `/store/room/updateRoom`,
-            data: this.form,
+            url: `/store/course/updateCourse`,
+            data:params,
             headers: {
               Authorization: sessionStorage.getItem("Authorization")
             }
@@ -863,26 +946,30 @@ export default {
                 console.log("info", res.data);
                 this.dialogFormVisible = false;
                 this.$message("编辑教室成功");
-                this.form.name = "";
-                this.form.sum = "";
-                this.from.orgId = "";
+                 // 赋值为空
+                 this.form.courseName='';this.form.coursesum=''; this.form.courseTime='';this.form.orgId='';this.form.Number='';this.form.courseCount='';
               } else {
                 this.$message("请求失败");
               }
             })
             .catch(err => {});
         }
-        // 赋值为空
-         this.form.courseName='';this.form.coursesum=''; this.form.courseTime='';this.form.orgId='';this.form.Number='';this.form.courseCount='';
+       
     },
 
     //  删除
     handleDelete(index, row) {
       console.log(index, row);
       var id = row.id;
+      console.log('删除的id',id)
+      this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+      }).then(() => {
       this.$axios({
         method: "delete",
-        url: `/store/room/deleteRoom/${id}`,
+        url: `/store/course/delCourse/${id}`,
         data: JSON.stringify({ id }),
         headers: {
           Authorization: sessionStorage.getItem("Authorization")
@@ -898,6 +985,7 @@ export default {
           }
         })
         .catch(err => {});
+      })
     },
 
     // 切换下拉选项
@@ -915,12 +1003,16 @@ export default {
               courseName = ''
           }
           if (courseType == null || courseType == undefined) {
-              courseType = ''
+              courseType = 0
           }
           let params ={
-             courseName,courseType,grade,states,orgId
+             courseName,courseSubject:courseType,grade,status:states,orgId
           }
           console.log('搜索参数',params)
+          this.selsectdata(params);
+          // getCourseList(params).then(res=>{
+          //   console.log(res)
+          // })
           // this.$axios({
           //     method: "get",
           //     url: `/store/room/getRoomList?orgId=${orgId}&name=${techername}`,
@@ -1049,10 +1141,6 @@ export default {
       console.log(e);
       // this.tb_idnex=e.index;
     },
-    //  复制
-    handleDelete(index, row) {
-      console.log(index, row);
-    },
     // 选择教师名称
     changeCategory(e) {},
     // 下拉选择内容
@@ -1061,12 +1149,14 @@ export default {
     },
     // table单选框
     handleSelectionChange(e) {
-      // console.log('多选',e)
+      console.log('勾选',e)
       this.tableselectlist = e;
       if (this.tableselectlist.length == 0) {
-        this.isputaway = true;
+        this.isputawayUp=true;
+        this.isputawayDown=true;
       } else {
-        this.isputaway = false;
+        this.isputawayUp=false;
+        this.isputawayDown=false;
       }
     },
     // 全选
@@ -1082,14 +1172,53 @@ export default {
     // 上架/下架
     btnputaway(a) {
       if (this.tableselectlist.length == 0) {
-        this.isputaway = true;
+        this.isputawayUp=true;
+        this.isputawayDown=true;
       } else {
-        this.isputaway = false;
+        this.isputawayUp= false;
+        this.isputawayDown=false;
       }
+      let arr = this.tableselectlist;
       if (a == 0) {
+        let arrs =[];
+        let sta= arr.filter(item=>item.status==1);
+        console.log('有几个呢',sta)
+        if(sta.length==0){
+            this.isputaway = true;
+            this.$message({type:'warning',message:'该产品已经上架'})
+            return 
+        }
+        sta.map(item=>{if(item.id)arrs.push(item.id)})
+        var params ={ids:arrs}
+        courseUp(params).then(res=>{
+          if(res.errorCode==0){
+             this.selsectdata();
+            this.$message({type:'success',message:'上架成功'})
+          }else{
+             this.$message({type:'warning',message:'上架失败'})
+          }
+        })
         // this.isputaway=true
       } else if (a == 1) {
-        // this.isputaway=false
+        let arrs =[];
+        let sta= arr.filter(item=>item.status==2);
+        console.log('有几个呢',sta)
+        if(sta.length==0){
+            this.isputawayDown=true,
+            this.$message({type:'warning',message:'该产品已经下架'})
+            return 
+        }
+        sta.map(item=>{if(item.id)arrs.push(item.id)})
+        var params ={ids:arrs}
+        courseDown(params).then(res=>{
+          if(res.errorCode==0){
+             this.isputawayDown=true,
+             this.selsectdata();
+            this.$message({type:'success',message:'下架成功'})
+          }else{
+             this.$message({type:'warning',message:'下架失败'})
+          }
+        })
       }
     }
   }

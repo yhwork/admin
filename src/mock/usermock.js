@@ -1,7 +1,7 @@
 // axios 请求
 // import ApiPath from "@/api/ApiPath"
 
-const Mock = require("mockjs")
+// const Mock = require("mockjs")
 // 对这个请求进行拦截
 // Mock.mock(ApiPath.user.getUserInfo, "get", {
 //     "code": 0,

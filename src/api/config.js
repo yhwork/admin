@@ -4,12 +4,31 @@
  */
 // 13716583263 736602
 const ApiUrl ={
+    
+    // 课程上架
+    courseUp:'/store/course/courseUp',
+    // 课程下架
+    courseDown:'store/course/courseDown',
     // 课程添加
     addCurriculum:'/store/cousre/addCurriculum',
-    // 获取课程列表
+    // 获取课程列表/筛选
     getCourseList:'/store/course/getCourseList',
-    // 筛选条件进行搜索
-    getSelectRes:'/store/cousre/getSelectRes',
+
+
+    // 添加班级
+    addClass:'/store/class/addClass',
+    // 修改班级
+    updateClass:'/store/class/updateClass',
+    // 查询班级列表
+    getClassList:'/store/class/getClassList',
+    // 删除班级
+    deleteClass:'/store/class/deleteClass',
+
+
+
+
+
+
     // 编辑条件
     ideaCurriculum:'/store/cousre/ideaCurriculum',
     // 测试1号  get
