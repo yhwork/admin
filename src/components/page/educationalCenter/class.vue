@@ -252,8 +252,6 @@
                     :row-class-name="changetable">
                     <el-table-column label="班级名称" tooltip-effect='dark' :show-overflow-tooltip="true" width="80">
                         <template slot-scope="scope">
-                            <!-- <i class="el-icon-time"></i> -->
-                            <!--  <span style="margin-left: 10px">{{ scope.row.date }}</span> -->
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.name }}</span>
                             </div>
@@ -266,14 +264,20 @@
                             </div>
                         </template>
                     </el-table-column>
-      <!--              <el-table-column label="所属门店" tooltip-effect='dark' :show-overflow-tooltip="true" >
+                   <el-table-column label="教师名称" tooltip-effect='dark' :show-overflow-tooltip="true" >
                         <template slot-scope="scope">
                             <div>
-                                <span style="margin-left: 10px">{{ scope.row.orgName }}</span>
+                                <span style="margin-left: 10px">{{ scope.row.techerName }}</span>
                             </div>
                         </template>
                     </el-table-column>
-      -->
+                    <el-table-column label="所在教室" tooltip-effect='dark' :show-overflow-tooltip="true" >
+                        <template slot-scope="scope">
+                            <div>
+                                <span style="margin-left: 10px">{{ scope.row.roomName }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="开课校区" tooltip-effect='dark' :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
@@ -302,7 +306,7 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="创建时间" :show-overflow-tooltip="true">
+                    <el-table-column label="创建时间" :show-overflow-tooltip="true" width='140'>
                         <template slot-scope="scope">
                             <div>
                                 <span style="margin-left: 10px">{{ scope.row.createDataTime }}</span>
@@ -361,8 +365,9 @@
                     startData:'2019-08-25',   //开班日期
                     startTime:'19:25',     // 上课时间
                     states:'已满',             // 招生状态
-                    createDataTime:'2019-13-14 13:14'
-
+                    createDataTime:'2019-13-14 13:14',
+                    techerName:'杨老师',
+                    roomName:'101教室'
                 }],
                 iscreate: true,
                 formLabelWidth: "120px",
@@ -394,26 +399,30 @@
                 },
                 form: {
                     className:'班级名称',
-                    teacherId:1 ,     // 教师id
+                    teacherId:0 ,     // 教师id
                     teacherName: '杨老师', // 教师名称
                     teacherList: [
-                        { name: '杨老师', id: 1 }
+                        { name: '杨老师', id: 1 },
+                        { name: '请选择', id: 0 }
                     ],
-                    orgId: 1,         // 机构id
+                    orgId: 0,         // 机构id
                     orgName: "小豆包机构",// 机构名字
                     orgList: [
+                        { name: '请选择', orgId: 0 },
                         { name: '小豆包机构', orgId: 1 },
                         { name: '中豆包机构', orgId: 2 },
                         { name: '大豆包机构', orgId: 3 }
                     ],
-                    storeCourseId:1,  // 课程id
+                    storeCourseId:0,  // 课程id
                     storeCourseList: [
-                        { name: '英语课', id: 1 }
+                        { name: '英语课', id: 1 },
+                        {name: '请选择', id: 0 }
                     ],
-                    roomId: 1,        // 教室id
+                    roomId: 0,        // 教室id
                     roomName: "1908班",// 教室名称
                     roomList: [
-                        { name: "1908班", id: 1 }
+                        { name: "1908班", id: 1 },
+                        { name: "请选择", id: 0 }
                     ],
                     num: 20,           // 容纳人数
                     id:2,
@@ -431,27 +440,33 @@
                 // 筛选条件
                 ruleForm: {
                     className: '班级名称', // 班级名称
-                    orgId:1,        // 机构id
+                    orgId:0,        // 机构id
                     orgList:[{
-                        name:'小豆包测试',
-                        orgId:1,
+                        name:'请选择',
+                        orgId:0,
                     },{
                         name:'小豆包测试2',
                         orgId:2,
                     }],
-                    techerId: 1,    // 老师id
+                    techerId: 0,    // 老师id
                     techerList:[{
                         name:'杨老师',
                         id:1
                     },{
                         name:'李老师',
                         id:2
+                    },{
+                        name:'请选择',
+                        id:0
                     }],
-                    roomId: 1,      // 教室id
+                    roomId: 0,      // 教室id
                     roomList: [
                         {
                             name: "教室1",
                             id: 1
+                        },{
+                            name: "请选择",
+                            id: 0
                         }, {
                             name: '教室2',
                             id: 2
@@ -575,17 +590,11 @@
             },
             // 查询数据
             selsectdata() {
-                this.$axios({
-                    method: "get",
-                    url: `/store/class/getClassList`,
-                    headers: {
-                        Authorization: sessionStorage.getItem("Authorization")
-                    }
-                }).then(res => {
-                    console.log('info', res.data);
-                    if (res.data.errorCode == 0) {
-                        if (res.data.result !== null) {
-                            let arr = JSON.parse(JSON.stringify(res.data.result));
+                getClassList().then(res => {
+                    console.log('info', res);
+                    if (res.errorCode == 0) {
+                        if (res.result !== null) {
+                            let arr = JSON.parse(JSON.stringify(res.result));
                             if (arr) {
                                 console.log(arr)
                                 // name:'一班',  // 班级名称
@@ -613,29 +622,40 @@
                                     // updateBy: null
                                     // updateByStr: null
                                     // updateTime: null
-
-
+                                
+                                // 赋值门店
+                                    // 设置默认值 arr.push({name:'',orgId})
+                                    // this.ruleForm.orgList = 
+                                    // this.form.orgList = 
+                                // 赋值教室
+                                     // this.ruleForm.roomList = 
+                                     // this.form.roomList = 
+                                // 赋值老师
+                                    // this.ruleForm.teacherList = 
+                                    // this.form.teacherList = 
+                                // 赋值课程
+                                    //  this.form.courseList = 
                                     let tabledatas = [];
                                     arr.map((item)=>{
                                         let o={};
                                         o.name=item.name;
                                         o.num=item.num;
                                         o.startSchool=item.orgName;
-                                        // o.startData=
+                                        o.teacherName =item.teacherName;
+                                        o.roomName= item.roomName;
                                         o.createDataTime=item.addTime;
                                         o.states = item.teacherId;
                                     })
-
                                 // arr.map(item => {
                                 //     item.addTime = item.addTime.split(' ')[0];
                                 // })
                                 // for (let i = 0; i < 100; i++) {
                                 //     arr.push(arr[i])
                                 // }
-                                // this.tableData = JSON.parse(JSON.stringify(arr))
-                                // // 计算分页
-                                // this.tablelist = this.pagination(this.currentPage4, this.pagesize, arr);
-                                // this.total_count = arr.length;
+                                this.tableData = JSON.parse(JSON.stringify(arr))
+                                // 计算分页
+                                this.tablelist = this.pagination(this.currentPage4, this.pagesize, arr);
+                                this.total_count = arr.length;
                             }
                         }
                     } else {
@@ -667,32 +687,26 @@
             handleDelete(index, row) {
                 console.log(index, row);
                 var id = row.id;
+                console.log('id',id)
                 this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$axios({
-                        method: "delete",
-                        // DELETE /class/deleteClass/{id}
-                        url: `/store/class/deleteClass/${id}`,
-                        data: JSON.stringify({ id }),
-                        headers: {
-                            Authorization: sessionStorage.getItem("Authorization")
-                        }
-                    }).then(res => {
-                        if (res.data.errorCode == 0) {
+                    let params =2;
+                    deleteClass(params).then(res => {
+                        if (res.errorCode == 0) {
                             this.selsectdata()
-                            console.log('info', res.data)
+                            console.log('info', res)
                             this.$message({
                                 type: 'success',
                                 message: '删除教室成功'
                             });
                         } else {
-                            this.$message('请求失败')
+                            this.$message('删除错误')
                         }
                     }).catch(err => {
-
+                            this.$message('请求失败')
                     })
                 }).catch(() => {
                     this.$message({
@@ -772,31 +786,21 @@
                         storeCourseId, 
                         roomId
                     }
-                    console.log('创建参数',params);
-                    addClass(params).then(res=>{
-                        console.log(res)
-                    })
-                    // this.$axios({
-                    //     method: "post",
-                    //     url: `/store/class/addClass?orgId=${orgId}&name=${name}&num=${num}`,
-                    //     data: params,
-                    //     headers: {
-                    //         Authorization: sessionStorage.getItem("Authorization")
-                    //     }
-                    // }).then(res => {
-                    //     if (res.data.errorCode == 0) {
-                    //         this.selsectdata()
-                    //         console.log('info', res.data)
-                    //         this.dialogFormVisible = false;
-                    //         this.$message('创建教室成功');
-                    //         // this.form.name="";
-                    //         // this.form.sum="";
-                    //         // this.from.orgId="";
+                    console.log('创建参数',params);         
+                    addClass(params).then(res => {
+                        if (res.errorCode == 0) {
+                            this.selsectdata()
+                            console.log('info', res)
+                            this.dialogFormVisible = false;
+                            this.$message('创建教室成功');
+                            // this.form.name="";
+                            // this.form.sum="";
+                            // this.from.orgId="";
 
-                    //     }
-                    // }).catch(err => {
-                    //     this.$message('请求失败')
-                    // })
+                        }
+                    }).catch(err => {
+                        this.$message('请求失败')
+                    })
                 } else {
                      let params = {
                         teacherId, 
@@ -808,29 +812,22 @@
                         id
                     }
                     console.log('编辑参数',params)
-                    // this.$axios({
-                    //     method: "put",
-                    //     url: `/store/class/updateClass`,
-                    //     data: params,
-                    //     headers: {
-                    //         Authorization: sessionStorage.getItem("Authorization")
-                    //     }
-                    // }).then(res => {
-                    //     if (res.data.errorCode == 0) {
-                    //         this.selsectdata()
-                    //         console.log('info', res.data)
-                    //         this.dialogFormVisible = false
-                    //         this.$message('编辑教室成功');
-                    //         // this.form.name="";
-                    //         // this.form.sum="";
-                    //         // this.from.orgId="";
+                     addClass(params).then(res => {
+                        if (res.errorCode == 0) {
+                            this.selsectdata()
+                            console.log('info', res)
+                            this.dialogFormVisible = false
+                            this.$message('编辑教室成功');
+                            // this.form.name="";
+                            // this.form.sum="";
+                            // this.from.orgId="";
 
-                    //     } else {
-                    //         this.$message('请求失败')
-                    //     }
-                    // }).catch(err => {
+                        } else {
+                            this.$message('请求失败')
+                        }
+                    }).catch(err => {
 
-                    // })
+                    })
                 }
                 this.form.teacherId='';
                 this.form.num='';

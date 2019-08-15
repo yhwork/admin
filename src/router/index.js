@@ -10,10 +10,8 @@ Vue.use(Router)
 // const timetable = ()=>import("@/components/page/educationalCenter/timetable");     //课程表
 
 
-
-
-
 export default new Router({
+  mode:'hash',
   routes: [
     {
       path: '/',

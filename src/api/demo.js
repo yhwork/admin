@@ -23,7 +23,7 @@ export function demo2(data) {
 }
 
 
-
+// 新建班级
 export function addClass(data) {
   console.log('请求参数',data)
   return axios({
@@ -32,7 +32,7 @@ export function addClass(data) {
     data
   })
 }
-
+// 编辑班级
 export function updateClass(data) {
   console.log('请求参数',data)
   return axios({
@@ -41,7 +41,7 @@ export function updateClass(data) {
     data
   })
 }
-
+// 获取班级列表
 export function getClassList(data) {
   console.log('请求参数',data)
   return axios({
@@ -51,10 +51,11 @@ export function getClassList(data) {
   })
 }
 
+// 删除班级
 export function deleteClass(data) {
   console.log('请求参数',data)
   return axios({
-    url: ApiPath.deleteClass,
+    url: `${ApiPath.deleteClass}/${data}`,
     method: 'delete',
     data
   })

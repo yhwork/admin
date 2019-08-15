@@ -47,7 +47,9 @@ import bus from "@/components/common/bus.js";
 export default {
   name: "Header",
   data() {
-    return {};
+    return {
+      collapse:false
+    };
   },
   computed: {
     username() {

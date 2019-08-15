@@ -396,6 +396,13 @@
             }
         }
     }
+    .myselectweeks{
+        display:flex;
+        color:#696969;
+        // border:1px solid rgba(0,0,0,.1);
+        margin:10px 3px;
+        p{}
+    }
 </style>
 
 <template>
@@ -413,54 +420,58 @@
             <div>
                 <el-button size='medium' @click="btnnewclass" type="primary">新建日程</el-button>
             </div>
-            <!-- 新建 -->
-        <div class="mystyles">
-            <el-form :model="ruleForm" ref="ruleForm" label-width="100px">
-                <div class='elrow elmt-2 selectclass'>
-                    <el-form-item label="班级名称">
-                        <el-select class="ws20" v-model="ruleForm.category" value-key="id" placeholder="请选择"
-                            @change="changeCategory">
-                            <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="所属门店">
-                        <el-select class="ws30" v-model="ruleForm.category" value-key="id" placeholder="请选择"
-                            @change="changeCategory">
-                            <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-        
-                </div>
-                <div class='elrow changesselect'>
-                    <el-form-item label="教师名称" prop="department">
-                        <el-select v-model="ruleForm.category" value-key="id" placeholder="请选择" @change="changeCategory">
-                            <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="教室" prop="techername">
-                        <el-select size="large" v-model="ruleForm.category" value-key="id" placeholder="请选择"
-                            @change="changeCategory">
-                            <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <div class="elrow">
-                        <div>
-                            <el-button class="clearpadding" type="primary" plain>筛选</el-button>
-                        </div>
-                        <div>
-                            <el-button class="clearpadding" type="primary" plain>清楚筛选条件</el-button>
-                        </div>
-                         <div class="searchcnt">
-                            <el-button  type="primary" icon="el-icon-search" @click='searchcnt'>搜索</el-button>
+            <!--筛选 -->
+           
+            <div class="mystyles">
+                <el-form :model="ruleForm" ref="ruleForm" label-width="100px">
+                    <div class='elrow elmt-2 selectclass'>
+
+                        <el-form-item label="班级名称">
+                            <el-select class="ws20" v-model="ruleForm.classId" value-key="id" placeholder="请选择"
+                                @change="changeCategory">
+                                <el-option v-for="item in ruleForm.classList" :label="item.name" :key="item.id" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+
+                        <el-form-item label="所属门店">
+                            <el-select class="ws30" v-model="ruleForm.orgId" value-key="id" placeholder="请选择"
+                                @change="changeCategory">
+                                <el-option v-for="item in ruleForm.orgList" :label="item.name" :key="item.id" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+
+                    </div>
+                    <div class='elrow changesselect'>
+
+                        <el-form-item label="教师名称" >
+                            <el-select v-model="ruleForm.techerId" value-key="id" placeholder="请选择" @change="changeCategory">
+                                <el-option v-for="item in ruleForm.techerList" :label="item.name" :key="item.id" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+
+                        <el-form-item label="教室" >
+                            <el-select size="large" v-model="ruleForm.roomId" value-key="id" placeholder="请选择"
+                                @change="changeCategory">
+                                <el-option v-for="item in ruleForm.roomList" :label="item.name" :key="item.id" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+
+                        <div class="elrow">
+                            <div>
+                                <el-button  @click='searchcnt' class="clearpadding" type="primary" plain>筛选</el-button>
+                            </div>
+                            <div>
+                                <el-button class="clearpadding" type="primary" plain>清楚筛选条件</el-button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </el-form>
-        </div>
+                </el-form>
+            </div>
+         
             <!-- 课程日历显示 -->
             <div class="container mystyles" >
                 <FullCalendar :plugins="calendarPlugins" :all-day-slot="false" 
@@ -714,13 +725,8 @@
         <div v-else class="content_box1">
             <el-form class="newcourse_box" :model="newDateForm" :rules="rules">
 
-                <el-form-item label="班级名称" prop="classnames">
+                <el-form-item label="班级名称"  :required="true">
                         <div class="newcourse_box_item">
-                            <!-- <el-select size='large' v-model="newDateForm.techerName" value-key="id" placeholder="请选择"
-                                @change="newchangeCategory">
-                                <el-option v-for="item in newDateForm.techerList" :label="item.techerName" :key="item.id" :value="item.techerId">
-                                </el-option>
-                            </el-select> -->
                             <el-autocomplete
                                 popper-class="my-autocomplete"
                                 v-model="newDateForm.className"
@@ -728,21 +734,20 @@
                                 placeholder="请输入内容"
                                 @blur="outselectclass"
                                 @select="handleSelectClass">
-                                
                                     <i
                                         class="el-icon-search el-input__icon"
                                         slot="suffix"
                                         @click="handleIconClick">
                                     </i>
                                     <template slot-scope="props">
-                                        <div class="name">{{ props.item.value }}</div>
-                                        <span class="addr">{{ props.item.address }}</span>
+                                        <div class="name">{{ props.item.className }}</div>
+                                        <span class="addr">{{ props.item.cousreName }}</span>
                                     </template>
                             </el-autocomplete>
-
                         </div>
                 </el-form-item>
-                <el-form-item label="所属课程"  prop="classname">
+
+                <el-form-item label="所属课程"   :required='true'>
                         <div class="newcourse_box_item">
                             <el-select size='large' :disabled="true" v-model="newDateForm.cousreName" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
@@ -750,7 +755,9 @@
                                 </el-option>
                             </el-select>
                         </div>
+                        
                 </el-form-item>
+                
                 <el-form-item label="开课日期"  prop="startDate">
                     <div class="newcourse_box_item">
                             <el-date-picker
@@ -771,15 +778,6 @@
 
                 <el-form-item label="上课时间" prop="startTime">
                         <div class="newcourse_box_item">
-                                <!-- <el-date-picker
-                                v-model="newDateForm.startTime"
-                                type="date"
-                                placeholder="选择日期"
-                                format="yyyy 年 MM 月 dd 日"
-                                @blur='outmourse(2)'
-                                @change="newchangestartTime"
-                                value-format="yyyy-MM-dd">
-                              </el-date-picker> -->
                                 <el-time-select
                                     v-model="newDateForm.startTime"
                                     :picker-options="{
@@ -788,36 +786,62 @@
                                         end: '18:30'
                                     }"
                                     @blur='outmourse(2)'
-                                    placeholder="选择时间">
+                                     @change="newchangestartTime"
+                                    placeholder="选择时间"
+                                    >
                                 </el-time-select>
                         </div>
                 </el-form-item>
 
                 <el-form-item label="课程次数" :label-width="formLabelWidth" prop="count">
                         <div class="newcourse_box_item">
-                            <el-input v-model="newDateForm.count" @blur='outmoursecount' auto-complete="off"></el-input>
+                            <el-input  :disabled='true' v-model="newDateForm.count" @blur='outmoursecount' auto-complete="off"></el-input>
                         </div>
                 </el-form-item>
 
                 <el-form-item label="课程时长" :label-width="formLabelWidth" prop="coursetime">
                         <div class="newcourse_box_item">
-                            <el-select size='large' v-model="newDateForm.coursetime" value-key="id" placeholder="请选择"
+                         <el-input :disabled='true' v-model="newDateForm.coursetime" @blur='outmoursecount' auto-complete="off"></el-input>
+                           <!-- <el-select size='large' v-model="newDateForm.coursetime" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
                                 <el-option v-for="item in coursetimelist" :label="item.name" :key="item.id" :value="item.id">
                                 </el-option>
-                            </el-select>
+                            </el-select>  -->
                         </div>
                 </el-form-item>
 
-                <el-form-item label="设置重复" :label-width="formLabelWidth" >
+                <el-form-item label="设置重复" :label-width="formLabelWidth" :required='true'>
                     <div class="newcourse_box_item">
-                                <el-radio-group class="newcourse_boxradios" v-model="newDateForm.checkList">
+                                <el-radio-group class="newcourse_boxradios" v-model="newDateForm.checkListstate" @change='setrecove'>
                                         <el-radio :label="0">每天</el-radio>
                                         <el-radio :label="1">每周</el-radio>
                                         <el-radio :label="2">每两周</el-radio>
                                         <el-radio :label="3">每月</el-radio>
                                         <el-radio :label="4">不重复</el-radio>
                                 </el-radio-group>
+                    </div>
+                     <div v-show="isselectweeks" class="myselectweeks">
+                               <div><p>请选择重复星期 </p></div>
+                                <div style='margin-left:15px'>
+                                <el-checkbox-group class="" v-model="newDateForm.checkListData" @change="handleCheckedCitiesChange">
+                                    <el-checkbox v-for="(item,index) in newDateForm.weekdays" :label="item" :key="item">{{item}}</el-checkbox>
+                                </el-checkbox-group>
+                                <div  v-if="newDateForm.checkListstate==2?true:false"><el-checkbox-group  v-model="newDateForm.checkListData1" @change="handleCheckedCitiesChange1">
+                                    <el-checkbox v-for="(item,index) in newDateForm.weekdays" :label="item" :key="item">{{item}}</el-checkbox>
+                                </el-checkbox-group></div>
+                                </div>
+                    </div>
+                    <div v-show="newDateForm.checkListstate==3?true:false" class=" myselectweeks">
+                                <p>请选择重复日期 </p>
+                               <div  style='margin-left:15px'>
+                                    <el-date-picker
+                                    v-model="newDateForm.endTime"
+                                    type="date"
+                                    placeholder="选择日期"
+                                    format="yyyy 年 MM 月 dd 日"
+                                    value-format="yyyy-MM-dd">
+                                </el-date-picker>
+                              </div>
                     </div>
                 </el-form-item>
                 <el-form-item label="结课日期"  prop="department" >
@@ -860,7 +884,7 @@
                 </el-form-item>
                 <el-form-item label="上课门店" :label-width="formLabelWidth" prop="department">
                     <div class="newcourse_box_item">
-                        <el-select size='large' v-model="newDateForm.courseShop" value-key="id" placeholder="请选择"
+                        <el-select :disabled='true' size='large' v-model="newDateForm.courseShop" value-key="id" placeholder="请选择"
                             @change="newchangeCategory">
                             <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
                             </el-option>
@@ -871,7 +895,7 @@
 
                 <el-form-item label="上课教室" :label-width="formLabelWidth" prop="classroom">
                         <div class="newcourse_box_item">
-                                <el-select size='large' v-model="newDateForm.classroom" value-key="id" placeholder="请选择"
+                                <el-select :disabled='true' size='large' v-model="newDateForm.classroom" value-key="id" placeholder="请选择"
                                     @change="newchangeCategory">
                                     <el-option v-for="item in coursetimelist" :label="item.name" :key="item.id" :value="item.id">
                                     </el-option>
@@ -879,7 +903,7 @@
                             </div>
                 </el-form-item>
 
-                <el-form-item label="授课讲师" :label-width="formLabelWidth" prop="techername">
+                <el-form-item label="授课讲师" :label-width="formLabelWidth" >
                     <div class="newcourse_box_item">
                         <el-select size='large' v-model="newDateForm.techername" value-key="id" placeholder="请选择"
                             @change="newchangeCategory">
@@ -889,7 +913,7 @@
                     </div>
                 </el-form-item>
 
-                <el-form-item label="教师助理" :label-width="formLabelWidth" prop="helpTecher">
+                <el-form-item label="教师助理" :label-width="formLabelWidth" >
                         <div class="newcourse_box_item">
                             <el-select size='large' v-model="newDateForm.helpTecher" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
@@ -903,7 +927,7 @@
             <div><vue-qr :text="downloadData.url" :margin="10" colorDark="#000" colorLight="#fff" :dotScale="1"  :logoScale="0.2" :size="200"/></div> 
             <div class="dialog-footer el_row_center m ">
                 <el-button class="dialog-footer_btn" @click="my_newcourse = true">取 消</el-button>
-                <el-button  class="dialog-footer_btn" type="primary" @click="my_newcourse = true">保存</el-button>
+                <el-button  class="dialog-footer_btn" type="primary" @click="newSaveCourse">保存</el-button>
             </div>
         </div>
     </div>
@@ -946,6 +970,7 @@
                     eventClick: this.eventClick, //点击事件
                     dayClick: this.dayClick, //点击日程表上面某一天
                 },
+                isselectweeks:false,
                 buttonText: {
                     today: '今天',
                     month: '月',
@@ -1044,10 +1069,6 @@
                 dialogalert:false,
                 showtecher:false,
                 categoryList: [], // 下拉列表
-                ruleForm: {
-                    techername: '教师名称',
-                    department: '所属门店'
-                },  // 所有数据
                 formLabelWidth: '180',
                 rules: {
                     title: [
@@ -1101,6 +1122,37 @@
                     address: '上海市普陀区金沙江路 1518 弄'
                 }],
                 timeout:null,
+                                // 筛选   
+                ruleForm: {
+                    classId:0,
+                    roomId:0,
+                    orgId:0,
+                    techerId:0,
+                    techerList:[
+                       {
+                        name:'请选择',
+                        id:0
+                       }
+                    ],
+                    orgList:[
+                        {
+                        name:'请选择',
+                        id:0
+                       }
+                    ],
+                    roomList:[
+                        {
+                        name:'请选择',
+                        id:0
+                       }
+                    ],
+                    classList:[
+                        {
+                        name:'请选择',
+                        id:0
+                       }
+                    ],
+                }, 
                 // 新建排课表单
                 newDateForm:{
                     className:'',     // 班级名称
@@ -1116,7 +1168,11 @@
                     endDate:'' ,       // 杰克日期
                     coursetime:'',    //课程时长
                     count:'',           // 课程次数
-                    checkList:0        //多选
+                    checkListstate:0,        //多选状态
+                    checkList:[],
+                    checkListData:[],
+                    checkListData1:[],
+                    weekdays:['星期一','星期二','星期三','星期四','星期五','星期六','星期日'],
                 }
             }
         },
@@ -1193,20 +1249,90 @@
             // 加载全部班级
             loadClassAll() {
                 return [
-                { "value": "三全鲜食（北新泾店）", "address": "长宁区新渔路144号","course":'英语课' },
-                { "value": "Hot honey 首尔炸鸡（仙霞路）", "address": "上海市长宁区淞虹路661号" ,"course":'英语课'},
-                { "value": "新旺角茶餐厅", "address": "上海市普陀区真北路988号创邑金沙谷6号楼113" ,"course":'英语课'},
-                { "value": "泷千家(天山西路店)", "address": "天山西路438号","course":'英语课' },
-                { "value": "胖仙女纸杯蛋糕（上海凌空店）", "address": "上海市长宁区金钟路968号1幢18号楼一层商铺18-101","course":'英语课' },
-                { "value": "贡茶", "address": "上海市长宁区金钟路633号","course":'英语课' },
-                { "value": "豪大大香鸡排超级奶爸", "address": "上海市嘉定区曹安公路曹安路1685号" ,"course":'英语课'},
-                { "value": "茶芝兰（奶茶，手抓饼）", "address": "上海市普陀区同普路1435号","course":'英语课' },
-                { "value": "十二泷町", "address": "上海市北翟路1444弄81号B幢-107","course":'英语课' },
-                { "value": "星移浓缩咖啡", "address": "上海市嘉定区新郁路817号" ,"course":'英语课'},
-                { "value": "阿姨奶茶/豪大大", "address": "嘉定区曹安路1611号","course":'英语课' },
-              
+                {  
+                    className:'软件设计',     // 班级名称
+                    startDate:'',     // 开课时间
+                    weekday:'',       // 星期数
+                    cousreName:'java程序设计',    // 课程名称
+                    startTime:'',     //上课时间
+                    helpTecher:'李老师',    // 助教
+                    techerName:'杨老师',    // 老师
+                    classroom:'软件1607班',     // 教室
+                    courseShop:'职场教育',     //门店
+                    endTime:'',        // 结束时间
+                    endDate:'' ,       // 结束日期
+                    coursetime:40,     // 课程时长
+                    count:4,          // 课程次数
+                    checkList:0        //重复多选,
+                },
+                {  
+                    className:'软件设计',     // 班级名称
+                    startDate:'',     // 开课时间
+                    weekday:'',       // 星期数
+                    cousreName:'java程序设计',    // 课程名称
+                    startTime:'',     //上课时间
+                    helpTecher:'李老师',    // 助教
+                    techerName:'杨老师',    // 老师
+                    classroom:'软件1607班',     // 教室
+                    courseShop:'职场教育',     //门店
+                    endTime:'',        // 结束时间
+                    endDate:'' ,       // 结束日期
+                    coursetime:40,     // 课程时长
+                    count:4,          // 课程次数
+                    checkList:0        //重复多选,
+                },
+                {  
+                     className:'软件设计',     // 班级名称
+                    startDate:'',     // 开课时间
+                    weekday:'',       // 星期数
+                    cousreName:'java程序设计',    // 课程名称
+                    startTime:'',     //上课时间
+                    helpTecher:'李老师',    // 助教
+                    techerName:'杨老师',    // 老师
+                    classroom:'软件1607班',     // 教室
+                    courseShop:'职场教育',     //门店
+                    endTime:'',        // 结束时间
+                    endDate:'' ,       // 结束日期
+                    coursetime:40,     // 课程时长
+                    count:4,          // 课程次数
+                    checkList:0        //重复多选,
+                },
+                {  
+                     className:'软件设计',     // 班级名称
+                    startDate:'',     // 开课时间
+                    weekday:'',       // 星期数
+                    cousreName:'java程序设计',    // 课程名称
+                    startTime:'',     //上课时间
+                    helpTecher:'李老师',    // 助教
+                    techerName:'杨老师',    // 老师
+                    classroom:'软件1607班',     // 教室
+                    courseShop:'职场教育',     //门店
+                    endTime:'',        // 结束时间
+                    endDate:'' ,       // 结束日期
+                    coursetime:40,     // 课程时长
+                    count:4,          // 课程次数
+                    checkList:0        //重复多选,
+                },
+                {  
+                    className:'软件设计',     // 班级名称
+                    startDate:'',     // 开课时间
+                    weekday:'',       // 星期数
+                    cousreName:'java程序设计',    // 课程名称
+                    startTime:'',     //上课时间
+                    helpTecher:'李老师',    // 助教
+                    techerName:'杨老师',    // 老师
+                    classroom:'软件1607班',     // 教室
+                    courseShop:'职场教育',     //门店
+                    endTime:'',        // 结束时间
+                    endDate:'' ,       // 结束日期
+                    coursetime:40,     // 课程时长
+                    count:4,          // 课程次数
+                    checkList:0        //重复多选,
+                },
+                { "value": "英语课11", "address": "嘉定区曹安路1611号","course":'英语课' },
                 ];
             },
+            // 鼠标离开事件
             outselectclass(){
                 var time = null;
                 this.rules.classnames[0].required=false
@@ -1220,14 +1346,73 @@
                 },1000)
                
             },
+            // 保存新建
+            newSaveCourse(){
+                console.log('保存内容',this.newDateForm);
+                var data = JSON.parse(JSON.stringify(this.newDateForm))
+                // var {} = data
+            },
+                        // 选择周的日期
+            handleCheckedCitiesChange(e){
+                // console.log(e);
+                let data= this.newDateForm.checkListData
+                console.log('11',data)
+                var state = this.newDateForm.checkListstate;  // 选择的状态
+                var arr=[];
+                if(state == 1){  // 每周
+                   
+                }
+                if(state == 2){ // 每两周
+                    this.newDateForm.checkList[0]=data
+                }
+                console.log('最终选择',this.newDateForm.checkList)
+            },
+            handleCheckedCitiesChange1(e){
+                // console.log(e);
+                let data= this.newDateForm.checkListData1
+                this.newDateForm.checkList[1]= data
+                console.log('22',data)
+                console.log('最终选择',this.newDateForm.checkList)
+            },
+            // 设置重复
+            setrecove(item){
+                this.newDateForm.checkListstate=item;
+                // 获取开课日期
+                let data = this.newDateForm.startDate;
+                // 获取上课时间
+                let time = this.newDateForm.startTime;
+                console.log('选中的是',item,'日期',data,'时间',time);
+                if(item == 0){
+                    // 每天
+                    this.isselectweeks=false
+                }else if(item == 1){
+                    this.isselectweeks=true;
+                    // 清空每周选择
+                     this.newDateForm.checkListData=[]
+                    // 每周
+                }else if(item == 2){
+                    this.newDateForm.checkListData=[]
+                    this.isselectweeks=true;
+                    // 每两周
+                }else if(item == 3){
+                    // 每月
+                    this.isselectweeks=false
+                }else{
+                    // 不重复
+                    this.isselectweeks=false
+                }
+            },
+            // 选择班级
             handleSelectClass(item) {
-                // if(item){
-                //    this.rules.classnames.required=false
-                // }
-                 
-                  this.newDateForm.cousreName=item.course;
-                
+                // 列表
+                console.info('选择班级',item)
+                let checkList = item.checkList
+                console.log('选中',checkList)
                 // 此处把课程给输入内
+                 this.newDateForm.className=item.className;
+                // console.log(this.newDateForm.cousreName)
+                // checkList
+
             },
             handleSelectinClass(item) {
                 console.log(item);
@@ -1266,6 +1451,7 @@
             newchangeCategory(e) {
 
             },
+            // 课程
             outmoursecount(){
                  console.log('失去焦点');
                 // 数据验证
@@ -1310,6 +1496,7 @@
                  console.log('选择开课日期',e)
                 this.newDateForm.startDate=e;
             },
+            // 上课时间
             newchangestartTime(e){
                 console.log('选择开课日期',e)
                 this.newDateForm.startTime=e;
