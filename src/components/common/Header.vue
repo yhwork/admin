@@ -67,7 +67,6 @@ export default {
     },
     // 侧边栏折叠
     collapseChage() {
-      
       this.collapse = !this.collapse;
       bus.$emit("collapse", this.collapse);
     }
