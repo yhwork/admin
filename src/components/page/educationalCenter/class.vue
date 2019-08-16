@@ -397,6 +397,7 @@
                         { name: '十班', id: '19' },
                     ]
                 },
+                // 弹框
                 form: {
                     className:'班级名称',
                     teacherId:0 ,     // 教师id
@@ -409,7 +410,7 @@
                     orgName: "小豆包机构",// 机构名字
                     orgList: [
                         { name: '请选择', orgId: 0 },
-                        { name: '小豆包机构', orgId: 1 },
+                        { name: '小豆包机构', orgId: 63 },
                         { name: '中豆包机构', orgId: 2 },
                         { name: '大豆包机构', orgId: 3 }
                     ],

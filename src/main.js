@@ -69,6 +69,7 @@ router.beforeEach((to, from, next) => {
             next()
         } else {
             next('/login');
+            // next()
         }
     } else if (to.meta.permission) {
         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
