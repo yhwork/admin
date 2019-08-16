@@ -293,10 +293,11 @@
         activated(){
             console.log(this.$route.params);
             let params = this.$route.params;
+
             if(params.hasOwnProperty('isnewcouse')){
                 this.dialogFormVisible = params.isnewcouse;   // 控制显示弹框
                 this.router_back= params.router_back;         // 是否返回原页面
-                this.mycontent = params.dialog_cnt;
+                this.mycontent = params.dialog_cnt;           // 
             }else{
                 console.log('不是别的过来新建的')
             }
@@ -309,7 +310,7 @@
         methods: {
             // 改变表格
             changetable(e) {
-                console.log(e);
+                // console.log(e);
                 if (e.rowIndex % 2 == 0) {
                     return "table_borders"
 
@@ -409,7 +410,7 @@
             handleDelete(index, row) {
                 console.log(index, row);
                 var id = row.id;
-                this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                this.$confirm('此操作将永久删除, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -568,9 +569,9 @@
                                 this.$message('创建教室成功,即将返回');
                                 let route =this.router;
                                 let params ={
-                                    mycontent:this.mycontent,
-                                    isnewcouse:true,
-                                    router_back:false
+                                    mycontent:this.mycontent,  // 带着内容
+                                    isnewcouse:true,           // 是否打开新建框
+                                    router_back:false          // 是否返回
                                 }
                                 let times =null;
                                     clearTimeout(times);

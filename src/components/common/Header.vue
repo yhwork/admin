@@ -47,7 +47,9 @@ import bus from "@/components/common/bus.js";
 export default {
   name: "Header",
   data() {
-    return {};
+    return {
+      collapse:false
+    };
   },
   computed: {
     username() {
@@ -65,7 +67,6 @@ export default {
     },
     // 侧边栏折叠
     collapseChage() {
-      
       this.collapse = !this.collapse;
       bus.$emit("collapse", this.collapse);
     }
