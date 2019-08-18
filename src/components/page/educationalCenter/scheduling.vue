@@ -766,6 +766,7 @@
                             placeholder="选择日期"
                             format="yyyy 年 MM 月 dd 日"
                             @change="newchangestartDate"
+                             :picker-options='pickerOptionstart'
                             @blur='outmourse(1)'
                             value-format="yyyy-MM-dd">
                           </el-date-picker>
@@ -786,7 +787,8 @@
                                         end: '18:30'
                                     }"
                                     @blur='outmourse(2)'
-                                     @change="newchangestartTime"
+                                   
+                                    @change="newchangestartTime"
                                     placeholder="选择时间"
                                     >
                                 </el-time-select>
@@ -897,6 +899,7 @@
                                 v-model="newDateForm.endDate"
                                 type="date"
                                 placeholder="选择日期"
+                                :disabled='true'
                                 format="yyyy 年 MM 月 dd 日"
                                 @blur='outmourseendDate'
                                 value-format="yyyy-MM-dd">
@@ -969,13 +972,10 @@
     import interactionPlugin from '@fullcalendar/interaction';
     import vueQr from 'vue-qr'
     export default {
-
         name: 'scheduling',
         props: [],
         data() {
-           
             return {
-                
                 checkAll:false,   // 全选
                 isIndeterminate:false,  //选择标记
                 events: [{
@@ -1182,7 +1182,17 @@
                         id:0
                        }
                     ],
-                }, 
+                },
+                pickerOptionstart:{
+                     disabledDate: (time) => {                          
+                        const one = 30 * 24 * 3600 * 1000;
+                        const minTime =  Date.now();
+                        const maxTime = minTime+ one;
+                        //获取本日
+                        const startDate = moment().valueOf(); 
+                        return time.getTime() < startDate 
+                    }
+                },
                 pickerOptionsOS: {
                     // 在选择范围内可以用
                     // onPick: ({maxDate, minDate}) => {
@@ -1350,12 +1360,12 @@
                     endTime:'',        // 结束时间
                     endDate:'' ,       // 结束日期
                     coursetime:40,     // 课程时长
-                    count:2,           // 课程次数
+                    count:5,           // 课程次数
                     number:20,          // 课时数量
                     checkList:0        //重复多选,
                 },
                 {  
-                    className:'软件设计',     // 班级名称
+                    className:'软件设计C',     // 班级名称
                     startDate:'',     // 开课时间
                     weekday:'',       // 星期数
                     cousreName:'java程序设计',    // 课程名称
@@ -1368,7 +1378,7 @@
                     endDate:'' ,       // 结束日期
                     coursetime:30,     // 课程时长
                     number:10,          // 课时数量
-                    count:10,          // 课程次数
+                    count:6,          // 课程次数
                     checkList:0        //重复多选,
                 },
                 {  
@@ -1385,7 +1395,7 @@
                     endDate:'' ,       // 结束日期
                     coursetime:40,     // 课程时长
                     number:20,          // 课时数量
-                    count:4,          // 课程次数
+                    count:7,          // 课程次数
                     checkList:0        //重复多选,
                 },
                 {  
@@ -1430,23 +1440,27 @@
             },
             // 添加日期
             recoverTime(e) {
-                if(e){
+                 var count = this.newDateForm.count;    // 总次数
+                if(e &&  this.newDateForm.editableTabs2.length < count){
                     console.log('增加标签',e)
                     let newTabName = ++this.newDateForm.tabIndex + '';
                     let title =moment(e).format("YYYY-MM-DD")
                     this.newDateForm.editableTabs2.push({
-                    title: title,
-                    name: newTabName,
-                    content: title
+                        title: title,
+                        name: newTabName,
+                        content: title
                     });
                     this.newDateForm.editableTabsValue2 = newTabName;
+                }else{
+                     return this.$message({type:'warning',message:`重复日期超出指定次数   ${count}，请重新选择`})
                 }
+                this.overDate(this.newDateForm.checkListstate);
             },
             removeTab(targetName) {
                 let tabs = this.newDateForm.editableTabs2;
                 console.log('标签',tabs)
                 let activeName = this.newDateForm.editableTabsValue2;
-                console.log('当前标签',activeName)
+                // console.log('当前标签',activeName)
                 if (activeName === targetName) {
                 tabs.forEach((tab, index) => {
                     if (tab.name === targetName) {
@@ -1459,21 +1473,34 @@
                 }
                 
                 this.newDateForm.editableTabsValue2 = activeName;
-                 console.log('当前标签2', this.newDateForm.editableTabsValue2)
+                //  console.log('当前标签2', this.newDateForm.editableTabsValue2)
                 this.newDateForm.editableTabs2 = tabs.filter(tab => tab.name !== targetName);
-                console.log('标签2',this.newDateForm.editableTabs2)
+                // console.log('标签2',this.newDateForm.editableTabs2)
+                this.overDate(this.newDateForm.checkListstate)
              },
             // 全选
             handleCheckAllChange(val){
-                // 每周
-                console.log(val)
+                //  全选的数量 与 总次数做判断
+                 var count = this.newDateForm.count;    // 总次数
                 let data= this.newDateForm.checkListstate
                 if(data == 1){
+                    if(this.newDateForm.weekdays.length >count ){
+                         this.checkAll = false;
+                    this.isIndeterminate = false;
+                    this.isselectweeks=true;
+                         return this.$message({type:'warning',message:`重复日期超出指定次数   ${count}，请重新选择`})
+                    }
                     this.newDateForm.checkListData = val ? this.newDateForm.weekdays : [];
                     this.isIndeterminate = false;
                       console.log('一周',this.newDateForm.checkListData)
                 }
                 if(data == 2){
+                    if(14 >count ){
+                        this.checkAll = false;
+                    this.isIndeterminate = false;
+                    this.isselectweeks=true;
+                         return this.$message({type:'warning',message:`重复日期超出指定次数   ${count}，请重新选择`})
+                    }
                    this.newDateForm.checkList[0] = val ?  this.newDateForm.weekdays : [];
                    this.newDateForm.checkList[1] = val ? this.newDateForm.weekdays : [];
                    this.newDateForm.checkListData= this.newDateForm.checkList[0];
@@ -1485,14 +1512,14 @@
             // 选择周的日期
             handleCheckedCitiesChange(value){
                 // console.log(e);
-                var data= this.newDateForm.checkListData
-                // console.log('11',data)
+                var data= this.newDateForm.checkListData // 
+                var count = this.newDateForm.count;    // 总次数
                 var state = this.newDateForm.checkListstate;  // 选择的状态
                 var weekdays =this.newDateForm.weekdays;
                  let checkedCount = value.length;
                 if(state == 1){  // 每周
                     console.log('一周',this.newDateForm.checkListData)
-                   
+                    this.overDate(state,data)
                     this.checkAll = checkedCount === weekdays.length;
                     this.isIndeterminate = checkedCount > 0 && checkedCount < weekdays.length;
                 }
@@ -1502,7 +1529,10 @@
                     console.log('两周',this.newDateForm.checkList)
                     this.isIndeterminate = checkedCount > 0 && checkedCount < 2* weekdays.length;
                 }
-                this.overDate(state,data)
+                if(data.length>count){
+                   return this.$message({type:'warning',message:`重复日期超出指定次数  ${count}，请重新选择`})
+                }
+                this.overDate(state)
             },
             // 每两周
             handleCheckedCitiesChange1(value){
@@ -1510,21 +1540,23 @@
                 let data= this.newDateForm.checkListData1
                 this.newDateForm.checkList[1]= data
                 var weekdays =this.newDateForm.weekdays;
-                // console.log('22',data)
+                var count = this.newDateForm.count;    // 总次数
                 console.log('两周',this.newDateForm.checkList)
                 let checkedCount = value.length;
                 if(data.length == weekdays.length && this.newDateForm.checkList[0].length == weekdays.length){
-                    console.log('1111111')
                     this.checkAll = true;
                     // this.isIndeterminate=true;
                 }else{
                     this.checkAll = true
-                     console.log('122222')
                 }
                 
                 this.isIndeterminate = checkedCount > 0 && checkedCount <= weekdays.length * 2;
+                if(this.newDateForm.checkList[0].length +this.newDateForm.checkList[1].length > this.newDateForm.count){
+                    return this.$message({type:'warning',message:`重复日期超出指定次数  ${count}，请重新选择`})
+                }
+                 this.overDate(this.newDateForm.checkListstate)
             },
-            // 设置重复
+            // 设置重复模式
             setrecove(item){
                 this.newDateForm.checkListstate=item;
                 // 获取开课日期
@@ -1540,15 +1572,18 @@
                     this.isIndeterminate = false;
                     this.isselectweeks=true;
                     // 清空每周选择
-                     this.newDateForm.checkListData=[]
+                     this.newDateForm.checkListData=[];
+                    //   this.overDate(item)
                     // 每周
                 }else if(item == 2){
                     this.checkAll = false;
                     this.isIndeterminate = false;
                     this.newDateForm.checkList[0]=[];
+                    this.newDateForm.checkList[1]=[];
                     this.newDateForm.checkListData=[];
                     this.newDateForm.checkListData1=[];
                     this.isselectweeks=true;
+                    
                     // 每两周
                 }else if(item == 3){
                     // 每月
@@ -1560,43 +1595,15 @@
                 this.overDate(item)
             },
             // 结束日期  // 结束时间
-            overDate(state,data){
-                console.log('参数',state,data)
+            overDate(state){
+                    // console.log('参数',state,data);
+                    // 对日期进行排序
                     var time = this.newDateForm.startDate  // 开始日期
                     var count = this.newDateForm.count;    // 总次数
+                    let week =  moment().format('YYYY-MM-DD'); // 当前时间的时间戳;
+                    var datelist=[];                       // 上课时间列表
                     var weeks ='';
                     var times =[]
-                    if(data){
-                        for(let t of data){
-                            switch(t) {
-                                case '星期一':
-                                    weeks= moment().weekday(0).format('YYYY-MM-DD');
-                                    break;
-                                case '星期二':
-                                    weeks= moment().weekday(1).format('YYYY-MM-DD');
-                                    break;
-                                case '星期三':
-                                    weeks= moment().weekday(2).format('YYYY-MM-DD');
-                                    break;
-                                case '星期四':
-                                    weeks= moment().weekday(3).format('YYYY-MM-DD');
-                                    break;
-                                case '星期五':
-                                    weeks= moment().weekday(4).format('YYYY-MM-DD');
-                                    break;
-                                case '星期六':
-                                    weeks= moment().weekday(5).format('YYYY-MM-DD');
-                                    break;
-                                case '星期日':
-                                    weeks= moment().weekday(6).format('YYYY-MM-DD');
-                            }
-                            times.push(weeks);
-                        }
-                        
-                    }else{
-                        console.log('不是星期')
-                    }
-               
                 if(state==0){   // 每天
                     console.log(time)        
                     let alltime = moment(time, "YYYY-MM-DD").add(count,'days').format('YYYY-MM-DD');
@@ -1604,40 +1611,289 @@
                     this.newDateForm.endDate = alltime;
                     // var alltime =  moment({ hour:time.split(':')[0], minute:time.split(':')[1] }).add({minute:daytime}).format('hh:mm')
                 }else if(state==1){
-                    // 获取今天星期机预选中的是否相同：
-                    // 在判断总次数中选中了几个剩余 算出还有几星期
-                    let week =  moment().weekday(); // Number
-                    // let week1 = moment().weekday(1).format('YYYY-MM-DD');
-                   console.log('星期2',week,weeks)
+                    // 转换时间
+                    let data= this.newDateForm.checkListData // 
+                    let weeks = moment(time).weekday();        // 选择开始时间于勾选的时间最小比较
+                    let sum = Math.ceil(count/data.length);
+                    if(data){
+                        for(let t of data){
+                            // 判断选中日期于当前日期
+                            if(moment(time).isAfter(week)){
+                                console.log('之后的日期');
+                                switch(t) {
+                                    case '星期一':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(0).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期二':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(1).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期三':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(2).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期四':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(3).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期五':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(4).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期六':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(5).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期日':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(6).format('YYYY-MM-DD');
+                                }
+                                times.push(weeks);   // 所有的日期
+                            }
+                                // else{
+                                //     console.log('之前的日期');
+                                //     switch(t) {
+                                //         case '星期一':
+                                //             weeks= moment().weekday(0).format('YYYY-MM-DD');
+                                //             break;
+                                //         case '星期二':
+                                //             weeks= moment().weekday(1).format('YYYY-MM-DD');
+                                //             break;
+                                //         case '星期三':
+                                //             weeks= moment().weekday(2).format('YYYY-MM-DD');
+                                //             break;
+                                //         case '星期四':
+                                //             weeks= moment().weekday(3).format('YYYY-MM-DD');
+                                //             break;
+                                //         case '星期五':
+                                //             weeks= moment().weekday(4).format('YYYY-MM-DD');
+                                //             break;
+                                //         case '星期六':
+                                //             weeks= moment().weekday(5).format('YYYY-MM-DD');
+                                //             break;
+                                //         case '星期日':
+                                //             weeks= moment().weekday(6).format('YYYY-MM-DD');
+                                //     }
+                                //     times.push(weeks);   // 所有的日期
+                                //     if(sum>=1){
+                                //         console.log('111==========>',sum)
+                                //         for(let i=1;i<=sum;i++){
+                                //             times.map(items=>{
+                                //                 if(datelist.length < count ){
+                                //                     let arr = moment(items).add(i,'week').format('YYYY-MM-DD');
+                                //                     datelist.push(arr)
+                                //                 }
+                                //             })
+                                //         }
+                                //     }
+                                // }
+                        }
+                        //
+                        // 获取今天星期机预选中的是否相同：
+                        // 在判断总次数中选中了几个剩余 算出还有几星期
+                        
+                    }else{
+                        console.log('不是星期')
+                    }
+                    if(times.length!==0){
+                        if(sum>=1){
+                            times.sort((a,b)=>{return Math.floor(moment(a,'YY-MM-DD').valueOf()) -Math.floor(moment(b,'YY-MM-DD').valueOf())})
+                            console.log('排序后',times);
+                            let mindata = times.reduce((a,b)=>{
+                                return moment(a).isBefore(b)?a:b;
+                            })
+                            console.log('最小时间',mindata)
+                            let arr=''
+                            // if(moment(time).isSame(mindata)){
+                            //     console.log('相等',time,mindata)
+                            //     datelist.push(mindata)
+                            // }
+                            for(let i=0;i<sum;i++){
+                                times.map(items=>{
+                                    if(datelist.length < count ){
+                                        arr = moment(items).add(i,'week').format('YYYY-MM-DD');
+                                        datelist.push(arr)
+                                    }
+                                })
+                            }
+                        }
+                        }
+                   console.log('星期',times,datelist)
+                   // 找出数组中日期最大的那个
+                   if(datelist.length>0){
+                       //  返回最大值
+                       let maxdata = datelist.reduce((a,b)=>{
+                            return moment(a).isBefore(b)?b:a;
+                        })
+                        console.log('最大的日期',maxdata);
+                        this.newDateForm.endDate =maxdata
+                   }else{
+                       this.newDateForm.endDate=''
+                   }
                 }else if(state==2){
-
+                    // 获取所有的时间列表
+                    let arr1 = this.newDateForm.checkList[0]  // 第一周的数据
+                    let first = [],sendent=[];
+                    if(arr1.length>0){
+                        for(let t of arr1){
+                            // 判断选中日期于当前日期
+                            if(moment(time).isAfter(week)){
+                                console.log('之后的日期');
+                                switch(t) {
+                                    case '星期一':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(0).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期二':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(1).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期三':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(2).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期四':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(3).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期五':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(4).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期六':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(5).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期日':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(6).format('YYYY-MM-DD');
+                                }
+                                first.push(weeks);   // 所有的日期
+                            }
+                        }
+                        // 获取今天星期机预选中的是否相同：
+                        // 在判断总次数中选中了几个剩余 算出还有几星期
+ 
+                    }
+                    let arr2 = this.newDateForm.checkList[1]  // 第二周的数据
+                    if( arr2.length>0){
+                        for(let t of arr2){
+                            // 判断选中日期于当前日期
+                            if(moment(time).isAfter(week)){
+                                console.log('之后的日期');
+                                switch(t) {
+                                    case '星期一':
+                                        weeks= moment(time,'YYYY-MM-DD').add(1,'week').weekday(0).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期二':
+                                        weeks= moment(time,'YYYY-MM-DD').add(1,'week').weekday(1).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期三':
+                                        weeks= moment(time,'YYYY-MM-DD').add(1,'week').weekday(2).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期四':
+                                        weeks= moment(time,'YYYY-MM-DD').add(1,'week').weekday(3).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期五':
+                                        weeks= moment(time,'YYYY-MM-DD').add(1,'week').weekday(4).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期六':
+                                        weeks= moment(time,'YYYY-MM-DD').add(1,'week').weekday(5).format('YYYY-MM-DD');
+                                        break;
+                                    case '星期日':
+                                        weeks= moment(time,'YYYY-MM-DD').weekday(6).format('YYYY-MM-DD');
+                                }
+                                sendent.push(weeks);   // 所有的日期
+                            }
+                        }
+                    }
+                   var times = first.concat(sendent)
+                    // console.log('重复两周',times);
+                    if(times.length !==0){
+                        let sum = Math.ceil(count/times.length);  // 两周的平均
+                        // 获取今天星期机预选中的是否相同：
+                        // 在判断总次数中选中了几个剩余 算出还有几星期
+                        if(sum >=1){
+                            times.sort((a,b)=>{return Math.floor(moment(a,'YY-MM-DD').valueOf()) -Math.floor(moment(b,'YY-MM-DD').valueOf())})
+                            console.log('排序后',times);
+                            let mindata = times.reduce((a,b)=>{
+                                return moment(a).isBefore(b)?a:b;
+                            })
+                            console.log('最小时间',mindata)
+                            
+                            for(let i=0;i<sum;i++){
+                                let arr=''
+                                let j= i*2;
+                                times.map(items=>{
+                                    if(datelist.length < count ){
+                                        arr = moment(items).add(j,'week').format('YYYY-MM-DD');
+                                        datelist.push(arr)
+                                    }
+                                })
+                            }
+                        }else{
+                            console.log('不满两周')
+                        }
+                    }
+                    console.log('重复两周',times,datelist);
+                    // 判断选中时间是否等于
+                    if(datelist.length>0){
+                       //  返回最大值
+                       let maxdata = datelist.reduce((a,b)=>{
+                            return moment(a).isBefore(b)?b:a;
+                        })
+                        console.log('最大的日期',maxdata);
+                        this.newDateForm.endDate =maxdata
+                   }else{
+                       this.newDateForm.endDate=''
+                   }
                 }else if(state==3){
-
+                    let timelist =  this.newDateForm.editableTabs2;
+                    console.log('========',timelist)
+                    if(timelist.length !==0){
+                        // 找出所有的日期
+                        let times = [];
+                        timelist.map(item=>{
+                            if(item.title){
+                                times.push(item.title)
+                            }
+                        })
+                        // 进行排序
+                        let sum = Math.ceil(count/times.length);  // 两周的平均
+                            // 获取今天星期机预选中的是否相同：
+                            // 在判断总次数中选中了几个剩余 算出还有几星期
+                        if(sum >=1){
+                            times.sort((a,b)=>{return Math.floor(moment(a,'YY-MM-DD').valueOf()) - Math.floor(moment(b,'YY-MM-DD').valueOf())})
+                            console.log('排序后',timelist);
+                            let mindata = times.reduce((a,b)=>{
+                                return moment(a).isBefore(b)?a:b;
+                            })
+                            console.log('最小时间',mindata)
+                            for(let i=0;i<sum;i++){
+                                let arr=''
+                                times.map(items=>{
+                                    // 小于长度  并且判断是开始时间 之前还是之后
+                                    if(datelist.length < count && moment(items).isAfter(time)){
+                                        arr = moment(items).add(i,'month').format('YYYY-MM-DD');
+                                        datelist.push(arr)
+                                    }else if(datelist.length < count){
+                                        arr = moment(items).add(i+1,'month').format('YYYY-MM-DD');
+                                        datelist.push(arr)
+                                    }
+                                })
+                            }
+                        }else{
+                            console.log('不满一月');
+                        }
+                            console.log('重复一月',times,datelist)
+                            if(datelist.length>0){
+                        //  返回最大值
+                            let maxdata = datelist.reduce((a,b)=>{
+                                return moment(a).isBefore(b)?b:a;
+                            })
+                            console.log('最大的日期',maxdata);
+                            this.newDateForm.endDate = maxdata
+                            }else{
+                                this.newDateForm.endDate=''
+                            }
+                    }
                 }else{
 
                 }
-                 console.log('星期',times)
+                //  console.log('星期',times)
             },
+
             // 新建 选择班级
             handleSelectClass(item) {
                 // 列表
                 console.info('选择班级',item);
-                // 赋值
-                // className:'软件设计',     // 班级名称
-                // startDate:'',     // 开课时间
-                // weekday:'',       // 星期数
-                // cousreName:'java程序设计',    // 课程名称
-                // startTime:'',            //上课时间
-                // helpTecher:'李老师',     // 助教
-                // techerName:'杨老师',     // 老师
-                // classroom:'软件1607班',     // 教室
-                // courseShop:'职场教育',     //门店
-                // endTime:'',        // 结束时间
-                // endDate:'' ,       // 结束日期
-                // coursetime:40,     // 课程时长
-                // number:20,         // 课时数量
-                // count:4,           // 课程次数
-                // checkList:0        //重复多选,
                 this.newDateForm.className=item.className;
                 this.newDateForm.cousreName = item.cousreName;
                 this.newDateForm.helpTecher = item.helpTecher;
