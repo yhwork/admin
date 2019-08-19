@@ -585,8 +585,8 @@
                             <i class="el-icon-edit el-input__icon" slot="suffix" @click="handleIconClick">
                             </i>
                             <template slot-scope="props">
-                                <div class="name">{{ props.item.value }}</div>
-                                <span class="addr">{{ props.item.address }}</span>
+                                <div class="name">{{ props.item.name }}</div>
+                                <span class="addr">{{ props.item.orgName }}</span>
                             </template>
                         </el-autocomplete>
                     </el-form-item>
@@ -740,8 +740,8 @@
                                         @click="handleIconClick">
                                     </i>
                                     <template slot-scope="props">
-                                        <div class="name">{{ props.item.className }}</div>
-                                        <span class="addr">{{ props.item.cousreName }}</span>
+                                        <div class="name">{{ props.item.name }}</div>
+                                        <span class="addr">{{ props.item.orgName }}</span>
                                     </template>
                             </el-autocomplete>
                         </div>
@@ -931,9 +931,9 @@
                             </div>
                 </el-form-item>
 
-                <el-form-item label="授课讲师" :label-width="formLabelWidth" >
+                <el-form-item label="授课讲师" :label-width="formLabelWidth" :required='true'>
                     <div class="newcourse_box_item">
-                        <el-select size='large' v-model="newDateForm.techername" value-key="id" placeholder="请选择"
+                        <el-select size='large' :disabled="true" v-model="newDateForm.techerName" value-key="id" placeholder="请选择"
                             @change="newchangeCategory">
                             <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
                             </el-option>
@@ -943,7 +943,7 @@
 
                 <el-form-item label="教师助理" :label-width="formLabelWidth" >
                         <div class="newcourse_box_item">
-                            <el-select size='large' v-model="newDateForm.helpTecher" value-key="id" placeholder="请选择"
+                            <el-select size='large' :disabled="true" v-model="newDateForm.helpTecher" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
                                 <el-option v-for="item in categoryList" :label="item.name" :key="item.id" :value="item.id">
                                 </el-option>
@@ -961,6 +961,7 @@
     </div>
 </template>
 <script>
+    import {addCourseArrange,getClassList,getCourseInfoByClassId} from '@/api/demo'
     import moment from 'moment';
     import { Calendar } from '@fullcalendar/core';
     import FullCalendar from '@fullcalendar/vue'
@@ -1205,6 +1206,8 @@
                         const one = 30 * 24 * 3600 * 1000;
                         const minTime =  Date.now();
                         const maxTime = minTime+ one;
+                        let times = this.newDateForm.startDate;
+                       
                         //获取本日
                         // const startDate = moment().format('YYYY-MM-DD'); 
                         // const startDate = moment().format('YYYY-MM-DD');
@@ -1212,8 +1215,8 @@
                         // const startDate = moment().week(moment().week()).startOf('week').format('YYYY-MM-DD');   //这样是年月日的格式
                         // const endDate = moment().week(moment().week()).endOf('week').valueOf(); //这样是时间戳的格式
                         //获取本月 
-                        const startDate = moment().month(moment().month()).startOf('month').valueOf();
-                        const endDate = moment().month(moment().month()).endOf('month').valueOf();
+                        const startDate = moment(times,'YYYY-MM-DD').startOf('month').valueOf();
+                        const endDate = moment(times,"YYYY-MM-DD").endOf('month').valueOf();
                         //获取本年
                         // const startDate = moment().year(moment().year()).startOf('year').valueOf();
                         // const endDate = moment().year(moment().year()).endOf('year').valueOf();
@@ -1316,107 +1319,123 @@
                 var restaurants = this.restaurants;
                 var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
                 // 调用 callback 返回建议列表的数据
-                 clearTimeout(this.timeout);
-                    this.timeout = setTimeout(() => {
-                    cb(results);
-                }, 200 * Math.random());
+                cb(results)
             },
             // 过滤班级
             createFilter(queryString) {
+                console.log('过来',queryString)
                 return (restaurant) => {
-                return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                    return (restaurant.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
                 };
             },
             // 加载全部班级
             loadClassAll() {
-                return [
-                {  
-                    className:'软件设计A',     // 班级名称
-                    startDate:'',     // 开课时间
-                    weekday:'',       // 星期数
-                    cousreName:'java程序设计',    // 课程名称
-                    startTime:'',     //上课时间
-                    helpTecher:'李老师',    // 助教
-                    techerName:'杨老师',    // 老师
-                    classroom:'软件1607班',     // 教室
-                    courseShop:'职场教育',     //门店
-                    endTime:'',        // 结束时间
-                    endDate:'',        // 结束日期
-                    coursetime:20,     // 课程时长
-                    count:4,           // 课程次数
-                    number:30,         // 课时数量
-                    checkList:0        //重复多选,
-                },
-                {  
-                    className:'软件设计B',     // 班级名称
-                    startDate:'',     // 开课时间
-                    weekday:'',       // 星期数
-                    cousreName:'java程序设计',    // 课程名称
-                    startTime:'',     //上课时间
-                    helpTecher:'李老师',    // 助教
-                    techerName:'杨老师',    // 老师
-                    classroom:'软件1607班',     // 教室
-                    courseShop:'职场教育',     //门店
-                    endTime:'',        // 结束时间
-                    endDate:'' ,       // 结束日期
-                    coursetime:40,     // 课程时长
-                    count:5,           // 课程次数
-                    number:20,          // 课时数量
-                    checkList:0        //重复多选,
-                },
-                {  
-                    className:'软件设计C',     // 班级名称
-                    startDate:'',     // 开课时间
-                    weekday:'',       // 星期数
-                    cousreName:'java程序设计',    // 课程名称
-                    startTime:'',     //上课时间
-                    helpTecher:'李老师',    // 助教
-                    techerName:'杨老师',    // 老师
-                    classroom:'软件1607班',     // 教室
-                    courseShop:'职场教育',     //门店
-                    endTime:'',        // 结束时间
-                    endDate:'' ,       // 结束日期
-                    coursetime:30,     // 课程时长
-                    number:10,          // 课时数量
-                    count:6,          // 课程次数
-                    checkList:0        //重复多选,
-                },
-                {  
-                    className:'软件设计',     // 班级名称
-                    startDate:'',     // 开课时间
-                    weekday:'',       // 星期数
-                    cousreName:'java程序设计',    // 课程名称
-                    startTime:'',     //上课时间
-                    helpTecher:'李老师',    // 助教
-                    techerName:'杨老师',    // 老师
-                    classroom:'软件1607班',     // 教室
-                    courseShop:'职场教育',     //门店
-                    endTime:'',        // 结束时间
-                    endDate:'' ,       // 结束日期
-                    coursetime:40,     // 课程时长
-                    number:20,          // 课时数量
-                    count:7,          // 课程次数
-                    checkList:0        //重复多选,
-                },
-                {  
-                    className:'软件设计',     // 班级名称
-                    startDate:'',     // 开课时间
-                    weekday:'',       // 星期数
-                    cousreName:'java程序设计',    // 课程名称
-                    startTime:'',     //上课时间
-                    helpTecher:'李老师',    // 助教
-                    techerName:'杨老师',    // 老师
-                    number:20,          // 课时数量
-                    classroom:'软件1607班',     // 教室
-                    courseShop:'职场教育',     //门店
-                    endTime:'',        // 结束时间
-                    endDate:'' ,       // 结束日期
-                    coursetime:40,     // 课程时长
-                    count:4,          // 课程次数
-                    checkList:0        //重复多选,
-                },
-                { "value": "英语课11", "address": "嘉定区曹安路1611号","course":'英语课' },
-                ];
+                // 先获取班级列表
+                let arr = []
+                getClassList().then(res=>{
+                    if(res.result!=='' && res.result !== undefined && res.result !== null){
+                        let {list} = {...res.result}
+                       
+                        list.map(i=>{
+                            let obj ={
+                                name:i.name,
+                                orgName:i.orgName,
+                                id:i.id,
+                            }
+                            arr.push(obj)
+                        })
+                         console.log('班级列表',arr);
+                    }
+                })
+                return arr;
+                // return [
+                // {  
+                //     className:'软件设计A',     // 班级名称
+                //     startDate:'',     // 开课时间
+                //     weekday:'',       // 星期数
+                //     cousreName:'java程序设计',    // 课程名称
+                //     startTime:'',     //上课时间
+                //     helpTecher:'李老师',    // 助教
+                //     techerName:'杨老师',    // 老师
+                //     classroom:'软件1607班',     // 教室
+                //     courseShop:'职场教育',     //门店
+                //     endTime:'',        // 结束时间
+                //     endDate:'',        // 结束日期
+                //     coursetime:20,     // 课程时长
+                //     count:4,           // 课程次数
+                //     number:30,         // 课时数量
+                //     checkList:0        //重复多选,
+                // },
+                // {  
+                //     className:'软件设计B',     // 班级名称
+                //     startDate:'',     // 开课时间
+                //     weekday:'',       // 星期数
+                //     cousreName:'java程序设计',    // 课程名称
+                //     startTime:'',     //上课时间
+                //     helpTecher:'李老师',    // 助教
+                //     techerName:'杨老师',    // 老师
+                //     classroom:'软件1607班',     // 教室
+                //     courseShop:'职场教育',     //门店
+                //     endTime:'',        // 结束时间
+                //     endDate:'' ,       // 结束日期
+                //     coursetime:40,     // 课程时长
+                //     count:5,           // 课程次数
+                //     number:20,          // 课时数量
+                //     checkList:0        //重复多选,
+                // },
+                // {  
+                //     className:'软件设计C',     // 班级名称
+                //     startDate:'',     // 开课时间
+                //     weekday:'',       // 星期数
+                //     cousreName:'java程序设计',    // 课程名称
+                //     startTime:'',     //上课时间
+                //     helpTecher:'李老师',    // 助教
+                //     techerName:'杨老师',    // 老师
+                //     classroom:'软件1607班',     // 教室
+                //     courseShop:'职场教育',     //门店
+                //     endTime:'',        // 结束时间
+                //     endDate:'' ,       // 结束日期
+                //     coursetime:30,     // 课程时长
+                //     number:10,          // 课时数量
+                //     count:6,          // 课程次数
+                //     checkList:0        //重复多选,
+                // },
+                // {  
+                //     className:'软件设计',     // 班级名称
+                //     startDate:'',     // 开课时间
+                //     weekday:'',       // 星期数
+                //     cousreName:'java程序设计',    // 课程名称
+                //     startTime:'',     //上课时间
+                //     helpTecher:'李老师',    // 助教
+                //     techerName:'杨老师',    // 老师
+                //     classroom:'软件1607班',     // 教室
+                //     courseShop:'职场教育',     //门店
+                //     endTime:'',        // 结束时间
+                //     endDate:'' ,       // 结束日期
+                //     coursetime:40,     // 课程时长
+                //     number:20,          // 课时数量
+                //     count:7,          // 课程次数
+                //     checkList:0        //重复多选,
+                // },
+                // {  
+                //     className:'软件设计',     // 班级名称
+                //     startDate:'',     // 开课时间
+                //     weekday:'',       // 星期数
+                //     cousreName:'java程序设计',    // 课程名称
+                //     startTime:'',     //上课时间
+                //     helpTecher:'李老师',    // 助教
+                //     techerName:'杨老师',    // 老师
+                //     number:20,          // 课时数量
+                //     classroom:'软件1607班',     // 教室
+                //     courseShop:'职场教育',     //门店
+                //     endTime:'',        // 结束时间
+                //     endDate:'' ,       // 结束日期
+                //     coursetime:40,     // 课程时长
+                //     count:4,          // 课程次数
+                //     checkList:0        //重复多选,
+                // },
+                // { "value": "英语课11", "address": "嘉定区曹安路1611号","course":'英语课' },
+                // ];
             },
             // 鼠标离开事件
             outselectclass(){
@@ -1434,9 +1453,55 @@
             },
             // 保存新建
             newSaveCourse(){
+                // {
+                //   "addBy": 0,
+                //   "addByStr": "string",
+                //   "courseDate": "string",
+                //   "endDate": "string",
+                //   "endTime": "string",
+                //   "repeatRule": 0,
+                //   "repeatWeek": "string",
+                //   "startDate": "string",
+                //   "startTime": "string",
+                //   "storeClassId": 0,
+                //   "updateBy": 0,
+                //   "updateByStr": "string",
+                //   "weekNum": 0
+                // }
                 console.log('保存内容',this.newDateForm);
+                // checkList: Array(0)
+                // checkListData: Array(3)
+                // checkListData1: Array(0)
+                // checkListstate: 1
+                // className: "软件设计A"
+                // classroom: "软件1607班"
+                // count: 4
+                // courseShop: "职场教育"
+                // coursetime: 20
+                // cousreName: "java程序设计"
+                // editableTabs2: Array(0)
+                // editableTabsValue2: "0"
+                // endDate: "2019-08-27"
+                // endTime: "10:30"
+                // helpTecher: "李老师"
+                // number: 30
+                // setrecoverTime: ""
+                // startDate: "2019-08-20"
+                // startTime: "08:00"
+                // tabIndex: 0
+                // techerName: "杨老师"
+                // weekday: ""
+                // weekdays: Array(7)
                 var data = JSON.parse(JSON.stringify(this.newDateForm))
-                // var {} = data
+                if(data.length !==0){
+                    let {} = data
+                    // addCourseArrange().then(res=>{
+                    //     console.log(res)
+                    // })
+                }
+                
+                
+                
             },
             // 添加日期
             recoverTime(e) {
@@ -1601,9 +1666,10 @@
                     var time = this.newDateForm.startDate  // 开始日期
                     var count = this.newDateForm.count;    // 总次数
                     let week =  moment().format('YYYY-MM-DD'); // 当前时间的时间戳;
-                    var datelist=[];                       // 上课时间列表
+                    var datelist=[];                      // 上课时间列表
                     var weeks ='';
-                    var times =[]
+                    var maxdata = ''
+                    var times =[];
                 if(state==0){   // 每天
                     console.log(time)        
                     let alltime = moment(time, "YYYY-MM-DD").add(count,'days').format('YYYY-MM-DD');
@@ -1619,7 +1685,7 @@
                         for(let t of data){
                             // 判断选中日期于当前日期
                             if(moment(time).isAfter(week)){
-                                console.log('之后的日期');
+                                // console.log('之后的日期');
                                 switch(t) {
                                     case '星期一':
                                         weeks= moment(time,'YYYY-MM-DD').weekday(0).format('YYYY-MM-DD');
@@ -1643,44 +1709,9 @@
                                         weeks= moment(time,'YYYY-MM-DD').weekday(6).format('YYYY-MM-DD');
                                 }
                                 times.push(weeks);   // 所有的日期
+                            }else{
+                        
                             }
-                                // else{
-                                //     console.log('之前的日期');
-                                //     switch(t) {
-                                //         case '星期一':
-                                //             weeks= moment().weekday(0).format('YYYY-MM-DD');
-                                //             break;
-                                //         case '星期二':
-                                //             weeks= moment().weekday(1).format('YYYY-MM-DD');
-                                //             break;
-                                //         case '星期三':
-                                //             weeks= moment().weekday(2).format('YYYY-MM-DD');
-                                //             break;
-                                //         case '星期四':
-                                //             weeks= moment().weekday(3).format('YYYY-MM-DD');
-                                //             break;
-                                //         case '星期五':
-                                //             weeks= moment().weekday(4).format('YYYY-MM-DD');
-                                //             break;
-                                //         case '星期六':
-                                //             weeks= moment().weekday(5).format('YYYY-MM-DD');
-                                //             break;
-                                //         case '星期日':
-                                //             weeks= moment().weekday(6).format('YYYY-MM-DD');
-                                //     }
-                                //     times.push(weeks);   // 所有的日期
-                                //     if(sum>=1){
-                                //         console.log('111==========>',sum)
-                                //         for(let i=1;i<=sum;i++){
-                                //             times.map(items=>{
-                                //                 if(datelist.length < count ){
-                                //                     let arr = moment(items).add(i,'week').format('YYYY-MM-DD');
-                                //                     datelist.push(arr)
-                                //                 }
-                                //             })
-                                //         }
-                                //     }
-                                // }
                         }
                         //
                         // 获取今天星期机预选中的是否相同：
@@ -1691,17 +1722,32 @@
                     }
                     if(times.length!==0){
                         if(sum>=1){
+
                             times.sort((a,b)=>{return Math.floor(moment(a,'YY-MM-DD').valueOf()) -Math.floor(moment(b,'YY-MM-DD').valueOf())})
                             console.log('排序后',times);
+
                             let mindata = times.reduce((a,b)=>{
                                 return moment(a).isBefore(b)?a:b;
                             })
-                            console.log('最小时间',mindata)
+                            // console.log('最小时间',mindata)
                             let arr=''
+                            // 判断当前星期的时间与选中开始时间    如果之前的话就是下个星期从当前时间开始
+                            times.map((items,index)=>{
+                               if(moment(items).isBefore(time)){
+                                   let a=moment(items).add(1,'week').format('YYYY-MM-DD');
+                                   console.log('之前',a);
+                                   times[index]=a;
+                               }
+                            })   
+                            console.log('过滤后',times);
+                            times.sort((a,b)=>{return Math.floor(moment(a,'YY-MM-DD').valueOf()) -Math.floor(moment(b,'YY-MM-DD').valueOf())})
+                            console.log('再次排序后',times);
+
                             // if(moment(time).isSame(mindata)){
                             //     console.log('相等',time,mindata)
                             //     datelist.push(mindata)
                             // }
+
                             for(let i=0;i<sum;i++){
                                 times.map(items=>{
                                     if(datelist.length < count ){
@@ -1716,10 +1762,10 @@
                    // 找出数组中日期最大的那个
                    if(datelist.length>0){
                        //  返回最大值
-                       let maxdata = datelist.reduce((a,b)=>{
+                        maxdata = datelist.reduce((a,b)=>{
                             return moment(a).isBefore(b)?b:a;
                         })
-                        console.log('最大的日期',maxdata);
+                        // console.log('最大的日期',maxdata);
                         this.newDateForm.endDate =maxdata
                    }else{
                        this.newDateForm.endDate=''
@@ -1803,11 +1849,24 @@
                         if(sum >=1){
                             times.sort((a,b)=>{return Math.floor(moment(a,'YY-MM-DD').valueOf()) -Math.floor(moment(b,'YY-MM-DD').valueOf())})
                             console.log('排序后',times);
+
+
                             let mindata = times.reduce((a,b)=>{
                                 return moment(a).isBefore(b)?a:b;
                             })
                             console.log('最小时间',mindata)
                             
+                            times.map((items,index)=>{
+                               if(moment(items).isBefore(time)){
+                                   let a=moment(items).add(1,'week').format('YYYY-MM-DD');
+                                   console.log('之前',a);
+                                   times[index]=a;
+                               }
+                            })   
+                            console.log('过滤后',times);
+                            times.sort((a,b)=>{return Math.floor(moment(a,'YY-MM-DD').valueOf()) -Math.floor(moment(b,'YY-MM-DD').valueOf())})
+                            console.log('再次排序后',times);
+
                             for(let i=0;i<sum;i++){
                                 let arr=''
                                 let j= i*2;
@@ -1826,7 +1885,7 @@
                     // 判断选中时间是否等于
                     if(datelist.length>0){
                        //  返回最大值
-                       let maxdata = datelist.reduce((a,b)=>{
+                        maxdata = datelist.reduce((a,b)=>{
                             return moment(a).isBefore(b)?b:a;
                         })
                         console.log('最大的日期',maxdata);
@@ -1835,7 +1894,7 @@
                        this.newDateForm.endDate=''
                    }
                 }else if(state==3){
-                    let timelist =  this.newDateForm.editableTabs2;
+                    let timelist =  this.newDateForm.editableTabs2;  /// 选择的时间
                     console.log('========',timelist)
                     if(timelist.length !==0){
                         // 找出所有的日期
@@ -1875,7 +1934,7 @@
                             console.log('重复一月',times,datelist)
                             if(datelist.length>0){
                         //  返回最大值
-                            let maxdata = datelist.reduce((a,b)=>{
+                            maxdata = datelist.reduce((a,b)=>{
                                 return moment(a).isBefore(b)?b:a;
                             })
                             console.log('最大的日期',maxdata);
@@ -1887,25 +1946,97 @@
                 }else{
 
                 }
-                //  console.log('星期',times)
+                 console.log('第几周',datelist)
+                 if(datelist){
+                        let start =time;
+                        let end = maxdata;
+                        
+                        const range = moment(end).diff(moment(start));
+                        const d = moment.duration(range);
+                        const days = d.asDays() + 1;  // 总天数  因为需要包含首尾所以加1
+                        const weekDuration = Math.floor(d.asWeeks()); // 计算周数
+                        const newStart = moment(start).add(weekDuration*7,'days').format('YYYY-MM-DD');  //整周的拿开 尾数为新的起始点
+                        let weekendDays = 2*weekDuration;
+                        
+                        if(newStart !== end){ // 不是满周计算后续
+                            let startDay = moment(newStart).format('d');
+                            let endDay = moment(end).format('d');
+                            if(startDay === '6'){ // 结束日期必然小于6
+                            weekendDays++
+                            if(endDay >= 0){
+                                weekendDays++
+                            }
+                            }else if(startDay === '0'){
+                            weekendDays++
+                            if(endDay === '6'){ // 开始日期等于0 结束为0则为整周   不可能
+                                weekendDays++
+                            }
+                            }
+                        }else{
+                            const endWeek = moment(newStart).format('d');  // 因为我这边数据包含首尾  需要扫尾
+                            if(endWeek === '0' || endWeek === '6'){
+                            weekendDays++;
+                            }
+                        }
+                        let obj= {
+                            weekDays: days - weekendDays,
+                            weekendDays: weekendDays
+                        }
+                        console.log('几周',obj)
+                 }
             },
 
-            // 新建 选择班级
+            // 新建 选择中的班级
             handleSelectClass(item) {
                 // 列表
+                // 请求课程信息
                 console.info('选择班级',item);
-                this.newDateForm.className=item.className;
-                this.newDateForm.cousreName = item.cousreName;
-                this.newDateForm.helpTecher = item.helpTecher;
-                this.newDateForm.helpTecher = item.helpTecher;
-                this.newDateForm.techerName = item.techerName;
-                this.newDateForm.classroom = item.classroom;
-                this.newDateForm.courseShop = item.courseShop;
-                this.newDateForm.coursetime =item.coursetime;
-                this.newDateForm.number =    item.number;
-                this.newDateForm.count =    item.count;
-                // console.log(this.newDateForm.cousreName)
+                this.newDateForm.className=item.name;
+                getCourseInfoByClassId({classId:item.id}).then(res=>{
+                    console.log('详情',res.result)
+                    let arr =res.result;
+                    if(arr !== '' && arr !== undefined && arr !== null){
+                        let {className,courseName,lessonNum,lessonTime,num,onceTime,orgName,roomName,teacherName} =arr;
+                        console.log(arr)
+                            this.newDateForm.cousreName = courseName;
+                            // this.newDateForm.helpTecher = item.helpTecher;
+                            this.newDateForm.techerName = teacherName;
+                            this.newDateForm.classroom = roomName;
+                            this.newDateForm.courseShop =orgName;
+
+
+                            this.newDateForm.coursetime =onceTime;
+
+                            this.newDateForm.number =  lessonNum;
+
+                            this.newDateForm.count = num;
+                            
+                    }
+                    console.log(this.newDateForm)
+                })
+                // className: "班级测试1"
+                // courseName: "课程名称测试"
+                // lessonNum: 20
+                // lessonTime: "45"
+                // num: 10
+                // onceTime: "2"
+                // orgName: "上海音乐家协会电子键盘专业委员会"
+                // roomName: "测试1"
+                // teacherName: "小灰灰"
+                
+                            // this.newDateForm.cousreName = item.cousreName;
+                            // this.newDateForm.helpTecher = item.helpTecher;
+                            // this.newDateForm.helpTecher = item.helpTecher;
+                            // this.newDateForm.techerName = item.techerName;
+                            // this.newDateForm.classroom = item.classroom;
+                            // this.newDateForm.courseShop = item.courseShop;
+                            // this.newDateForm.coursetime =item.coursetime;
+                            // this.newDateForm.number =    item.number;
+                            // this.newDateForm.count =    item.count;
+                            // console.log(this.newDateForm.cousreName)
+                
             },
+            // 选中的班级
             handleSelectinClass(item) {
                 console.log(item);
             },
@@ -1987,6 +2118,9 @@
             newchangestartDate(e){
                  console.log('选择开课日期',e)
                 this.newDateForm.startDate=e;
+                this.newDateForm.setrecoverTime=e;
+                // 默认选中每天的
+                this.overDate(0);
             },
             // 分钟转换小时
             ChangeHourMinutestr(str) {

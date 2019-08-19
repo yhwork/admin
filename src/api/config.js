@@ -5,6 +5,10 @@
 // 13716583263 736602
 const ApiUrl ={
     
+    // 新建排课
+    addCourseArrange:`/store/course/addCourseArrange`,
+    // 查询班级详情
+    getCourseInfoByClassId:'/store/class/getCourseInfoByClassId',
     // 课程上架
     courseUp:'/store/course/courseUp',
     // 课程下架

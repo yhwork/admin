@@ -7,7 +7,8 @@ const state = {
   },
   allowBack:false,
   token: sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization"):"",
-  demo: '测试内容'
+  demo: '测试内容',
+  islogin:false
 }
 
 const mutations = {
@@ -21,6 +22,15 @@ const mutations = {
     stopBack:(state,data)=>{
       state.allowBack=data
       // console.log('修改后内容为',state.allowBack)
+    },
+    login(state,data){
+      state.islogin=data
+    },
+    quit:(state,data)=>{
+      state.islogin = data
+      this.$router.push({
+        path:'/login',
+      })
     }
 }
 
@@ -28,9 +38,12 @@ const actions = {
     asyncgettoken({commit}){
         commit("gettoken")
     },
+    asyncQuit({commit},data){
+      commit('quit',data)
+    },
     updateAppSetting({commit},{state}){
       // console.log('你是个啥？',state)
-      commit("stopBack",state)
+    commit("stopBack",state)
     },
     // 获取兄弟模块中的方法和store
     getdemofun:(store,data)=>{
