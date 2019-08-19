@@ -58,15 +58,16 @@ service.interceptors.response.use(
       if (res.errorCode == 100001||res.errorCode==400001 || res.cerrorCodeode == 100005 || res.errorCode == 300000 ) {
         // to re-login
         // if(){}
-        MessageBox.confirm('服务器错误', '请重新登录', {
-          confirmButtonText: '去登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          setTimeout(()=>{
-            this.$router.push('/login');
-          },1500)
-        })
+        // MessageBox.confirm('请求超时', '请重新登录', {
+        //   confirmButtonText: '去登录',
+        //   cancelButtonText: '取消',
+        //   type: 'warning'
+        // }).then(() => {
+        //   console.log('怎敢路')
+        //   store.dispath('asyncQuit',false)
+        // }).catch(()=>{
+        //   store.dispath('asyncQuit',false)
+        // })
       }
       return Promise.reject(new Error(res.errorMessage || 'Error'))
     } else {

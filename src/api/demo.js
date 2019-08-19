@@ -22,6 +22,26 @@ export function demo2(data) {
   })
 }
 
+// 查询班级详情
+export function getCourseInfoByClassId(data){
+  console.log('请求参数',data)
+  return axios({
+    url:`${ApiPath.getCourseInfoByClassId}?classId=${data.classId}`,
+    method: 'get',
+    data
+  })
+}
+
+// 新建排课
+export function addCourseArrange(data){
+  console.log('请求参数',data)
+  return axios({
+    url: ApiPath.addCourseArrange,
+    method: 'post',
+    data
+  })
+}
+
 
 // 新建班级
 export function addClass(data) {
@@ -44,11 +64,20 @@ export function updateClass(data) {
 // 获取班级列表
 export function getClassList(data) {
   console.log('请求参数',data)
-  return axios({
-    url: ApiPath.getClassList,
-    method: 'get',
-    data
-  })
+  if(data===undefined){
+    return axios({
+      url: ApiPath.getClassList,
+      method: 'get',
+      data
+    })
+  }else{
+    return axios({
+      url: `${ApiPath.getClassList}?className=${data.className}&orgId=${data.orgId}&techerId=${data.techerId}&roomId=${data.roomId}`,
+      method: 'get',
+      data
+    })
+  }
+
 }
 
 // 删除班级
