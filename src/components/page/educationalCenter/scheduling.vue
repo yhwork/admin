@@ -403,6 +403,28 @@
         margin:10px 3px;
         p{}
     }
+    .showcolors{
+        width: 100%;
+        display:flex;
+        justify-content:flex-end;
+        font-size: 0.8rem;
+        color: #696969;
+        div.right{
+            display:flex;
+            .items_color{
+                margin: 8px 8px;
+                padding-bottom: 15px;
+                span{
+                    display: inline-block;
+                    width: 15px;
+                    height: 10px;
+                    margin-right:5px;
+                    border: 1px solid rgba(0, 0, 0, .1);
+                }
+            }
+        }
+        
+    }
 </style>
 
 <template>
@@ -474,6 +496,14 @@
          
             <!-- 课程日历显示 -->
             <div class="container mystyles" >
+                <div class='showcolors'>
+                    <div class="right">
+                         <div v-for="(item, index) in bgcolorList" :key="index">
+                        <div class="items_color"><span :style="'background-color:'+item.color"></span>{{item.name}}</div>
+                    </div>
+                    </div>
+                   
+                </div>
                 <FullCalendar :plugins="calendarPlugins" :all-day-slot="false" 
                             :header="{
                                 left:'prev,next today',          
@@ -515,6 +545,7 @@
                     @selectAllow='handselectAllow'
                     @eventClick="compilecnt"
                     @dateClick="handleDateClick"
+                    @eventDrop= 'moveDateClick'
                     @select="handleSelectdate"
                     @eventMouseEnter="handMouseEnter"
                     @eventMouseLeave="handMouseLeave "
@@ -540,31 +571,31 @@
                         <div v-for="(item, index) in coursebox" :key="index">
                             <div class="dlogboxitem">
                                 <label class="dlogbox_label">上课时间:</label>
-                                <div class="dlogbox_val">{{item.time}}</div>
+                                <div class="dlogbox_val">{{item.startDatetime}}--{{item.endDatetime}}</div>
                             </div>
                             <div class="dlogboxitem">
                                 <label class="dlogbox_label">班级:</label>
-                                <div class="dlogbox_val font_color">{{item.class}}</div>
+                                <div class="dlogbox_val font_color">{{item.className}}</div>
                             </div>
                             <div class="dlogboxitem">
                                 <label class="dlogbox_label">教师:</label>
-                                <div class="dlogbox_val">{{item.techername}}</div>
+                                <div class="dlogbox_val">{{item.teacherName}}</div>
                             </div>
                             <div class="dlogboxitem">
-                                <label class="dlogbox_label">助教:</label>
-                                <div class="dlogbox_val">{{item.techernames}}</div>
+                                <label class="dlogbox_label">门店:</label>
+                                <div class="dlogbox_val">{{item.orgName}}</div>
                             </div>
                             <div class="dlogboxitem">
                                 <label class="dlogbox_label">教室:</label>
-                                <div class="dlogbox_val">{{item.classroom}}</div>
+                                <div class="dlogbox_val">{{item.roomName}}</div>
                             </div>
                             <div class="dlogboxitem">
-                                <label class="dlogbox_label">科目:</label>
-                                <div class="dlogbox_val">{{item.type}}</div>
+                                <label class="dlogbox_label">课程:</label>
+                                <div class="dlogbox_val">{{item.courseName}}</div>
                             </div>
                             <div class="dlogboxitem">
                                 <label class="dlogbox_label">实到/应到:</label>
-                                <div class="dlogbox_val">{{item.sum}}</div>
+                                <div class="dlogbox_val">{{item.joinNum}}/{{item.num}}</div>
                             </div>
                         </div>
                         <div class="dlogbox_btn">
@@ -579,30 +610,46 @@
             <el-dialog @click='showtecher = false' title="编辑日程"  custom-class='dialog_ediecourse' top="10vh"
                 width="45%" left :visible.sync="dialoginfoVisible" :close-on-click-modal='false'>
                 <el-form class="edit_schedule" :model="form" :rules="rules">
-                    <el-form-item label="班级/一对一：" :label-width="formLabelWidth" prop="techername">
-                        <el-autocomplete popper-class="my-autocomplete" v-model="state3" :fetch-suggestions="querySearch"
-                            placeholder="请输入内容" @select="handleSelectinClass">
-                            <i class="el-icon-edit el-input__icon" slot="suffix" @click="handleIconClick">
-                            </i>
-                            <template slot-scope="props">
-                                <div class="name">{{ props.item.name }}</div>
-                                <span class="addr">{{ props.item.orgName }}</span>
-                            </template>
-                        </el-autocomplete>
+                    <!--  <el-form-item label="所属门店：" :label-width="formLabelWidth" prop="techername">
+                         <el-autocomplete popper-class="my-autocomplete" v-model="state3" :fetch-suggestions="querySearch"
+                                placeholder="请输入内容" @select="handleSelectinClass">
+                                <i class="el-icon-edit el-input__icon" slot="suffix" @click="handleIconClick">
+                                </i>
+                                <template slot-scope="props">
+                                    <div class="name">{{ props.item.name }}</div>
+                                    <span class="addr">{{ props.item.orgName }}</span>
+                                </template>
+                            </el-autocomplete>  
+                    </el-form-item>-->
+                    <el-form-item label="所属门店" :label-width="formLabelWidth">
+                        <div class="elrow">
+                            <el-select size='large' v-model="form.orgId" value-key="id"
+                                placeholder="请选择" @change="changeCategory">
+                                <el-option v-for="(item,index) in form.orgList" :label="item.name" :key="index"
+                                    :value="item.orgId">
+                                </el-option>
+                            </el-select>
+                           
+                        </div>
                     </el-form-item>
+
                     <el-form-item label="上课日期：" :label-width="formLabelWidth" prop="techername">
-                        <el-date-picker v-model="value11" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日"
+                        <el-date-picker 
+                            v-model="form.startDate" type="date"
+                            placeholder="选择日期" 
+                            format="yyyy 年 MM 月 dd 日"
                             value-format="yyyy-MM-dd">
                         </el-date-picker>
                     </el-form-item>
-                    <el-form-item label="上课时段：" :label-width="formLabelWidth" prop="techername">
-                        <el-time-select placeholder="起始时间" v-model="startTime" :picker-options="{
+
+                    <el-form-item label="上课时间段：" :label-width="formLabelWidth" prop="techername">
+                        <el-time-select placeholder="起始时间" v-model="form.startTime" :picker-options="{
                                                 start: '08:30',
                                                 step: '00:15',
                                                 end: '18:30'
                                                 }">
                         </el-time-select>
-                        <el-time-select placeholder="结束时间" v-model="endTime" :picker-options="{
+                        <el-time-select placeholder="结束时间" v-model="form.endTime" :picker-options="{
                                                 start: '08:30',
                                                 step: '00:15',
                                                 end: '18:30',
@@ -613,7 +660,7 @@
                     <div class="elcolum">
                         <div class="elrow flex1">
                             <div class="dialog_ediw">
-                                <el-form-item label="教师" :label-width="formLabelWidth" prop="techername">
+                                <el-form-item label="老师" :label-width="formLabelWidth" prop="techername">
                                     <div @click="isshowtecher" class="inputbox">
                                         <div></div>
                                         <i class="el-icon-edit el-input__icon dialog_edieright" @click="handleIconClick">
@@ -675,7 +722,7 @@
                                 </el-form-item>
                             </div>
                             <div class="dialog_ediw">
-                                <el-form-item label="科目" :label-width="formLabelWidth" prop="techername">
+                                <el-form-item label="课程" :label-width="formLabelWidth" prop="techername">
                                     <div @click="isshowtecher" class="inputbox">
                                         <div></div>
                                         <i class="el-icon-edit el-input__icon dialog_edieright" @click="handleIconClick">
@@ -893,7 +940,7 @@
                                 </div>
                     </div>
                 </el-form-item>
-                <el-form-item label="结课日期"  prop="department" >
+                <el-form-item label="结课日期"  >
                         <div class="newcourse_box_item">
                                 <el-date-picker
                                 v-model="newDateForm.endDate"
@@ -906,7 +953,7 @@
                               </el-date-picker>
                               <div class="inweekcourse">
                                   <div class="inweekcourse_nchild">星期数</div>
-                                  <el-input v-model="newDateForm.weekday" auto-complete="off"></el-input>
+                                  <el-input :disabled='true' v-model="newDateForm.weekday" auto-complete="off"></el-input>
                               </div>
                         </div>
                 </el-form-item>
@@ -954,14 +1001,14 @@
             </el-form>
             <div><vue-qr :text="downloadData.url" :margin="10" colorDark="#000" colorLight="#fff" :dotScale="1"  :logoScale="0.2" :size="200"/></div> 
             <div class="dialog-footer el_row_center m ">
-                <el-button class="dialog-footer_btn" @click="my_newcourse = true">取 消</el-button>
+                <el-button class="dialog-footer_btn" @click="newSaveCourse(0)">取 消</el-button>
                 <el-button  class="dialog-footer_btn" type="primary" @click="newSaveCourse">保存</el-button>
             </div>
         </div>
     </div>
 </template>
 <script>
-    import {addCourseArrange,getClassList,getCourseInfoByClassId} from '@/api/demo'
+    import {addCourseArrange,getClassList,getCourseInfoByClassId,getAllCourseTime,delCourseTime,finishCourseTime,getCourseTimeDetails} from '@/api/demo'
     import moment from 'moment';
     import { Calendar } from '@fullcalendar/core';
     import FullCalendar from '@fullcalendar/vue'
@@ -977,6 +1024,26 @@
         props: [],
         data() {
             return {
+                bgcolorList:[
+                    {
+                        color:'#5BC377',
+                        name:'待上课'
+                    },
+                    {
+                        color:'#347AB7',
+                        name:'已上课'
+                    },
+                    {
+                        color:'#FFB51F',  // 黄色
+                        name:'冲突课程'
+                    },
+                    // {
+                    //     color:'#129CA9',
+                    //     name:'我的日程'
+                    // }
+                    
+                ],
+                somecourseId:'',   // 单机的id
                 checkAll:false,   // 全选
                 isIndeterminate:false,  //选择标记
                 events: [{
@@ -1011,27 +1078,33 @@
                 monthdata:[
                             {
                               title: '计算机学院小组会议',
-                              start: '2019-07-29 10:00:00',
-                              end: '2019-07-29 12:00:00',
-                              color:'orange'
+                              start: '2019-08-20 10:00:00',
+                              end: '2019-08-20 12:00:00',
+                              color:'orange',
+                              id:0,
                             },
                             {
                                 title: '计算机学院小组会议',
-                                start: '2019-07-29 10:00:00',
-                                end: '2019-07-29 11:00:00',
-                                color:'red'
+                                start: '2019-08-21 10:00:00',
+                                end: '2019-08-21 11:00:00',
+                                editable:true,    // 可以编辑
+                                textColor:'red',
+                                color:'green',
+                                id:1,
                             },
                             {
                                 title: '计算机学院小组会议132135454654654654645',
-                                start: '2019-07-30 10:00:00',
-                                end: '2019-07-30 11:00:00',
-                                color:'orange'
+                                start: '2019-08-20 10:00:00',
+                                end: '2019-08-20 11:00:00',
+                                color:'orange',
+                                id:2,        
                             },
                             {
-                              start: '2019-07-30 13:00:00',
-                              end: '2019-07-30 14:00:00',
+                              start: '2019-08-20 13:00:00',
+                              end: '2019-08-20 14:00:00',
                               title: '东南大学计算机学术会议',
-                              color:'green'
+                              color:'green',
+                              id:3,
                             }
                           ],
                 // 二维码生成
@@ -1071,16 +1144,6 @@
                     { name: "记上课", id: 5 },
                 ],
                 coursebox: [
-                    {
-                        time: ' 2019-07-31 08:00-18:00',
-                        name: '班级',
-                        class: ' 美术教育连锁机构暑期班一年级课程1班',
-                        techername: '张金刚',
-                        techernames: '小辉',
-                        classroom: ' 教室一',
-                        type: '学华初一数学',
-                        sum: '12/25',
-                    },
                 ],
                 dialoginfoVisible: false,
                 dialogFormVisible: false,   // 显示新建日程对话框
@@ -1089,6 +1152,11 @@
                 checkList: ['选中且禁用', '一对一'],
                 form: {
                     name: "",
+                    startDate:'', // 上课是时间
+                    orgId:0,
+                    orgList:[
+                        {name:'请选择',orgId:0}
+                    ],
                     region: "",
                     date1: "",
                     date2: "",
@@ -1190,8 +1258,8 @@
                         const minTime =  Date.now();
                         const maxTime = minTime+ one;
                         //获取本日
-                        const startDate = moment().valueOf(); 
-                        return time.getTime() < startDate 
+                        const startDate = moment().subtract(1,'day').valueOf(); 
+                        return time.getTime() <= startDate 
                     }
                 },
                 pickerOptionsOS: {
@@ -1214,18 +1282,19 @@
                         //获取本周
                         // const startDate = moment().week(moment().week()).startOf('week').format('YYYY-MM-DD');   //这样是年月日的格式
                         // const endDate = moment().week(moment().week()).endOf('week').valueOf(); //这样是时间戳的格式
-                        //获取本月 
-                        const startDate = moment(times,'YYYY-MM-DD').startOf('month').valueOf();
-                        const endDate = moment(times,"YYYY-MM-DD").endOf('month').valueOf();
+                        //获取指定月的开始和结束 
+                        // const startDate = moment(times,'YYYY-MM-DD').startOf('month').valueOf();
+                        // const endDate = moment(times,"YYYY-MM-DD").endOf('month').valueOf();
                         //获取本年
                         // const startDate = moment().year(moment().year()).startOf('year').valueOf();
                         // const endDate = moment().year(moment().year()).endOf('year').valueOf();
                         // 一个月内的日期
                         // return time.getTime() < minTime || time.getTime() > maxTime
                         // 利用 moment 前一个月和下一个月范围
-                        // return time.getTime() < moment(minTime).subtract(1,'month').valueOf() || time.getTime() > moment(minTime).add(1,'month').valueOf();
+                        // return time.getTime() < moment(time).subtract(1,'month').valueOf() || time.getTime() >  moment(time).subtract(1,'month').valueOf()
+                          return time.getTime() <=  moment(times,'YYYY-MM-DD').valueOf() || time.getTime() >  moment(times,'YYYY-MM-DD').add(1,'month').valueOf()
                         // 月初和月末
-                        return time.getTime() < startDate || time.getTime() > endDate
+                        // return time.getTime() < startDate || time.getTime() > endDate
                     }
 
                 },
@@ -1249,6 +1318,17 @@
                     checkListstate:0,  // 多选状态
                     checkList:[],      // 每两周列表数据         
                     checkListData:[],  // 每周数据
+                    courseDateList:{
+                           startTime:'',
+                           endTime:'',
+                           startDate:'',        // 开始时间
+                           endDate:'',     // 结束时间
+                           weekNum:'',     // 有几周
+                           courseDate:'',    // 上课时间列表
+                           repeatRule:'',   // 选中状态
+                           repeatWeek:'',           // 选中列表
+                           storeClassId:'',
+                    },     // 所有上课时间的列表
                     checkListData1:[], 
                     weekdays:['星期一','星期二','星期三','星期四','星期五','星期六','星期日'],  // 总星期数
                     tabIndex:0,             // 控制标签的数量
@@ -1263,7 +1343,11 @@
         mounted() {
             this.restaurants = this.loadClassAll();
         },
+        activated(){
+            this.getAllCourseList();
+        },
         created() {
+            this.getAllCourseList();
             var a= moment().add(1,'month').format('YYMM').valueOf() 
             console.log(a)
             // document.addEventListener('DOMContentLoaded', function() {
@@ -1314,6 +1398,13 @@
                 'resourceRender'
                     */
         methods: {
+            // 获取所有对课程表
+            getAllCourseList(){
+                getAllCourseTime().then(res=>{
+                    console.log('参数',res.result);
+                    this.monthdata=res.result;
+                })
+            },
             // 新建班级查询
             querySearch(queryString, cb) {
                 var restaurants = this.restaurants;
@@ -1335,7 +1426,6 @@
                 getClassList().then(res=>{
                     if(res.result!=='' && res.result !== undefined && res.result !== null){
                         let {list} = {...res.result}
-                       
                         list.map(i=>{
                             let obj ={
                                 name:i.name,
@@ -1344,7 +1434,7 @@
                             }
                             arr.push(obj)
                         })
-                         console.log('班级列表',arr);
+                        console.log('班级列表',arr);
                     }
                 })
                 return arr;
@@ -1366,76 +1456,6 @@
                 //     number:30,         // 课时数量
                 //     checkList:0        //重复多选,
                 // },
-                // {  
-                //     className:'软件设计B',     // 班级名称
-                //     startDate:'',     // 开课时间
-                //     weekday:'',       // 星期数
-                //     cousreName:'java程序设计',    // 课程名称
-                //     startTime:'',     //上课时间
-                //     helpTecher:'李老师',    // 助教
-                //     techerName:'杨老师',    // 老师
-                //     classroom:'软件1607班',     // 教室
-                //     courseShop:'职场教育',     //门店
-                //     endTime:'',        // 结束时间
-                //     endDate:'' ,       // 结束日期
-                //     coursetime:40,     // 课程时长
-                //     count:5,           // 课程次数
-                //     number:20,          // 课时数量
-                //     checkList:0        //重复多选,
-                // },
-                // {  
-                //     className:'软件设计C',     // 班级名称
-                //     startDate:'',     // 开课时间
-                //     weekday:'',       // 星期数
-                //     cousreName:'java程序设计',    // 课程名称
-                //     startTime:'',     //上课时间
-                //     helpTecher:'李老师',    // 助教
-                //     techerName:'杨老师',    // 老师
-                //     classroom:'软件1607班',     // 教室
-                //     courseShop:'职场教育',     //门店
-                //     endTime:'',        // 结束时间
-                //     endDate:'' ,       // 结束日期
-                //     coursetime:30,     // 课程时长
-                //     number:10,          // 课时数量
-                //     count:6,          // 课程次数
-                //     checkList:0        //重复多选,
-                // },
-                // {  
-                //     className:'软件设计',     // 班级名称
-                //     startDate:'',     // 开课时间
-                //     weekday:'',       // 星期数
-                //     cousreName:'java程序设计',    // 课程名称
-                //     startTime:'',     //上课时间
-                //     helpTecher:'李老师',    // 助教
-                //     techerName:'杨老师',    // 老师
-                //     classroom:'软件1607班',     // 教室
-                //     courseShop:'职场教育',     //门店
-                //     endTime:'',        // 结束时间
-                //     endDate:'' ,       // 结束日期
-                //     coursetime:40,     // 课程时长
-                //     number:20,          // 课时数量
-                //     count:7,          // 课程次数
-                //     checkList:0        //重复多选,
-                // },
-                // {  
-                //     className:'软件设计',     // 班级名称
-                //     startDate:'',     // 开课时间
-                //     weekday:'',       // 星期数
-                //     cousreName:'java程序设计',    // 课程名称
-                //     startTime:'',     //上课时间
-                //     helpTecher:'李老师',    // 助教
-                //     techerName:'杨老师',    // 老师
-                //     number:20,          // 课时数量
-                //     classroom:'软件1607班',     // 教室
-                //     courseShop:'职场教育',     //门店
-                //     endTime:'',        // 结束时间
-                //     endDate:'' ,       // 结束日期
-                //     coursetime:40,     // 课程时长
-                //     count:4,          // 课程次数
-                //     checkList:0        //重复多选,
-                // },
-                // { "value": "英语课11", "address": "嘉定区曹安路1611号","course":'英语课' },
-                // ];
             },
             // 鼠标离开事件
             outselectclass(){
@@ -1449,59 +1469,49 @@
                             })
                       }
                 },1000)
-               
             },
             // 保存新建
-            newSaveCourse(){
-                // {
-                //   "addBy": 0,
-                //   "addByStr": "string",
-                //   "courseDate": "string",
-                //   "endDate": "string",
-                //   "endTime": "string",
-                //   "repeatRule": 0,
-                //   "repeatWeek": "string",
-                //   "startDate": "string",
-                //   "startTime": "string",
-                //   "storeClassId": 0,
-                //   "updateBy": 0,
-                //   "updateByStr": "string",
-                //   "weekNum": 0
-                // }
-                console.log('保存内容',this.newDateForm);
-                // checkList: Array(0)
-                // checkListData: Array(3)
-                // checkListData1: Array(0)
-                // checkListstate: 1
-                // className: "软件设计A"
-                // classroom: "软件1607班"
-                // count: 4
-                // courseShop: "职场教育"
-                // coursetime: 20
-                // cousreName: "java程序设计"
-                // editableTabs2: Array(0)
-                // editableTabsValue2: "0"
-                // endDate: "2019-08-27"
-                // endTime: "10:30"
-                // helpTecher: "李老师"
-                // number: 30
-                // setrecoverTime: ""
-                // startDate: "2019-08-20"
-                // startTime: "08:00"
-                // tabIndex: 0
-                // techerName: "杨老师"
-                // weekday: ""
-                // weekdays: Array(7)
-                var data = JSON.parse(JSON.stringify(this.newDateForm))
-                if(data.length !==0){
-                    let {} = data
-                    // addCourseArrange().then(res=>{
-                    //     console.log(res)
-                    // })
+            newSaveCourse(args){
+                if(args ===0){
+                    return this.my_newcourse = true
                 }
-                
-                
-                
+                var data = JSON.parse(JSON.stringify(this.newDateForm.courseDateList))
+                console.log('保存内容',data);
+                if(data.length !==0){
+                    let {courseDate,startDate,endDate,startTime,endTime,weekNum,repeatRule,repeatWeek,storeClassId} = data
+                    let params = { courseDate:courseDate.join(','),startDate,endDate,startTime,endTime,weekNum,repeatRule,repeatWeek:JSON.stringify(repeatWeek),storeClassId }
+                    
+                    addCourseArrange(params).then(res=>{
+                        if(res.errorCode==0){
+                            this.getAllCourseList()     // 刷新课程表
+                            console.log('保存成功',res)
+                            this.$message({type:'success',message:'保存成功'});
+                            // 返回显示界面
+                            this.my_newcourse = true;
+                            this.newDateForm.cousreName = '';
+                            // this.newDateForm.helpTecher = item.helpTecher;
+                            this.newDateForm.techerName = '';
+                            this.newDateForm.classroom = '';
+                            this.newDateForm.courseShop ='';
+                            this.newDateForm.coursetime ='';
+                            this.newDateForm.number =  '';
+                            this.newDateForm.count = '';
+                            // 默认显示每天
+                            this.newDateForm.checkListstate=0;
+                            // 选中的列表
+                            this.newDateForm.checkList=[];      // 每两周列表数据         
+                            this.newDateForm.checkListData=[];  // 每周数据
+                            this.newDateForm.editableTabs2=[];
+                            // 有多少周
+                            this.newDateForm.weekday = "";
+                            this.newDateForm.startDate = '';
+                            this.newDateForm.endDate = "";
+                            this.newDateForm.startTime='';
+                            this.newDateForm.endTime = "";
+                        }
+                       
+                    })
+                }
             },
             // 添加日期
             recoverTime(e) {
@@ -1510,16 +1520,22 @@
                     console.log('增加标签',e)
                     let newTabName = ++this.newDateForm.tabIndex + '';
                     let title =moment(e).format("YYYY-MM-DD")
+                    let obj ={
+                        title: title,
+                        name: newTabName,
+                        content: title
+                    }
                     this.newDateForm.editableTabs2.push({
                         title: title,
                         name: newTabName,
                         content: title
                     });
+                    this.overDate(this.newDateForm.checkListstate);
                     this.newDateForm.editableTabsValue2 = newTabName;
                 }else{
                      return this.$message({type:'warning',message:`重复日期超出指定次数   ${count}，请重新选择`})
                 }
-                this.overDate(this.newDateForm.checkListstate);
+                
             },
             removeTab(targetName) {
                 let tabs = this.newDateForm.editableTabs2;
@@ -1663,22 +1679,33 @@
             overDate(state){
                     // console.log('参数',state,data);
                     // 对日期进行排序
-                    var time = this.newDateForm.startDate  // 开始日期
-                    var count = this.newDateForm.count;    // 总次数
+                    var time = this.newDateForm.startDate      // 开始日期
+                    var count = this.newDateForm.count;        // 总次数
                     let week =  moment().format('YYYY-MM-DD'); // 当前时间的时间戳;
-                    var datelist=[];                      // 上课时间列表
+                    var datelist=[];                           // 上课时间列表
+                    var weekNum=''                             // 有几周
                     var weeks ='';
-                    var maxdata = ''
+                    var maxdata = ''                           // 结束时间
                     var times =[];
-                if(state==0){   // 每天
-                    console.log(time)        
-                    let alltime = moment(time, "YYYY-MM-DD").add(count,'days').format('YYYY-MM-DD');
-                    console.log('次数',count,'结束日期为',alltime)
-                    this.newDateForm.endDate = alltime;
+                    var repeatWeek=[]
+                if(state==0){   // 每天   
+                    maxdata = moment(time, "YYYY-MM-DD").add(count,'days').format('YYYY-MM-DD');
+                    console.log('次数',count,'结束日期为',maxdata)
+                    this.newDateForm.endDate = maxdata;
+                  
+                    for(var i = 0;i<count;i++){
+                        if(i==0){
+                            datelist.push(time)
+                        }else{
+                            datelist.push(moment(time, "YYYY-MM-DD").add(i,'days').format('YYYY-MM-DD'))
+                        }
+                    }
+                    console.log('每天的数据为',datelist)
                     // var alltime =  moment({ hour:time.split(':')[0], minute:time.split(':')[1] }).add({minute:daytime}).format('hh:mm')
                 }else if(state==1){
                     // 转换时间
                     let data= this.newDateForm.checkListData // 
+                    repeatWeek=data
                     let weeks = moment(time).weekday();        // 选择开始时间于勾选的时间最小比较
                     let sum = Math.ceil(count/data.length);
                     if(data){
@@ -1772,6 +1799,7 @@
                    }
                 }else if(state==2){
                     // 获取所有的时间列表
+                    repeatWeek=this.newDateForm.checkList;
                     let arr1 = this.newDateForm.checkList[0]  // 第一周的数据
                     let first = [],sendent=[];
                     if(arr1.length>0){
@@ -1895,6 +1923,7 @@
                    }
                 }else if(state==3){
                     let timelist =  this.newDateForm.editableTabs2;  /// 选择的时间
+                    repeatWeek =timelist
                     console.log('========',timelist)
                     if(timelist.length !==0){
                         // 找出所有的日期
@@ -1944,46 +1973,32 @@
                             }
                     }
                 }else{
-
+                    console.log('不重复')
                 }
-                 console.log('第几周',datelist)
-                 if(datelist){
+                console.log('时间列表',datelist);
+                
+               
+                
+
+                if(datelist){
                         let start =time;
                         let end = maxdata;
-                        
-                        const range = moment(end).diff(moment(start));
-                        const d = moment.duration(range);
-                        const days = d.asDays() + 1;  // 总天数  因为需要包含首尾所以加1
-                        const weekDuration = Math.floor(d.asWeeks()); // 计算周数
-                        const newStart = moment(start).add(weekDuration*7,'days').format('YYYY-MM-DD');  //整周的拿开 尾数为新的起始点
-                        let weekendDays = 2*weekDuration;
-                        
-                        if(newStart !== end){ // 不是满周计算后续
-                            let startDay = moment(newStart).format('d');
-                            let endDay = moment(end).format('d');
-                            if(startDay === '6'){ // 结束日期必然小于6
-                            weekendDays++
-                            if(endDay >= 0){
-                                weekendDays++
-                            }
-                            }else if(startDay === '0'){
-                            weekendDays++
-                            if(endDay === '6'){ // 开始日期等于0 结束为0则为整周   不可能
-                                weekendDays++
-                            }
-                            }
-                        }else{
-                            const endWeek = moment(newStart).format('d');  // 因为我这边数据包含首尾  需要扫尾
-                            if(endWeek === '0' || endWeek === '6'){
-                            weekendDays++;
-                            }
-                        }
-                        let obj= {
-                            weekDays: days - weekendDays,
-                            weekendDays: weekendDays
-                        }
-                        console.log('几周',obj)
-                 }
+                        console.log(time,maxdata)
+                        const range = moment(end,'YYYY-MM-DD').diff(moment(start,'YYYY-MM-DD'),'week');
+                        const day = moment(end,'YYYY-MM-DD').diff(moment(start,'YYYY-MM-DD'),'day');
+                        let weekdays = day%7
+                        // console.log('有几周',range,day,weekdays)
+                        weekNum = `${range}周-${weekdays}天`;
+                        console.log(weekNum)
+                        this.newDateForm.weekday=weekNum;
+
+                }
+                this.newDateForm.courseDateList.startDate=time;
+                this.newDateForm.courseDateList.endDate=maxdata;
+                this.newDateForm.courseDateList.weekNum=weekNum;
+                this.newDateForm.courseDateList.courseDate=datelist;
+                this.newDateForm.courseDateList.repeatRule=state;
+                this.newDateForm.courseDateList.repeatWeek=repeatWeek;
             },
 
             // 新建 选择中的班级
@@ -1992,6 +2007,8 @@
                 // 请求课程信息
                 console.info('选择班级',item);
                 this.newDateForm.className=item.name;
+                // 保存时的id
+                this.newDateForm.courseDateList.storeClassId=item.id;
                 getCourseInfoByClassId({classId:item.id}).then(res=>{
                     console.log('详情',res.result)
                     let arr =res.result;
@@ -2003,12 +2020,8 @@
                             this.newDateForm.techerName = teacherName;
                             this.newDateForm.classroom = roomName;
                             this.newDateForm.courseShop =orgName;
-
-
-                            this.newDateForm.coursetime =onceTime;
-
+                            this.newDateForm.coursetime =lessonTime;
                             this.newDateForm.number =  lessonNum;
-
                             this.newDateForm.count = num;
                             
                     }
@@ -2023,7 +2036,7 @@
                 // orgName: "上海音乐家协会电子键盘专业委员会"
                 // roomName: "测试1"
                 // teacherName: "小灰灰"
-                
+            
                             // this.newDateForm.cousreName = item.cousreName;
                             // this.newDateForm.helpTecher = item.helpTecher;
                             // this.newDateForm.helpTecher = item.helpTecher;
@@ -2093,6 +2106,7 @@
                 this.rules.endDate.required=false;
              }
             },
+            // 失去焦点
             outmourse(state){
                 console.log(state)
                 // console.log('失去焦点');
@@ -2148,7 +2162,9 @@
                     let daytime = Math.floor(onesum * parseInt(coursetime));
                     var alltime =  moment({ hour:time.split(':')[0], minute:time.split(':')[1] }).add({minute:daytime}).format('hh:mm')
                     console.log('分钟',daytime,'结果为',alltime)
-                    this.newDateForm.endTime= alltime;
+                    this.newDateForm.endTime = alltime;
+                    this.newDateForm.courseDateList.startTime = time;
+                    this.newDateForm.courseDateList.endTime = alltime;
                     // 课时  *  单次
                     // coursetime:'',     // 课程时长
                     // count:'',          // 课程次数
@@ -2161,9 +2177,85 @@
             },
             // 课程显示事件
             btnchange(id) {
+                // 当前点击的id
+                if(id==1){
+                    this.dialogcourseVisible = false //关闭显示框
+                }
+                let CousrId =this.somecourseId;
                 if (id == 2) {  //单词编辑
                     this.dialogcourseVisible = false //关闭显示框
                     this.dialoginfoVisible = true  // 打开编辑框
+                }
+                if(id == 3){    // 编辑重复
+                    // 转到重复编辑内容   传递 id
+                    this.my_newcourse = false;
+                    // 获取班级详情
+                    let params ={
+                        name:'',
+                        id:CousrId,
+                    }
+                    this.handleSelectClass(params);
+                    // 赋值 时间等选中判断
+                    // 默认显示每天
+                    this.newDateForm.checkListstate=0;  // 状态
+                    // 选中的列表
+                    this.newDateForm.checkList=[];      // 每两周列表数据      // 包含  checkListData1  checkListData
+
+                    this.newDateForm.checkListData=[];  // 每周数据
+                    this.newDateForm.editableTabs2=[];  // 每月列表
+                    // 有多少周
+                    this.newDateForm.weekday = "";
+                    this.newDateForm.startDate = '';    // 开始日期
+                    this.newDateForm.endDate = "";      // 结束日期
+                    this.newDateForm.startTime='';      // 开始时间
+                    this.newDateForm.endTime = "";      // 结束时间
+                }
+                //  删除
+                if(id == 4){
+                    this.$confirm('此操作将永久删除该课程, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                    }).then(() => {
+                        delCourseTime(CousrId).then(res=>{
+                            if(res.errorCode==0){
+                                this.dialogcourseVisible = false //关闭显示框
+                                this.getAllCourseList()
+                                this.$message({
+                                    type: 'success',
+                                    message: '删除成功!'
+                                });
+                            }else{
+                                this.$message({
+                                    type: 'warning',
+                                    message: '删除失败!'
+                                });
+                            }
+                        })
+                       
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });          
+                    });
+       
+                }
+                // 记上课
+                if(id == 5){
+                    finishCourseTime(CousrId).then(res=>{
+                        if(res.errorCode==0){
+                            this.$message({type:'success',message:'标记上课成功'})
+                             this.getAllCourseList()
+                              this.dialogcourseVisible = false //关闭显示框
+                        }else{
+                                this.$message({
+                                    type: 'warning',
+                                    message: '记上课失败!'
+                                });
+                            }
+                    })
+                   
                 }
             },
             // 切换
@@ -2182,7 +2274,7 @@
                 }
                 return '';
             },
-                                // 搜索
+            // 搜索
             searchcnt(){
                     let a = {...this.ruleForm};
                     let { techername,departmen} = a;
@@ -2234,6 +2326,9 @@
                     this.dialogalert=false
                 }
             },
+            moveDateClick(e){
+                console.log(e)
+            },
             // 用户日历单击事件
             handleDateClick(e) {
                 console.log('点击日历', e);
@@ -2262,9 +2357,36 @@
                 console.log('创建内容', date, jsEvent, view)
             },
             // 点击又内容的出发 编辑内容
-            compilecnt(calEvent, jsEvent, view) {
+            compilecnt(e) {
                 this.dialogcourseVisible = true;
-                console.log('编辑内容', calEvent, jsEvent, view)
+                // 设置唯一的id 到全局变量中编辑或删除时使用
+                console.log('编辑内容',e)
+                this.somecourseId = e.event.id;
+                // 获取详情
+                //TODO
+                getCourseTimeDetails(this.somecourseId).then(res=>{
+                    console.log(res)
+                  
+
+                    //     coursebox: [
+                    //     {
+                    //         time: ' 2019-07-31 08:00-18:00',
+                    //         name: '班级',
+                    //         class: ' 美术教育连锁机构暑期班一年级课程1班',
+                    //         techername: '张金刚',
+                    //         techernames: '小辉',
+                    //         classroom: ' 教室一',
+                    //         type: '学华初一数学',
+                    //         sum: '12/25',
+                    //     },
+                    // ],
+                    this.coursebox=[];
+                    if(res.errorCode==0){
+                        let obj =res.result;
+                        this.coursebox.push(obj)
+
+                    }
+                })
             },
             // 弹窗
             morealert(info) {

@@ -286,8 +286,9 @@
 
         },
         created() {
-            this.selsectdata()  // 查询
             this.getorglist()   // 获取门店
+            this.selsectdata()  // 查询
+            
           
         },
         activated(){

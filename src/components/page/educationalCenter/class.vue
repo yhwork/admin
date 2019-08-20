@@ -146,7 +146,7 @@
                             </el-select>
                             </div>
                             <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(0)"
-                                    class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div>
+                                    class='elm-1 color'>新建</span>|<span class="elm-1 color" @click='refresh'>刷新</span></div>
                         </div>
                     </el-form-item>
                     <el-form-item label="所属课程" :label-width="formLabelWidth" prop="department">
@@ -161,7 +161,7 @@
                             </el-select>
                             </div>
                             <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(1)"
-                                    class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div>
+                                    class='elm-1 color'>新建</span>|<span class="elm-1 color"  @click='refresh'>刷新</span></div>
                         </div>
                     </el-form-item>
                     <el-form-item label="所属教室" :label-width="formLabelWidth" prop="department">
@@ -175,7 +175,7 @@
                                 </el-select>
                             </div>
                             <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(2)"
-                                    class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span>
+                                    class='elm-1 color'>新建</span>|<span class="elm-1 color"  @click='refresh'>刷新</span>
                             </div>
                         </div>
                     </el-form-item>
@@ -476,6 +476,7 @@
             //     })
         },
         activated(){
+             this.selsectdata()
             console.log(this.$route.params);
             let params = this.$route.params;
             if(params.hasOwnProperty('isnewcouse')){
@@ -516,6 +517,10 @@
                 // this.$store.getters.total(state)
               console.log(a)
 
+            },
+            // 刷新
+            refresh(){
+                this.selsectdata()
             },
             // 查询数据
             selsectdata(ars) {
@@ -712,6 +717,7 @@
                             this.form.className = item.name;              // 班级
                             this.form.storeCourseId = item.storeCourseId; // 课程
                             this.form.teacherId = item.teacherId;
+                            this.from.teacherName = item.teacherName;
                             this.form.orgId = item.orgId;
                             this.form.roomId =item.roomId;
                             this.form.id = item.id;

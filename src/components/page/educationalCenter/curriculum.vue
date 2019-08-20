@@ -478,7 +478,7 @@
               </el-select>
               <div class="flex1 elm-2 c_red">
                 <span @click="newcourse(0)" class="elm-1 color">新增门店</span>|
-                <span class="elm-1 color">刷新</span>
+                <span class="elm-1 color" @click='refresh'>刷新</span>
               </div>
             </div>
           </el-form-item>
@@ -717,7 +717,7 @@ export default {
     // });
   },
     activated() {
-        // this.selsectdata();
+        this.selsectdata();
         let params = this.$route.params;
         if (params.hasOwnProperty("isnewcouse")) {
           console.log(params)
@@ -741,6 +741,9 @@ export default {
         // this.rules.classname[0].required=true;
       }
 
+    },
+    refresh(){
+      this.selsectdata()
     },
     //查询教室
     selsectdata(myparams) {

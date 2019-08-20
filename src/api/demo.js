@@ -21,7 +21,47 @@ export function demo2(data) {
     params: {data} 
   })
 }
+// 
 
+// 删除班级
+export function getCourseTimeDetails(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getCourseTimeDetails}/${data}`,
+    method: 'get',
+    data
+  })
+}
+
+// 删除班级
+export function finishCourseTime(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.finishCourseTime}/${data}`,
+    method: 'delete',
+    data
+  })
+}
+
+// 删除班级
+export function delCourseTime(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.delCourseTime}/${data}`,
+    method: 'delete',
+    data
+  })
+}
+
+// 查询课程表
+export function getAllCourseTime(data){
+  console.log('请求参数',data)
+  return axios({
+    url:`${ApiPath.getAllCourseTime}`,
+    method: 'get',
+    data
+  })
+}
 // 查询班级详情
 export function getCourseInfoByClassId(data){
   console.log('请求参数',data)

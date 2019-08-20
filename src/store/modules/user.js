@@ -6,7 +6,8 @@ const state = {
     withoutAnimation: false
   },
   allowBack:false,
-  token: sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization"):"",
+  // token: sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization"):"",
+  token:'',
   demo: '测试内容',
   islogin:false
 }
@@ -19,6 +20,7 @@ const mutations = {
         state.demo=data
         console.log('修改后内容为',state.demo)
     },
+
     stopBack:(state,data)=>{
       state.allowBack=data
       // console.log('修改后内容为',state.allowBack)
@@ -26,8 +28,13 @@ const mutations = {
     login(state,data){
       state.islogin=data
     },
+    SetToken(state,data){
+       state.token=data
+       console.log(state.token,data)
+    },
     quit:(state,data)=>{
       state.islogin = data
+      console.log('啦啦啦啦')
       this.$router.push({
         path:'/login',
       })
@@ -37,6 +44,9 @@ const mutations = {
 const actions = {
     asyncgettoken({commit}){
         commit("gettoken")
+    },
+    asyncSetToken({commit},data){
+      commit('SetToken',data)
     },
     asyncQuit({commit},data){
       commit('quit',data)

@@ -4,7 +4,13 @@
  */
 // 13716583263 736602
 const ApiUrl ={
-    
+    getCourseTimeDetails:`/store/course/getCourseTimeDetails`,
+    // 记上课
+    finishCourseTime:`/store/course/finishCourseTime`,
+    // 删除单个课程
+    delCourseTime:`/store/course/delCourseTime`,
+    // 查询课程表
+    getAllCourseTime:`/store/course/getAllCourseTime`,
     // 新建排课
     addCourseArrange:`/store/course/addCourseArrange`,
     // 查询班级详情

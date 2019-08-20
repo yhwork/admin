@@ -15,7 +15,7 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-    console.log('请求参数拦截',config)
+   
     if (store.getters.user) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
@@ -23,6 +23,7 @@ service.interceptors.request.use(
       config.headers['Authorization'] = sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization") :store.getters.user
       // config.headers['X-Token'] = getToken()
     }
+    console.log('请求参数拦截',config)
     return config
   },
   error => {
@@ -66,7 +67,7 @@ service.interceptors.response.use(
         //   console.log('怎敢路')
         //   store.dispath('asyncQuit',false)
         // }).catch(()=>{
-        //   store.dispath('asyncQuit',false)
+          store.dispath('user/asyncQuit',false)
         // })
       }
       return Promise.reject(new Error(res.errorMessage || 'Error'))

@@ -61,6 +61,7 @@
 </template>          
 
 <script>
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 import router from "../../router";
 import qs from "qs";
 export default {
@@ -86,7 +87,16 @@ export default {
       }
     };
   },
+  computed: {
+            ...mapState({
+                viewsCount: 'app/demo'
+            }),
+            ...mapGetters({
+                todosALise: 'user' // user 不是字符串，对应的是getter里面的一个方法名字 然后将这个方法名字重新取一个别名 todosALise
+            })
+        },
   created() {
+    // console.log('getter',this.todosALise)
     var that = this;
     that.getCode();
     // that.geytList()
@@ -98,7 +108,14 @@ export default {
     }
   },
   methods: {
-
+     // vuex的集合
+    ...mapMutations({
+        totalAlise: 'app/getstore' // getstore 是mutation 里的方法，totalAlise是重新定义的一个别名方法，本组件直接调用这个方法
+    }),
+    // vuex 异步调用方法
+    　...mapActions({
+        blogAdd: 'user/asyncSetToken' // 第一个blogAdd是定义的一个函数别名称，挂载在到this(vue)实例上，后面一个blogAdd 才是actions里面函数方法名称
+    }),
         //注册协议
     agreement(){
       console.log('注册协议')
@@ -162,8 +179,11 @@ export default {
                     "Bearer " + res.data.result.token
                   );
                   // 存到 store
+                  let Authorization=`Bearer ${res.data.result.token}`;
+                  // console.log(Authorization);
                   
-                  // console.log('咋不跳转呢')
+                  this.blogAdd(Authorization);
+                  console.log(this.todosALise)
                   return this.$router.push("/");
                 
                 }
