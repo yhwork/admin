@@ -24,6 +24,9 @@
     .elcolum{
         display: flex;
         flex-flow: column wrap;
+        // background: #696969;
+        position: relative;
+        z-index: 999;
     }
     .elmt-2 {
         margin-top: 2rem;
@@ -225,7 +228,42 @@
     .font_color {
         color: #75aaec;
     }
+    
+    .table_border {
+        border-bottom: 1px solid rgba(0, 0, 0, .5);
+        background-color: #A0C6F0 !important;
+    }
 
+    .table_borders {
+        border-bottom: 1px solid rgba(0, 0, 0, .5);
+        background-color: #CAE1FF !important;
+    }
+    .el-table--enable-row-hover .el-table__body tr:hover>td {
+
+        background-color: #CBD1D8 !important;
+    }
+
+    .table_border {
+        border-bottom: 1px solid rgba(0, 0, 0, .5);
+        background-color: #A0C6F0 !important;
+    }
+
+    .table_borders {
+        border-bottom: 1px solid rgba(0, 0, 0, .5);
+        background-color: #CAE1FF !important;
+    }
+
+    .headerclassname {
+        border: 1px solid #ccc !important;
+        color: darkslategrey;
+        background-color: #ccc !important
+    }
+
+    .clearpadding {
+        margin-top: 2px;
+        padding: 8px 12px !important;
+        margin-left: 15px;
+    }
     .active_btn {
         color: #75aaec;
         border-color: #75aaec;
@@ -262,6 +300,7 @@
     .dialog_ediw{
         min-width: 300px;
         position: relative;
+        // z-index: 99;
     }
     .dialog_edieright{
         position: absolute;
@@ -401,7 +440,7 @@
         color:#696969;
         // border:1px solid rgba(0,0,0,.1);
         margin:10px 3px;
-        p{}
+        
     }
     .showcolors{
         width: 100%;
@@ -607,9 +646,10 @@
                     </div>
             </el-dialog>
             <!-- 编辑日程嵌套弹框 -->
-            <el-dialog @click='showtecher = false' title="编辑日程"  custom-class='dialog_ediecourse' top="10vh"
+            <el-dialog :title="isnewcreate?'新建日程':'编辑日程'"  custom-class='dialog_ediecourse' top="10vh"
                 width="45%" left :visible.sync="dialoginfoVisible" :close-on-click-modal='false'>
-                <el-form class="edit_schedule" :model="form" :rules="rules">
+                <div @click.stop="changeshowbox">
+                    <el-form  class="edit_schedule" :model="form" :rules="rules">
                     <!--  <el-form-item label="所属门店：" :label-width="formLabelWidth" prop="techername">
                          <el-autocomplete popper-class="my-autocomplete" v-model="state3" :fetch-suggestions="querySearch"
                                 placeholder="请输入内容" @select="handleSelectinClass">
@@ -624,7 +664,7 @@
                     <el-form-item label="所属门店" :label-width="formLabelWidth">
                         <div class="elrow">
                             <el-select size='large' v-model="form.orgId" value-key="id"
-                                placeholder="请选择" @change="changeCategory">
+                                placeholder="请选择" @change="changeorgList">
                                 <el-option v-for="(item,index) in form.orgList" :label="item.name" :key="index"
                                     :value="item.orgId">
                                 </el-option>
@@ -633,16 +673,17 @@
                         </div>
                     </el-form-item>
 
-                    <el-form-item label="上课日期：" :label-width="formLabelWidth" prop="techername">
+                    <el-form-item label="上课日期：" :label-width="formLabelWidth" >
                         <el-date-picker 
                             v-model="form.startDate" type="date"
                             placeholder="选择日期" 
+                            :picker-options='pickerOptionstarts'
                             format="yyyy 年 MM 月 dd 日"
                             value-format="yyyy-MM-dd">
                         </el-date-picker>
                     </el-form-item>
 
-                    <el-form-item label="上课时间段：" :label-width="formLabelWidth" prop="techername">
+                    <el-form-item label="上课时间段：" :label-width="formLabelWidth">
                         <el-time-select placeholder="起始时间" v-model="form.startTime" :picker-options="{
                                                 start: '08:30',
                                                 step: '00:15',
@@ -653,48 +694,59 @@
                                                 start: '08:30',
                                                 step: '00:15',
                                                 end: '18:30',
-                                                minTime: startTime
+                                                minTime: form.startTime
                                                 }">
                         </el-time-select>
                     </el-form-item>
                     <div class="elcolum">
                         <div class="elrow flex1">
                             <div class="dialog_ediw">
-                                <el-form-item label="老师" :label-width="formLabelWidth" prop="techername">
-                                    <div @click="isshowtecher" class="inputbox">
-                                        <div></div>
+                                <el-form-item label="老师" :label-width="formLabelWidth">
+                                    <div  @click.stop="isshowtecher(1)" class="inputbox">
+                                        <el-input
+                                            :readonly='true'
+                                            placeholder="请输入内容"
+                                            suffix-icon="el-icon-edit"
+                                            v-model="form.teacherName">
+                                        </el-input>
                                         <i class="el-icon-edit el-input__icon dialog_edieright" @click="handleIconClick">
                                         </i>
                                     </div>
-                                    <div class="dialog_edieinfo" v-show='showtecher'>
-                                        <el-table :data="tableData2" style="width: 100%" :row-class-name="tableRowClassName"
+                                    <div class="dialog_edieinfo" v-if='showtecher==1?true:false'>
+                                        <el-table :data="form.teacherList" style="width: 100%" @row-click ='tableindex' :row-class-name="changetable"
                                             max-height="250">
-                                            <el-table-column prop="date" label="日期" width="100">
+                                             <!--<el-table-column  prop="date" label="日期" width="100">
+                                               <template slot-scope="scope">
+                                                    <div>
+                                                        <span style="margin-left: 10px">{{ scope.row.name }}</span>
+                                                    </div>
+                                                </template> 
+                                            </el-table-column> -->
+                                            <el-table-column  prop="name" label="姓名" width="120">
                                             </el-table-column>
-                                            <el-table-column prop="name" label="姓名" width="70">
-                                            </el-table-column>
-                                            <el-table-column prop="address" label="地址" width="280">
+                                           <el-table-column  prop="phone" label="手机号" width="280">
                                             </el-table-column>
                                         </el-table>
                                     </div>
                                 </el-form-item>
                             </div>
                             <div class="dialog_ediw">
-                                <el-form-item label="助教" :label-width="formLabelWidth" prop="techername">
-                                    <div @click="isshowtecher" class="inputbox">
-                                        <div></div>
+                                <el-form-item label="班级" :label-width="formLabelWidth" >
+                                    <div @click.stop="isshowtecher(4)" class="inputbox">
+                                        <el-input
+                                            :readonly='true'
+                                            placeholder="请输入内容"
+                                            v-model="form.className">
+                                        </el-input>
                                         <i class="el-icon-edit el-input__icon dialog_edieright" @click="handleIconClick">
                                         </i>
                                     </div>
-                                    <div class="dialog_edieinfo" v-show='showtecher'>
-                                        <el-table :data="tableData2" style="width: 100%" :row-class-name="tableRowClassName"
+                                    <div class="dialog_edieinfo" v-if='showtecher==4?true:false'>
+                                        <el-table :data="form.classList" style="width: 100%"  @row-click='tableindex' :row-class-name="changetable"
                                             max-height="250">
-                                            <el-table-column prop="date" label="日期" width="100">
+                                            <el-table-column prop="name" label="班级名称" width="280">
                                             </el-table-column>
-                                            <el-table-column prop="name" label="姓名" width="70">
-                                            </el-table-column>
-                                            <el-table-column prop="address" label="地址" width="280">
-                                            </el-table-column>
+                                            
                                         </el-table>
                                     </div>
                                 </el-form-item>
@@ -702,53 +754,66 @@
                         </div>
                         <div class="elrow flex1">
                             <div class="dialog_ediw">
-                                <el-form-item label="教室" :label-width="formLabelWidth" prop="techername">
-                                    <div @click="isshowtecher" class="inputbox">
-                                        <div></div>
+                                <el-form-item label="教室" :label-width="formLabelWidth">
+                                    <div @click.stop="isshowtecher(2)" class="inputbox">
+                                        <el-input
+                                            :readonly='true'
+                                            placeholder="请输入内容"
+                                            v-model="form.roomName">
+                                        </el-input>
                                         <i class="el-icon-edit el-input__icon dialog_edieright" @click="handleIconClick">
                                         </i>
                                     </div>
-                                    <div class="dialog_edieinfo" v-show='showtecher'>
-                                        <el-table :data="tableData2" style="width: 100%" :row-class-name="tableRowClassName"
+                                    <div class="dialog_edieinfo" v-if='showtecher==2?true:false'>
+                                        <el-table :data="form.roomList" style="width: 100%" @row-click ='tableindex' :row-class-name="changetable"
                                             max-height="250">
-                                            <el-table-column prop="date" label="日期" width="100">
+                                            <el-table-column label="姓名" width="100">
+                                                <template slot-scope="scope">
+                                                    <div>
+                                                        <span style="margin-left: 10px">{{ scope.row.name }}</span>
+                                                    </div>
+                                                </template> 
                                             </el-table-column>
-                                            <el-table-column prop="name" label="姓名" width="70">
+                                            <el-table-column prop="num" label="容纳人数" width="70">
                                             </el-table-column>
-                                            <el-table-column prop="address" label="地址" width="280">
+                                            <el-table-column prop="orgName" label="所在机构" width="280">
                                             </el-table-column>
                                         </el-table>
                                     </div>
                                 </el-form-item>
                             </div>
                             <div class="dialog_ediw">
-                                <el-form-item label="课程" :label-width="formLabelWidth" prop="techername">
-                                    <div @click="isshowtecher" class="inputbox">
-                                        <div></div>
+                                <el-form-item label="课程" :label-width="formLabelWidth">
+                                    <div @click.stop="isshowtecher(3)" class="inputbox">
+                                        <el-input
+                                            :readonly='true'
+                                            placeholder="请输入内容"
+                                            v-model="form.courseName">
+                                        </el-input>
                                         <i class="el-icon-edit el-input__icon dialog_edieright" @click="handleIconClick">
                                         </i>
                                     </div>
-                                    <div class="dialog_edieinfo" v-show='showtecher'>
-                                        <el-table :data="tableData2" style="width: 100%" :row-class-name="tableRowClassName"
+                                    <div class="dialog_edieinfo" v-if='showtecher==3?true:false'>
+                                        <el-table :data="form.courseList" style="width: 100%"  @row-click='tableindex' :row-class-name="changetable"
                                             max-height="250">
-                                            <el-table-column prop="date" label="日期" width="100">
+                                            <el-table-column prop="name" label="课程名称" width="100">
                                             </el-table-column>
-                                            <el-table-column prop="name" label="姓名" width="70">
+                                            <el-table-column prop="courseSubjectName" label="课程类别" width="100">
                                             </el-table-column>
-                                            <el-table-column prop="address" label="地址" width="280">
+                                            <el-table-column prop="statusName" label="课程状态" width="280">
                                             </el-table-column>
                                         </el-table>
                                     </div>
                                 </el-form-item>
                             </div>
-            
-            
                         </div>
                     </div>
                 </el-form>
+                </div>
+                
                 <div slot="footer" class="dialog-footer ">
-                    <el-button @click="dialoginfoVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="dialoginfoVisible = false">保存
+                    <el-button @click="saveiedData(0)">取 消</el-button>
+                    <el-button type="primary" @click="saveiedData(isnewcreate)">保存
                     </el-button>
                 </div>
             </el-dialog>
@@ -796,9 +861,9 @@
 
                 <el-form-item label="所属课程"   :required='true'>
                         <div class="newcourse_box_item">
-                            <el-select size='large' :disabled="true" v-model="newDateForm.cousreName" value-key="id" placeholder="请选择"
+                            <el-select size='large' :disabled="true" v-model="newDateForm.courseName" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
-                                <el-option v-for="item in categoryList" :label="item.cousreName" :key="item.id" :value="item.cousreId">
+                                <el-option v-for="item in categoryList" :label="item.courseName" :key="item.id" :value="item.courseId">
                                 </el-option>
                             </el-select>
                         </div>
@@ -813,7 +878,7 @@
                             placeholder="选择日期"
                             format="yyyy 年 MM 月 dd 日"
                             @change="newchangestartDate"
-                             :picker-options='pickerOptionstart'
+                            :picker-options='pickerOptionstart'
                             @blur='outmourse(1)'
                             value-format="yyyy-MM-dd">
                           </el-date-picker>
@@ -1008,7 +1073,7 @@
     </div>
 </template>
 <script>
-    import {addCourseArrange,getClassList,getCourseInfoByClassId,getAllCourseTime,delCourseTime,finishCourseTime,getCourseTimeDetails} from '@/api/demo'
+    import {addCourseArrange,getClassList,getCourseInfoByClassId,getAllCourseTime,delCourseTime,finishCourseTime,getCourseTimeDetails,updateCourseTime,addCourseTime} from '@/api/demo'
     import moment from 'moment';
     import { Calendar } from '@fullcalendar/core';
     import FullCalendar from '@fullcalendar/vue'
@@ -1024,6 +1089,7 @@
         props: [],
         data() {
             return {
+                isnewcreate:false,
                 bgcolorList:[
                     {
                         color:'#5BC377',
@@ -1152,21 +1218,31 @@
                 checkList: ['选中且禁用', '一对一'],
                 form: {
                     name: "",
+                    startTime:'',
+                    endTime:'',
                     startDate:'', // 上课是时间
+
                     orgId:0,
+                    orgName:'',
                     orgList:[
                         {name:'请选择',orgId:0}
                     ],
-                    region: "",
-                    date1: "",
-                    date2: "",
-                    delivery: false,
-                    type: [],
-                    resource: "",
-                    desc: ""
+                    teacherId:"",
+                    teacherName:'',
+                    teacherList:[],
+
+                    courseName:'',
+                    courseId:'',
+
+                    classId:'',
+                    className:'',
+                    classList:[],
+
+                    roomId:'',
+                    roomName:'',
                 },
                 dialogalert:false,
-                showtecher:false,
+                showtecher:0, // 编辑显示
                 categoryList: [], // 下拉列表
                 formLabelWidth: '180',
                 rules: {
@@ -1177,6 +1253,7 @@
                     classnames:[{ required: true, message: "请输入教室名称", trigger: "blur" }],
                     galleryful: [{ required: true, message: "请输入最大容纳人数", trigger: "blur" }],
                     techername: [{ required: true, message: "请输入教师名称", trigger: "blur" }],
+                    roomId:[{ required: true, message: "请输入教室名称", trigger: "blur" }],
                     department: [{ required: true, message: "请输入所属门店", trigger: "blur" }],
                     // 新建提醒
                     startDate:[{ required: true, message: "请输入开课日期", trigger: "blur" }],
@@ -1252,6 +1329,16 @@
                        }
                     ],
                 },
+                pickerOptionstarts:{
+                    disabledDate: (time) => {                          
+                        const one = 30 * 24 * 3600 * 1000;
+                        const minTime =  Date.now();
+                        const maxTime = minTime+ one;
+                        //获取本日
+                        const startDate = moment(time,'YYYY-MM-DD').subtract(1,'day').valueOf(); 
+                        return time.getTime() <= startDate 
+                    }
+                },
                 pickerOptionstart:{
                      disabledDate: (time) => {                          
                         const one = 30 * 24 * 3600 * 1000;
@@ -1304,7 +1391,7 @@
                     className:'',      // 班级名称
                     startDate:'',      // 开课日期
                     weekday:'',        // 星期数
-                    cousreName:'',     // 课程名称
+                    courseName:'',     // 课程名称
                     startTime:'',      // 上课时间
                     helpTecher:'',     // 助教
                     techerName:'',     // 老师
@@ -1398,6 +1485,37 @@
                 'resourceRender'
                     */
         methods: {
+            // 点击哪一行
+            tableindex(row, e) {
+                let state = this.showtecher;
+                if(state==1){      // 老师
+                    this.form.teacherId=row.id;
+                    this.form.teacherName = row.name;
+                }   
+                if(state == 2){     // 教室
+                    this.form.roomName=row.name;
+                    this.form.roomId = row.id;
+                }
+                if(state == 3){     // 课程
+                    this.form.courseName=row.name;
+                    this.form.courseId = row.id;
+                }
+                if(state == 4){    // 班级
+                    this.form.className=row.name;
+                    this.form.classId = row.id;
+                }
+                console.log(row,state)
+                // this.tb_idnex=e.index;
+            },
+            // 改变表格
+            changetable(e) {
+                if (e.rowIndex % 2 == 0) {
+                    return "table_borders"
+
+                } else {
+                    return "table_border"
+                }
+            },
             // 获取所有对课程表
             getAllCourseList(){
                 getAllCourseTime().then(res=>{
@@ -1488,7 +1606,7 @@
                             this.$message({type:'success',message:'保存成功'});
                             // 返回显示界面
                             this.my_newcourse = true;
-                            this.newDateForm.cousreName = '';
+                            this.newDateForm.courseName = '';
                             // this.newDateForm.helpTecher = item.helpTecher;
                             this.newDateForm.techerName = '';
                             this.newDateForm.classroom = '';
@@ -2015,7 +2133,7 @@
                     if(arr !== '' && arr !== undefined && arr !== null){
                         let {className,courseName,lessonNum,lessonTime,num,onceTime,orgName,roomName,teacherName} =arr;
                         console.log(arr)
-                            this.newDateForm.cousreName = courseName;
+                            this.newDateForm.courseName = courseName;
                             // this.newDateForm.helpTecher = item.helpTecher;
                             this.newDateForm.techerName = teacherName;
                             this.newDateForm.classroom = roomName;
@@ -2080,6 +2198,10 @@
             //改变选项
             changeCategory(e) {
 
+            },
+            // 改变门店
+            changeorgList(e){
+                console.log(e)
             },
             // 新增
             newcourse() { },
@@ -2185,6 +2307,38 @@
                 if (id == 2) {  //单词编辑
                     this.dialogcourseVisible = false //关闭显示框
                     this.dialoginfoVisible = true  // 打开编辑框
+                    // 赋值内容表单
+                    let arr= this.coursebox;
+                    if(arr.length !==0 ){
+                        arr.map(item=>{
+                            this.form.startTime = item.startDatetime.split(' ')[1];
+                            this.form.endTime = item.endDatetime.split(' ')[1];
+
+                            this.form.orgId=item.orgId;
+                            this.form.orgName=item.orgName;
+
+                            this.form.className=item.className;
+                            this.form.classId = item.classId;
+
+                            this.form.id = item.id;
+
+                            this.form.teacherName=item.teacherName;
+                             this.form.teacherId=item.teacherId;
+
+                            this.form.roomName=item.roomName;
+                            this.form.roomId=item.roomId;
+
+                            this.form.courseName=item.courseName;
+                            this.form.courseId=item.courseId;
+
+                            this.form.teacherId=item.teacherId;
+                            this.form.teacherName=item.teacherName;
+
+                            this.form.startDate = item.startDatetime;
+                        })
+                       
+                    }
+                    console.log('编辑内容',this.form,arr)
                 }
                 if(id == 3){    // 编辑重复
                     // 转到重复编辑内容   传递 id
@@ -2258,21 +2412,29 @@
                    
                 }
             },
-            // 切换
-            isshowtecher(){
-                if(this.showtecher){
-                    this.showtecher=false
-                }else{
-                    this.showtecher=true
-                }
+            // 
+            changeshowbox(){
+                console.log('全部隐藏')
+                this.showtecher=0 
             },
-            tableRowClassName({row, rowIndex}) {
-                if (rowIndex === 1) {
-                return 'warning-row';
-                } else if (rowIndex === 3) {
-                return 'success-row';
+            // 切换
+            isshowtecher(args){
+                if(args==this.showtecher){
+                    this.showtecher=0;
+                }else{
+                    if(args==1){
+                        this.showtecher=1;
+                    }else if(args==2){
+                        this.showtecher=2;
+                    }else if(args ==3){
+                        this.showtecher=3;
+                    }else if(args ==4){
+                        this.showtecher=4;
+                    }else{
+                        this.showtecher=0;
+                    }
                 }
-                return '';
+               
             },
             // 搜索
             searchcnt(){
@@ -2290,16 +2452,48 @@
                 let calendarApi = this.$refs.fullCalendar.getApi() // from the ref="..."
                 calendarApi.gotoDate('2000-01-01') // call a method on the Calendar object
             },
-            // 选择日历
+            // 选择日历--新建课程表
             handleSelectdate(e) {
-                console.log('选择日历', e);
+                // console.log('选择日历', e);
                 var start = new Date(e.endStr).toLocaleDateString()
+                // 当前视图的开始结束时间
+                var activeStart = moment(e.start).format('YYYY-MM-DD HH:mm:ss');
+                var data = moment(e.start).format('YYYY-MM-DD')
+                var activeEnd = moment(e.end).format('YYYY-MM-DD HH:mm:ss');
+                console.log('开始一周',activeStart,activeEnd)    // 一星期
+                //  传值  开始  日期  时间
+                this.form.startDate = data;
+                this.form.startTime = activeStart.split(' ')[1];
+                this.form.startTime = activeEnd.split(' ')[1]
+                // 关闭当前-进入新建
+                this.dialoginfoVisible=true;
+                this.isnewcreate=true;
+                // 调用详情接口
+                getCourseTimeDetails(0).then(res=>{
+                    console.log(res)
+                    this.coursebox=[];
+                    if(res.errorCode==0){
+                        let obj =res.result;
+                        // 赋值 机构列表
+                        obj.orgList.unshift({name:'请选择',orgId:0})
+                        this.form.orgList=obj.orgList;
+                        // 赋值 教室列表
+                        this.form.roomList = obj.roomList
+                        // 赋值 老师列表
+                        this.form.teacherList = obj.teacherList
+                        // 赋值 课程列表
+                        this.form.courseList = obj.courseList
+                        // 赋值班级列表
+                        this.form.classList = obj.classList
+                    }
+                })
                 // 格式化时间
                 // var endStr = moment(e.endStr).format("YYYY-MM-DD HH:mm:ss")
                 // var startStr = moment(e.startStr).format("YYYY-MM-DD HH:mm:ss")
                 // var end = moment(e.end).format("YYYY-MM-DD HH:mm:ss")
                 // var start = moment(e.start)("YYYY-MM-DD HH:mm:ss")
                 // console.log(endStr,startStr,end,start)
+                
             },
             // 视图
             changeview(view){
@@ -2329,21 +2523,55 @@
             moveDateClick(e){
                 console.log(e)
             },
-            // 用户日历单击事件
+            // 保存课程表--新建
+            saveiedData(ars){
+                if(ars==0){
+                    return this.dialoginfoVisible=false;
+                }else{
+                    if(this.saveiedData){
+                        let {orgId,startDate,startTime,endTime,teacherId,classId,roomId,courseId,id} = this.form
+                        let params ={orgId,startDatetime:`${startDate} ${startTime}`,endDatetime:`${startDate} ${endTime}`,teacherId,storeClassId:classId,roomId,storeCourseId:courseId};
+                        addCourseTime(params).then(res=>{
+                            if(res.errorCode==0){
+                                this.getAllCourseList();
+                                this.$message({type:'success',message:'添加课程成功'})    
+                                this.dialoginfoVisible = false;
+                            }else{
+                                this.$message({type:'warning',message:'添加课程失败'})    
+                            }
+                        })
+                    }else{
+                        console.log('保存数据',this.form);
+                        // let {orgId,startDate,startTime,endTime,teacherName,className,roomName,courseName} = this.form
+                        let {orgId,startDate,startTime,endTime,teacherId,classId,roomId,courseId,id} = this.form
+                        let params ={orgId,startDatetime:`${startDate.split(' ')[0]} ${startTime}`,endDatetime:`${startDate.split(' ')[0]} ${endTime}`,teacherId,storeClassId:classId,roomId,storeCourseId:courseId,id};
+                        updateCourseTime(params).then(res=>{
+                            if(res.errorCode==0){
+                                this.getAllCourseList();
+                                this.$message({type:'success',message:'修改成功'})    
+                                this.dialoginfoVisible = false;
+                               
+                            }else{
+                                this.$message({type:'warning',message:'修改失败'})    
+                            }
+                        })
+                        
+                    }
+                    // 清除数据
+                        this.form.orgId='';this.form.startDate='';this.form.startTime='';this.form.endTime='';this.form.teacherName='';this.form.className='';this.form.roomName='';this.form.courseName=''
+                        this.form.teacherId='';this.form.classId='';this.form.roomId='';this.form.courseId='';this.form.id=''
+                }
+               
+            },
+            // 用户日历单击事件--新建
             handleDateClick(e) {
-                console.log('点击日历', e);
-                var date =moment(e.date).format("YYYY-MM-DD");
+                // console.log('点击日历', e);
+                var date =moment(e.date).format("YYYY-MM-DD HH:mm:ss");
                 console.log('开始日期',date)
-                // 当前视图的开始结束时间
-                var activeStart = moment(e.view.activeStart).format('YYYY-MM-DD HH:mm:ss');
-                var activeEnd = moment(e.view.activeEnd).format('YYYY-MM-DD HH:mm:ss');
-                var uid = e.view.uid;      // 表格uis
-                console.log(uid,'开始一周',activeStart,activeEnd)    // 一星期
-                // 关闭当前-进入新建
-                this.my_newcourse=false;
+                // this.my_newcourse=false;
                 // 把时间传进入-赋值
-                this.newDateForm.startTime=date;
-                console.log(this.newDateForm.startTime)
+                // this.newDateForm.startTime=date;
+                // console.log(this.newDateForm.startTime)
                 // 开始时间
                 // {
                 //      title: '计算机学院小组会议',
@@ -2356,8 +2584,9 @@
             createcnt(date, allDay, jsEvent, view) {
                 console.log('创建内容', date, jsEvent, view)
             },
-            // 点击又内容的出发 编辑内容
+            // 点击有内容的出发 编辑内容
             compilecnt(e) {
+                this.isnewcreate=false     // 编辑
                 this.dialogcourseVisible = true;
                 // 设置唯一的id 到全局变量中编辑或删除时使用
                 console.log('编辑内容',e)
@@ -2366,25 +2595,21 @@
                 //TODO
                 getCourseTimeDetails(this.somecourseId).then(res=>{
                     console.log(res)
-                  
-
-                    //     coursebox: [
-                    //     {
-                    //         time: ' 2019-07-31 08:00-18:00',
-                    //         name: '班级',
-                    //         class: ' 美术教育连锁机构暑期班一年级课程1班',
-                    //         techername: '张金刚',
-                    //         techernames: '小辉',
-                    //         classroom: ' 教室一',
-                    //         type: '学华初一数学',
-                    //         sum: '12/25',
-                    //     },
-                    // ],
                     this.coursebox=[];
                     if(res.errorCode==0){
                         let obj =res.result;
-                        this.coursebox.push(obj)
-
+                        this.coursebox.push(obj.details)
+                        // 赋值 机构列表
+                        obj.orgList.unshift({name:'请选择',orgId:0})
+                        this.form.orgList=obj.orgList;
+                        // 赋值 教室列表
+                        this.form.roomList = obj.roomList
+                        // 赋值 老师列表
+                        this.form.teacherList = obj.teacherList
+                        // 赋值 课程列表
+                        this.form.courseList = obj.courseList
+                        // 赋值班级列表
+                        this.form.classList = obj.classList
                     }
                 })
             },

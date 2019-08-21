@@ -58,6 +58,12 @@ export default new Router({
           meta: { title: '班级界面', icon: '' }
         },
         {
+          path: '/usermge',
+          name: 'usermge',
+          component:()=>import("@/components/page/educationalCenter/usermge"),
+          meta: { title: '员工管理', icon: '' }
+        },
+        {
           path: '/curriculum',
           name: 'curriculum',
           component: ()=>import("@/components/page/educationalCenter/curriculum"),

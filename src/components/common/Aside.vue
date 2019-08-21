@@ -146,6 +146,11 @@ export default {
                 icon: null,
                 name: "课程表",
                 path: "/timetable"
+              },
+              {
+                icon: null,
+                name: "员工管理",
+                path: "/usermge"
               }
             ],
             icon: null,

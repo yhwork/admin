@@ -13,7 +13,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/store':{
-        target: 'http://192.168.1.102:8083',
+        target: 'http://192.168.1.102:8086',
         // target: 'https://qa.xdb.iforbao.com/store/',
         // target: 'https://xdb.iforbao.com/store/',
         changeOrigin:true,

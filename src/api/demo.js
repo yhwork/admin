@@ -22,7 +22,25 @@ export function demo2(data) {
   })
 }
 // 
+// 添加课程
+export function addCourseTime(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.addCourseTime}`,
+    method: 'post',
+    data
+  })
+}
 
+//编辑课程
+export function updateCourseTime(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.updateCourseTime}`,
+    method: 'post',
+    data
+  })
+}
 // 删除班级
 export function getCourseTimeDetails(data) {
   console.log('请求参数',data)

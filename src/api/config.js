@@ -4,6 +4,12 @@
  */
 // 13716583263 736602
 const ApiUrl ={
+    
+    //添加课程表
+    addCourseTime:`/store/course/addCourseTime`,
+    //编辑课程表
+    updateCourseTime:`/store/course/updateCourseTime`,
+    // 课程详情
     getCourseTimeDetails:`/store/course/getCourseTimeDetails`,
     // 记上课
     finishCourseTime:`/store/course/finishCourseTime`,

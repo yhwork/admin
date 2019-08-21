@@ -128,11 +128,16 @@
                     </el-form-item>
                     <el-form-item label="教师名称" :label-width="formLabelWidth">
                         <div class="elrow ">
+                            <div>
                                 <el-select v-model="form.teacherId" value-key="id" placeholder="请选择" @change="changeCategory">
                                         <el-option v-for="(item,index) in form.teacherList" :label="item.name" :key="index"
                                             :value="item.id">
                                         </el-option>
                                 </el-select>
+                            </div>
+                            <div v-if="iscreate" class='flex1 elm-2 c_red'>
+                                <span @click="newcourse(3)" class='elm-1 color'>新建</span>|<span class="elm-1 color" @click='refresh'>刷新</span>
+                            </div>
                         </div>
                     </el-form-item>
                     <el-form-item label="所属门店" :label-width="formLabelWidth">
@@ -190,6 +195,31 @@
                                 </el-date-picker>
                             </div>
                         </el-form-item> -->
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="createclass(0)">取 消</el-button>
+                    <el-button style="background:orange;border:1px solid orange;" type="primary" @click="createclass">
+                        确 定</el-button>
+                </div>
+            </el-dialog>
+
+            <!--新建老师-->
+             <el-dialog custom-class='dialogclass' :close-on-click-modal='false' title="创建老师" class="dialog_box" left :visible.sync="dialogteacherVisible">
+                <el-form :model="form" :rules="rules">
+                    <el-form-item label="命名规则" :label-width="formLabelWidth" >
+
+                    </el-form-item>
+                    <el-form-item label="教师名称" :label-width="formLabelWidth">
+                        <div class="elrow ">
+                            <div>
+                                <el-select v-model="form.teacherId" value-key="id" placeholder="请选择" @change="changeCategory">
+                                        <el-option v-for="(item,index) in form.teacherList" :label="item.name" :key="index"
+                                            :value="item.id">
+                                        </el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                    </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="createclass(0)">取 消</el-button>
@@ -358,6 +388,7 @@
         props: [],
         data() {
             return {
+                dialogteacherVisible:false,
                 // 分页
                 pagesize: 10,
                 currentPage4: 1,
@@ -717,7 +748,7 @@
                             this.form.className = item.name;              // 班级
                             this.form.storeCourseId = item.storeCourseId; // 课程
                             this.form.teacherId = item.teacherId;
-                            this.from.teacherName = item.teacherName;
+                            // this.from.teacherName = item.teacherName;
                             this.form.orgId = item.orgId;
                             this.form.roomId =item.roomId;
                             this.form.id = item.id;
@@ -964,6 +995,10 @@
                         params,
                     })
                 }
+                if(i==3){    // 新建老师
+                    // 打开对话框
+
+                }
                 
             },
             // 改变表格
@@ -974,7 +1009,6 @@
                 } else {
                     return "table_border"
                 }
-
             },
             hovertablein(row, column, cell, event) {
                 console.log(row, column, cell, event)
