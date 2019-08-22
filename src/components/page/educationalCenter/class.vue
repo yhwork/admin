@@ -206,9 +206,10 @@
             <!--新建老师-->
              <el-dialog custom-class='dialogclass' :close-on-click-modal='false' title="创建老师" class="dialog_box" left :visible.sync="dialogteacherVisible">
                 <el-form :model="form" :rules="rules">
-                    <el-form-item label="命名规则" :label-width="formLabelWidth" >
+                   <!-- <el-form-item label="命名规则" :label-width="formLabelWidth" >
 
-                    </el-form-item>
+                    </el-form-item>  -->
+                    
                     <el-form-item label="教师名称" :label-width="formLabelWidth">
                         <div class="elrow ">
                             <div>

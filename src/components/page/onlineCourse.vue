@@ -197,7 +197,7 @@
           <!-- 
           <div>
             <div v-if="!course_type">
-              <!-- <el-form-item label="课程规格：" :required="true"> 
+              <!<el-form-item label="课程规格：" :required="true"> 
                 <div class="rule_title">
                   <div>课程次数</div>
                   <div>每次课时</div>
@@ -443,14 +443,14 @@
                   <el-row v-else>
                     <el-alert title="预约时间再次确认" type="warning" :closable="false"></el-alert>
                     <div class="campus_title">所在校区：{{className}}</div>
-                    <!-- <el-table border :data="classInfo" style="width: 100%">
+                    <! <el-table border :data="classInfo" style="width: 100%">
                       <el-table-column prop="date" label="上课时间" width="180"></el-table-column>
                       <el-table-column prop="name" label="教师名称" width="180"></el-table-column>
                       <el-table-column prop="address" label="教室"></el-table-column>
                       <el-table-column prop="num" label="预约人数"></el-table-column>
                     </el-table>
                     <div>
-                      <!-- <el-alert
+                      <!<el-alert
                         style="margin-top:20px;"
                         title="预约时间再次确认"
                         type="warning"
@@ -541,7 +541,7 @@
           </div>
           <!-- <el-form-item v-if="!course_type" label="生效时间：" :required="true">
             首次上课签到后生效
-            <!-- <el-input v-model="ruleForm.legal_name" placeholder="首次上课签到后生效" ></el-input> 
+             <el-input v-model="ruleForm.legal_name" placeholder="首次上课签到后生效" ></el-input> 
           </el-form-item>-->
           <!-- v-else -->
           <el-form-item label="有效时间：" prop="effectiveTime">
@@ -637,7 +637,7 @@
               </el-form-item>
               <!-- <el-form-item label="拼团日期：" prop style="margin-bottom:20px;margin-left:10px;">
                 <div class="info_box">
-                  <!-- <el-date-picker
+                  <!<el-date-picker
                     v-model="groupTimeArray"
                     type="datetimerange"
                     range-separator="至"

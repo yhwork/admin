@@ -690,7 +690,7 @@
                                                 end: '18:30'
                                                 }">
                         </el-time-select>
-                        <el-time-select placeholder="结束时间" v-model="form.endTime" :picker-options="{
+                        <el-time-select placeholder="结束时间" v-model="form.endTime"  :readonly="true" :picker-options="{
                                                 start: '08:30',
                                                 step: '00:15',
                                                 end: '18:30',
@@ -893,6 +893,7 @@
                         <div class="newcourse_box_item">
                                 <el-time-select
                                     v-model="newDateForm.startTime"
+                                    :readonly="true"
                                     :picker-options="{
                                         start: '07:30',
                                         step: '00:15',
@@ -1499,6 +1500,7 @@
                 if(state == 3){     // 课程
                     this.form.courseName=row.name;
                     this.form.courseId = row.id;
+                    
                 }
                 if(state == 4){    // 班级
                     this.form.className=row.name;
