@@ -4,7 +4,10 @@
  */
 // 13716583263 736602
 const ApiUrl ={
-    
+    // 预约详情
+    getHotCourseAppointmentInfo:`/store/appointment/getHotCourseAppointmentInfo`,
+    // 预约列表
+    getHotCourseAppointmentList:`/store/appointment/getHotCourseAppointmentList`,
     //添加课程表
     addCourseTime:`/store/course/addCourseTime`,
     //编辑课程表

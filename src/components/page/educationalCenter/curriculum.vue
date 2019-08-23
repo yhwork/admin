@@ -329,7 +329,6 @@
             <div class="elrow">
               <el-button size="mini" type="primary"
                :disabled='scope.row.status==2?true:false'
-               :type="scope.row.status==2?'info':'primary'"
                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
               <!-- <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">发布销售</el-button> -->
               <el-button
@@ -591,7 +590,7 @@ export default {
           { name: "已开课", id: 2 },
           { name: "已结课", id: 3 }
         ], // 状态列表
-        grade: 2,                     // 年级
+        grade: 0,                     // 年级
         gradeList: [                  //年级列表
          { name: '请选择', id: 0 },
           { name: "幼儿园小班", id: 1 },
@@ -601,23 +600,23 @@ export default {
           { name: "二年级", id: 5 },
           { name: "三年级", id: 6 }
         ], //年级列表
-        courseName: "JAVA设计",
+        courseName: "",
         courseType:0, // 课程类别
         courseTypeList:[    // 课程类别
-          { name: '请选择', id: 0 },
-          {name:'小程序',id:1},
-          {name:'移动app',id:2},
-          {name:'h5开发',id:3},
-          {name:'web响应式开发',id:4},
-          {name:'公众号',id:5},
+          // { name: '请选择', id: 0 },
+          // {name:'小程序',id:1},
+          // {name:'移动app',id:2},
+          // {name:'h5开发',id:3},
+          // {name:'web响应式开发',id:4},
+          // {name:'公众号',id:5},
         ],
         orgList: [], // 门店列表
-        techername: "教师名称",
+        techername: "",
         orgId:0,
         orgList:[
           { name: '请选择', orgId: 0 },
           {
-            name:'北大青鸟教育中心',
+            name:'',
             orgId:1
           },
           {

@@ -163,7 +163,7 @@
             </el-form-item>
              <el-form-item label="设置密码：">
                 <div class="flex_row">
-                    <el-input v-model="form.userName" type="password" placeholder="为员工设置密码" maxlength="8" auto-complete="off"></el-input>
+                    <el-input v-model="form.userPwd" type="password" placeholder="为员工设置密码" maxlength="8" auto-complete="off"></el-input>
                 </div>
              </el-form-item>
             <el-form-item label="员工编号：">
@@ -422,7 +422,8 @@ export default {
                 userId:'',
                 checked:true,
                 orgData: generateData(),
-                orgList: [1, 4]
+                orgList: [1, 4],
+                userPwd:''
             },
             newForm:{
                 status:'',

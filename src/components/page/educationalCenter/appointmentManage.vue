@@ -2,23 +2,23 @@
   <div class="content_box1">
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="form_box">
       <el-form-item label="课程名称：" prop="">
-        <el-select v-model="endTime" placeholder="请选择" style="width:400px">
-          <el-option v-for="item in endTimeArray" :key="item" :label="item" :value="item"></el-option>
+        <el-select v-model="ruleForm.courseId" placeholder="请选择" style="width:400px">
+          <el-option v-for="(item,index) in ruleForm.courseList" :key="index" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="预约门店：" prop="">
-        <el-select v-model="endTime" placeholder="请选择" style="width:400px">
-          <el-option v-for="item in endTimeArray" :key="item" :label="item" :value="item"></el-option>
+        <el-select v-model="ruleForm.orgId" placeholder="请选择" style="width:400px">
+          <el-option v-for="(item,index) in ruleForm.orgList" :key="index" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="预约教师：" prop="">
-        <el-select v-model="endTime" placeholder="请选择" style="width:300px">
-          <el-option v-for="item in endTimeArray" :key="item" :label="item" :value="item"></el-option>
+        <el-select v-model="ruleForm.teacherId" placeholder="请选择" style="width:300px">
+          <el-option v-for="(item,index) in ruleForm.teacherList" :key="index" :label="name" :value="id"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="预约时间：" prop="">
          <el-date-picker
-            v-model="startTime"
+            v-model="ruleForm.startTime"
             type="date"
             placeholder="选择开始时间"
             value-format="yyyy-MM-dd"
@@ -26,7 +26,7 @@
           ></el-date-picker>
           <span>至</span>
           <el-date-picker
-            v-model="endTime"
+            v-model="ruleForm.endTime"
             type="date"
             placeholder="选择结束时间"
             value-format="yyyy-MM-dd"
@@ -35,7 +35,7 @@
       </el-form-item>
 
       <el-form-item label="手机号码：" prop="title">
-        <el-input></el-input>
+        <el-input placeholder="请输入手机号" type="number" maxlength="11" v-model.number="ruleForm.phone" ></el-input>
       </el-form-item>
     </el-form>
     <el-menu
@@ -148,6 +148,7 @@
   </div>
 </template>
 <script>
+    import {getHotCourseAppointmentList,getHotCourseAppointmentInfo} from '@/api/demo'
 export default {
   name: "appointment",
   data() {
@@ -155,16 +156,12 @@ export default {
       activeIndex: "1",
       dataList:[],
       dataDetail:[],
-      value6: "",
-      endTime: "",
       endTimeArray: [],
       dialogVisible: false,
-      ruleForm: {},
+      ruleForm: {
+        orgId:'',courseId:'',teacherId:'',startTime:'',endTime:'',phone:''
+      },
       rules: {},
-      orgId:'',
-      hotCourseId:'',
-      startTime:'',
-      endTime:'',
     };
   },
   created(){
@@ -172,14 +169,12 @@ export default {
   },
   methods: {
      getList() {
-      this.$axios({
-        method: "get",
-        url: "/store/appointment/getHotCourseAppointmentList?orgId=" + this.orgId+'&hotCourseId='+this.hotCourseId+"&startTime="+this.startTime+'&endTime='+this.endTime,
-        headers: { Authorization: sessionStorage.getItem("Authorization") }
-      })
+      let {orgId,courseId,teacherId,startTime,endTime,phone} = this.ruleForm;
+      let params = {orgId,courseId,teacherId,startTime,endTime,phone}
+      getHotCourseAppointmentList(params)
         .then(res => {
           console.log(res)
-          this.dataList = res.data.result;
+          this.dataList = res.result;
         })
         .catch(error => {
           console.log("error", error);
@@ -203,7 +198,7 @@ export default {
         });
     },
     changeStartTime(e){
-      this.startTime=e
+      this.ruleForm.startTime=e
       // if(this.endTime!==''){
         this.getList()
       // }else{
@@ -211,7 +206,7 @@ export default {
       // }
     },
     changeEndTime(e){
-      this.endTime=e
+      this.ruleForm.endTime=e
       //  if(this.startTime!==''){
         this.getList()
       // }else{

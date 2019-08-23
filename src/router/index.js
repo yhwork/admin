@@ -170,7 +170,7 @@ export default new Router({
         },
         {
           path: '/appointment',
-          component: resolve => require(['../components/page/appointmentManage.vue'], resolve),
+          component: resolve => require(['../components/page/educationalCenter/appointmentManage.vue'], resolve),
           meta: { title: '预约管理' },
         }, {
           path: '/order',

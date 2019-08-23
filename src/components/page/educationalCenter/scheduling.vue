@@ -893,7 +893,7 @@
                         <div class="newcourse_box_item">
                                 <el-time-select
                                     v-model="newDateForm.startTime"
-                                    :readonly="true"
+                                   
                                     :picker-options="{
                                         start: '07:30',
                                         step: '00:15',
@@ -919,6 +919,7 @@
                                 <el-time-select
                                     placeholder="下课时间"
                                     v-model="newDateForm.endTime"
+                                     :readonly="true"
                                     :picker-options="{
                                     start: '08:30',
                                     step: '00:15',
@@ -1500,7 +1501,13 @@
                 if(state == 3){     // 课程
                     this.form.courseName=row.name;
                     this.form.courseId = row.id;
-                    
+                    // 计算下课时间
+                    // this.form.startTime 
+                    let onceTime = row.onceTime;       // 一天几次课
+                    let lessonTime = row.lessonTime;   // 一节课多少时间
+                    this.form.endTime = moment(this.form.startTime,'HH:mm').add( onceTime * lessonTime,'minute').format('HH:mm');
+                    console.log('结束日期',this.form.endTime)
+                    // var alltime =  moment({ hour:time.split(':')[0], minute:time.split(':')[1] }).add({minute:daytime}).format('hh:mm')
                 }
                 if(state == 4){    // 班级
                     this.form.className=row.name;
@@ -2284,7 +2291,7 @@
                     let number = this.newDateForm.number;  // 课程数量
                     let onesum = parseInt(number) / parseInt(count);  // 单次数量
                     let daytime = Math.floor(onesum * parseInt(coursetime));
-                    var alltime =  moment({ hour:time.split(':')[0], minute:time.split(':')[1] }).add({minute:daytime}).format('hh:mm')
+                    var alltime =  moment({ hour:time.split(':')[0], minute:time.split(':')[1] }).add({minute:daytime}).format('HH:mm')
                     console.log('分钟',daytime,'结果为',alltime)
                     this.newDateForm.endTime = alltime;
                     this.newDateForm.courseDateList.startTime = time;
@@ -2465,8 +2472,8 @@
                 console.log('开始一周',activeStart,activeEnd)    // 一星期
                 //  传值  开始  日期  时间
                 this.form.startDate = data;
-                this.form.startTime = activeStart.split(' ')[1];
-                this.form.startTime = activeEnd.split(' ')[1]
+                this.form.startTime =moment(activeStart.split(' ')[1],'HH:mm:ss').format('HH:mm') ;
+                this.form.endTime =moment(activeEnd.split(' ')[1],'HH:mm:ss').format('HH:mm') ; 
                 // 关闭当前-进入新建
                 this.dialoginfoVisible=true;
                 this.isnewcreate=true;

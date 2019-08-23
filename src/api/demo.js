@@ -21,7 +21,25 @@ export function demo2(data) {
     params: {data} 
   })
 }
-// 
+// 预约详情
+export function getHotCourseAppointmentInfo(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getHotCourseAppointmentInfo}/${data.id}`,
+    method: 'get',
+    data
+  })
+}
+// 预约列表
+export function getHotCourseAppointmentList(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getHotCourseAppointmentList}?orgId=${data.orgId}&hotCourseId=${data.hotCourseId}&startTime=${data.startTime}&endTime=${data.endTime}`,
+    method: 'get',
+    data
+  })
+}
+
 // 添加课程
 export function addCourseTime(data) {
   console.log('请求参数',data)
