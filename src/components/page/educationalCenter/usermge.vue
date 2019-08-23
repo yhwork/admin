@@ -158,23 +158,30 @@
                             :value="item.id">
                         </el-option>
                     </el-select>
-                    <el-input class="m_left" v-model="form.userPhone" placeholder="请输入员工手机号" maxlength="8" auto-complete="off"></el-input>
+                    <el-input class="m_left" v-model.number="form.userPhone" placeholder="请输入员工手机号" maxlength="11" auto-complete="off"></el-input>
                 </div>
             </el-form-item>
              <el-form-item label="设置密码：">
                 <div class="flex_row">
-                    <el-input v-model="form.userPwd" type="password" placeholder="为员工设置密码" maxlength="8" auto-complete="off"></el-input>
+                    <el-input v-model="form.userPwd" type="password" placeholder="为员工设置密码" maxlength="16" auto-complete="off"></el-input>
                 </div>
              </el-form-item>
             <el-form-item label="员工编号：">
                 <div >
-                    <el-input v-model="form.userId" placeholder="请输入员工编号" maxlength="8" auto-complete="off"></el-input>
+                    <el-input v-model="form.userId" placeholder="请输入员工编号"  auto-complete="off"></el-input>
                 </div>
              </el-form-item>
             <el-form-item label="所属门店：">
                 <div class="boeder">
                    <template>
-                        <el-transfer v-model="form.orgList" :data="form.orgData"></el-transfer>
+                 <!--   :left-default-checked="[2, 3]"
+                    :right-default-checked="[1]"  -->
+                        <el-transfer 
+                            v-model="form.orgId" 
+                            :data="form.orgData"
+                            :titles="['全部', '已筛选']"
+                             @change="handleChangese"
+                            ></el-transfer>
                    </template>
                 </div>
             </el-form-item>
@@ -195,25 +202,12 @@
             <div>
                 <el-form-item label="教师昵称：">
                     <div class="flex_row">
-                        <el-input v-model="form.userName" placeholder="请输入教师姓名" maxlength="8" auto-complete="off"></el-input>
+                        <el-input v-model="form.teacherName" placeholder="请输入教师姓名" maxlength="8" auto-complete="off"></el-input>
                         <div class="m_left font_color flex_row"><p>用于购买课程时，显示老师昵称</p><el-checkbox class="m_left" v-model="form.checked"></el-checkbox></div>
                     </div>
                 </el-form-item>
                 <el-form-item label="教师头像：">
                     <div class="flex_row">
-                        <!--
-                            action="/store/file/img/upload"
-                            multiple
-                            accept="image/png, image/jpeg"
-                            list-type="picture-card"
-                            :limit="6"
-                            :headers="headers"
-                            :on-success="uploadImg"
-                            :on-preview="previewImg"
-                            :on-remove="removeImg"
-                            :show-file-list="true"
-                            :file-list="imgList"
-                        -->
                         <el-upload
                             class="avatar-uploader"
                             action="/store/file/img/upload"
@@ -243,7 +237,7 @@
                 </el-form-item>
                 <el-form-item label="教师职务：">
                     <div class="flex_column">
-                        <el-input v-model="form.userId" placeholder="请输入教师职务" maxlength="8" auto-complete="off"></el-input>
+                        <el-input v-model="form.duty" placeholder="请输入教师职务"  auto-complete="off"></el-input>
                         <p class="font_color">可以输入老师的职位如：清华大学教授，便于用户了解详细信息</p>
                     </div>
                 </el-form-item>
@@ -279,7 +273,7 @@
             
         </el-form>
             <div slot="footer" class="flex_row flex_center">
-                <el-button class="tenter" @click="saveiedData()">取 消</el-button>
+                <el-button class="tenter" @click="saveiedData(0)">取 消</el-button>
                 <el-button  class="tenter" type="primary" @click="saveiedData()">保存</el-button>
             </div>
        </div>
@@ -363,9 +357,13 @@
                     <el-table-column label="员工姓名" >
                         <template slot-scope="scope">{{ scope.row.userName }}</template>
                     </el-table-column>
+
                     <el-table-column
                         prop="userType"
                         label="角色">
+                    </el-table-column>
+                    <el-table-column label="员工状态" >
+                        <template slot-scope="scope">{{ scope.row.statusName }}</template>
                     </el-table-column>
                      <el-table-column label="操作" >
                         <template slot-scope="scope">
@@ -389,6 +387,7 @@
     </div>
 </template>
 <script>
+import {getUserList,addUser,delUser} from "@/api/demo";
 export default {
     name:'usermge',
     data(){
@@ -420,9 +419,11 @@ export default {
                 userPhone:'',
                 userName:'',
                 userId:'',
+                teacherName:'',
                 checked:true,
-                orgData: generateData(),
-                orgList: [1, 4],
+                orgData: [],
+                selectorgId:[],
+                orgId: [],
                 userPwd:''
             },
             newForm:{
@@ -433,26 +434,136 @@ export default {
                 roleList:[],
                 role:''
             },
-            tableData:[{userName:'我大哥',userType:"老大",userId:"17634630221",id:0}]
+            // 表格
+            tableData:[]
         }
     },
+    created() {
+        this.getUserLists()
+    },
+    activated(){
+        this.getUserLists();
+    },
     methods: {
+        handleChangese(value, direction, movedKeys){
+            console.log('右边的值',value, '方向',direction,'移除的值', movedKeys);
+            this.selectorgId = value;
+            console.log(this.form.orgId);
+        },
+        // 获取列表
+        getUserLists(){
+            getUserList().then(res=>{
+                console.log(res)
+                if(res.errorCode== 0){
+                    this.tableData=[];
+                    res.result.list.map(item=>{
+                        let obj={
+                            userId:item.account,
+                            userName:item.name,
+                            userType:item.roleName,
+                            status:item.status,
+                            statusName:item.statusName
+                        }
+                         this.tableData.push(obj)
+                    })
+
+                    this.form.orgData=[];
+                    res.result.orgList.map((item,index)=>{
+                        this.form.orgData.push({
+                            key:item.orgId,
+                            label:item.name,
+                        })          
+                    })
+
+                    this.form.roleList = res.result.roleList;
+                    this.newForm.roleList = res.result.roleList;
+                }   
+                
+            })
+        },
         // 头像上传成功时的钩子
         handleAvatarSuccess1(res, file) {
             if(res.errorCode==0){
-                this.imageUrl = res.result;
+                this.form.dialogImageUrl = res.result;
             }
             console.log('图片上传成功',res,file);
             
         },
-        saveiedData(){
-            this.my_newcourse=false
+        saveiedData(args){
+            if(args==0){
+               return  this.my_newcourse=false;
+            }else{
+                console.log('添加员工参数',this.form)
+                // dialogImageUrl: '',
+                // imageUrlIdPhone:'',  // 证件照
+                // dialogVisible: false,
+                // dialogVisible1: false,
+                // roleId:'',
+                // roleList:[],
+                // userPhone:'',
+                // userName:'',
+                // userId:'',
+                // checked:true,
+                // orgData: [],
+                // teacherName
+                // orgList: [1, 4],
+                // duty
+                // userPwd:''
+                let {userName,userPhone,userPwd,userId,roleId,teacherName,dialogImageUrl,imageUrlIdPhone,duty,orgId,selectorgId} = this.form;
+                let params = {
+                    name:userName,
+                    phone:userPhone,
+                    passwd:userPwd,
+                    employeeID:userId,
+                    roleId,
+                    teacherName,
+                    logo:dialogImageUrl,
+                    duty,
+                    orgId:orgId[0],
+                    honorInfo:imageUrlIdPhone,
+                }
+                    //      {
+                    //   "account": "string",
+                    //   "addBy": 0,
+                    //   "addByStr": "string",
+                    //   "addTime": "string",
+                    //   "authInfo": "string",
+                    //   "descr": "string",
+                    //   "employeeID": "string",
+                    //   "gender": 0,
+                    //   "honorInfo": "string",
+                    //   "id": 0,
+                    //   "logo": "string",
+                    //   "name": "string",
+                    //   "orgId": 0,
+                    //   "passwd": "string",
+                    //   "phone": "string",
+                    //   "role": 0,
+                    //   "roleId": 0,
+                    //   "teacherId": 0,
+                    //   "teachingAge": 0,
+                    //   "updateBy": 0,
+                    //   "updateByStr": "string",
+                    //   "updateTime": "string"
+                // }
+                // 保存数据
+                addUser(params).then(res=>{
+                    console.log('保存',res)
+                    if(res.errorCode==0){
+                        this.$message({type:'success',message:"添加成功"});
+                        this.my_newcourse=false;
+                    }else{
+                        this.$message({type:'warning',message:"检查参数"});
+                    }
+                })
+            }
+           
         },
         // 证件照上传成功时的钩子
         handleAvatarSuccess(res, file) {
-            console.log('图片上传成功',res,file);
+            console.log('证件照上传成功',res,file);
              if(res.errorCode==0){
-                this.imageUrlIdPhone = res.result;
+                this.form.imageUrlIdPhone = res.result;
             }
             // this.imageUrlIdPhone = URL.createObjectURL(file.raw);
         },

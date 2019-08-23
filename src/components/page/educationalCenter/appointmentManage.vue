@@ -184,19 +184,19 @@ export default {
       this.dialogVisible = true;
       this.getListDetail(row.id)
     },
-     getListDetail(id){
-      this.$axios({
-        method: "get",
-        url: "/store/appointment/getHotCourseAppointmentInfo/" + id,
-        headers: { Authorization: sessionStorage.getItem("Authorization") }
-      })
-        .then(res => {
-          this.dataDetail = res.data.result;
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
-    },
+    //  getListDetail(id){
+    //   this.$axios({
+    //     method: "get",
+    //     url: "/store/appointment/getHotCourseAppointmentInfo/" + id,
+    //     headers: { Authorization: sessionStorage.getItem("Authorization") }
+    //   })
+    //     .then(res => {
+    //       this.dataDetail = res.data.result;
+    //     })
+    //     .catch(error => {
+    //       console.log("error", error);
+    //     });
+    // },
     changeStartTime(e){
       this.ruleForm.startTime=e
       // if(this.endTime!==''){

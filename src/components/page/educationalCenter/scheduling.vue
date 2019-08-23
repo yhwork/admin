@@ -604,7 +604,7 @@
                    ></full-calendar> -->
             </div>
             <!-- 日程弹框 -->
-            <el-dialog title="新建日程"  custom-class='dialog_course' top="25vh" width="35%" left
+            <el-dialog title="查看日程"  custom-class='dialog_course' top="25vh" width="35%" left
                     :visible.sync="dialogcourseVisible">
                     <div class="dlogbox">
                         <div v-for="(item, index) in coursebox" :key="index">
@@ -646,7 +646,7 @@
                     </div>
             </el-dialog>
             <!-- 编辑日程嵌套弹框 -->
-            <el-dialog :title="isnewcreate?'新建日程':'编辑日程'"  custom-class='dialog_ediecourse' top="10vh"
+            <el-dialog :title="isnewcreate==true?'新建日程':'编辑日程'"  custom-class='dialog_ediecourse' top="10vh"
                 width="45%" left :visible.sync="dialoginfoVisible" :close-on-click-modal='false'>
                 <div @click.stop="changeshowbox">
                     <el-form  class="edit_schedule" :model="form" :rules="rules">
@@ -706,10 +706,10 @@
                                         <el-input
                                             :readonly='true'
                                             placeholder="请输入内容"
-                                            suffix-icon="el-icon-edit"
+                                     
                                             v-model="form.teacherName">
                                         </el-input>
-                                        <i class="el-icon-edit el-input__icon dialog_edieright" @click="handleIconClick">
+                                         <i class="el-icon-edit el-input__icon dialog_edieright" @click="handleIconClick">
                                         </i>
                                     </div>
                                     <div class="dialog_edieinfo" v-if='showtecher==1?true:false'>
@@ -1091,7 +1091,7 @@
         props: [],
         data() {
             return {
-                isnewcreate:false,
+                isnewcreate:true,
                 bgcolorList:[
                     {
                         color:'#5BC377',
@@ -2540,6 +2540,13 @@
                     if(this.saveiedData){
                         let {orgId,startDate,startTime,endTime,teacherId,classId,roomId,courseId,id} = this.form
                         let params ={orgId,startDatetime:`${startDate} ${startTime}`,endDatetime:`${startDate} ${endTime}`,teacherId,storeClassId:classId,roomId,storeCourseId:courseId};
+                        // 验证参数为空
+                        if(orgId=='' || orgId==undefined){return $message({type:'warning',message:'门店为空'})}
+                        if(startDatetime=='' || startDatetime==undefined){return $message({type:'warning',message:'时间为空'})}
+                        if(teacherId=='' || teacherId==undefined){return $message({type:'warning',message:'教师为空'})}
+                        if(storeClassId=='' || storeClassId==undefined){return $message({type:'warning',message:'班级为空'})}
+                        if(roomId=='' || roomId==undefined){return $message({type:'warning',message:'教师为空'})}
+                        if(storeCourseId=='' || storeCourseId==undefined){return $message({type:'warning',message:'课程为空'})}
                         addCourseTime(params).then(res=>{
                             if(res.errorCode==0){
                                 this.getAllCourseList();
@@ -2554,6 +2561,13 @@
                         // let {orgId,startDate,startTime,endTime,teacherName,className,roomName,courseName} = this.form
                         let {orgId,startDate,startTime,endTime,teacherId,classId,roomId,courseId,id} = this.form
                         let params ={orgId,startDatetime:`${startDate.split(' ')[0]} ${startTime}`,endDatetime:`${startDate.split(' ')[0]} ${endTime}`,teacherId,storeClassId:classId,roomId,storeCourseId:courseId,id};
+                         // 验证参数为空
+                        if(orgId=='' || orgId==undefined){return $message({type:'warning',message:'门店为空'})}
+                        if(startDatetime=='' || startDatetime==undefined){return $message({type:'warning',message:'时间为空'})}
+                        if(teacherId=='' || teacherId==undefined){return $message({type:'warning',message:'教师为空'})}
+                        if(storeClassId=='' || storeClassId==undefined){return $message({type:'warning',message:'班级为空'})}
+                        if(roomId=='' || roomId==undefined){return $message({type:'warning',message:'教师为空'})}
+                        if(storeCourseId=='' || storeCourseId==undefined){return $message({type:'warning',message:'课程为空'})}
                         updateCourseTime(params).then(res=>{
                             if(res.errorCode==0){
                                 this.getAllCourseList();
@@ -2595,10 +2609,10 @@
             },
             // 点击有内容的出发 编辑内容
             compilecnt(e) {
-                this.isnewcreate=false     // 编辑
+                this.isnewcreate=false  // 编辑
                 this.dialogcourseVisible = true;
                 // 设置唯一的id 到全局变量中编辑或删除时使用
-                console.log('编辑内容',e)
+                console.log('编辑内容',this.isnewcreate)
                 this.somecourseId = e.event.id;
                 // 获取详情
                 //TODO

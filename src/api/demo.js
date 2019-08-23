@@ -21,6 +21,36 @@ export function demo2(data) {
     params: {data} 
   })
 }
+
+// 添加员工
+export function addUser(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.addUser}`,
+    method: 'post',
+    data
+  })
+}
+// 查询员工
+export function getUserList(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getUserList}`,
+    method: 'get',
+    data
+  })
+}
+// 删除员工
+export function delUser(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.delUser}/${data.id}`,
+    method: 'delete',
+    data
+  })
+}
+
+
 // 预约详情
 export function getHotCourseAppointmentInfo(data) {
   console.log('请求参数',data)

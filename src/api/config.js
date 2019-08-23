@@ -4,10 +4,20 @@
  */
 // 13716583263 736602
 const ApiUrl ={
+    // 添加员工
+    addUser:`/store/user/addUser`,
+    // 查询员工列表
+    getUserList:`/store/user/getUserList`,
+    // 删除员工
+    delUser:`/store/user/delUser`,
+
     // 预约详情
     getHotCourseAppointmentInfo:`/store/appointment/getHotCourseAppointmentInfo`,
     // 预约列表
     getHotCourseAppointmentList:`/store/appointment/getHotCourseAppointmentList`,
+
+
+
     //添加课程表
     addCourseTime:`/store/course/addCourseTime`,
     //编辑课程表
@@ -24,6 +34,9 @@ const ApiUrl ={
     addCourseArrange:`/store/course/addCourseArrange`,
     // 查询班级详情
     getCourseInfoByClassId:'/store/class/getCourseInfoByClassId',
+
+
+
     // 课程上架
     courseUp:'/store/course/courseUp',
     // 课程下架
