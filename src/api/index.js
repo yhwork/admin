@@ -67,7 +67,8 @@ service.interceptors.response.use(
         //   console.log('怎敢路')
         //   store.dispath('asyncQuit',false)
         // }).catch(()=>{
-          store.dispath('user/asyncQuit',false)
+          console.log(store)
+          store.dispatch('user/asyncQuit',false)
         // })
       }
       return Promise.reject(new Error(res.errorMessage || 'Error'))

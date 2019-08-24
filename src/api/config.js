@@ -4,6 +4,8 @@
  */
 // 13716583263 736602
 const ApiUrl ={
+    // 编辑保存员工
+    updateUser:`/store/user/updateUser`,
     // 添加员工
     addUser:`/store/user/addUser`,
     // 查询员工列表

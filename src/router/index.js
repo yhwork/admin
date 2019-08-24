@@ -9,7 +9,6 @@ Vue.use(Router)
 // const scheduling = ()=>import("@/components/page/educationalCenter/scheduling");   //排课
 // const timetable = ()=>import("@/components/page/educationalCenter/timetable");     //课程表
 
-
 export default new Router({
   mode:'hash',
   routes: [
@@ -90,6 +89,12 @@ export default new Router({
           path: '/course_list',
           component: resolve => require(['../components/page/CourseList.vue'], resolve),
           meta: { title: '课程列表' }
+        },
+        {
+          path: '/role',
+          name:'role',
+          component: () => import('../components/page/roleManagement/role'),
+          meta: { title: '角色管理' }
         },
         {
           path: '/public_info',
@@ -215,6 +220,7 @@ export default new Router({
       component: resolve => require(['../components/page/Register.vue'], resolve),
       meta: { isLogin: false },
     },
+    { path: '*', redirect: '/404',component:()=>import("@/components/page/educationalCenter/classroom"), hidden: true }
 
   ]
 })     

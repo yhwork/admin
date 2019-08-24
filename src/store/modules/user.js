@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie'
+import router from '@/router'
 
 const state = {
   sidebar: {
@@ -11,7 +12,7 @@ const state = {
   demo: '测试内容',
   islogin:false
 }
-
+var that =this
 const mutations = {
     gettoken:state=>{
         console.log(state.token)
@@ -34,10 +35,12 @@ const mutations = {
     },
     quit:(state,data)=>{
       state.islogin = data
-      console.log('啦啦啦啦')
-      this.$router.push({
-        path:'/login',
-      })
+      console.log('啦啦啦啦',data);
+      console.log(router.options.routes.push('/login'))
+      // resetRouter()
+      // that.$router.push({
+      //   path:'/login',
+      // })
     }
 }
 

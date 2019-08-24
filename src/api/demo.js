@@ -21,7 +21,15 @@ export function demo2(data) {
     params: {data} 
   })
 }
-
+// 编辑保存员工
+export function updateUser(data) {
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.updateUser}`,
+    method: 'post',
+    data
+  })
+}
 // 添加员工
 export function addUser(data) {
   console.log('请求参数',data)
