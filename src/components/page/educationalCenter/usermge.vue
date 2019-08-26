@@ -138,6 +138,17 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     background-color: #cae1ff !important;
   }
+  .line{
+    margin-bottom: 10px;
+  }
+  .roleselect{
+    margin-right: 10px;
+    max-width: 10rem;
+    p{
+      font-size: 14px;
+      color: #696969;
+    }
+  }
 }
 .pointer {
   cursor: pointer;
@@ -151,8 +162,17 @@
         <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
         <el-breadcrumb-item class="pointer">教务管理</el-breadcrumb-item>
         <el-breadcrumb-item class="pointer">
-          <div v-if="my_newcourse" class="pointer">新建员工</div>
-          <div v-else class="pointer">员工管理</div>
+          <div v-if="my_newcourse" class="pointer">
+              <div v-if="iscreate" @click="changetitle(0)">
+                 新建员工
+              </div> 
+              <div v-else >
+                  <div @click="changetitle(1)"> 编辑员工</div>
+              </div>
+            </div>
+          <div v-else class="pointer" >
+              <div @click="changetitle(2)">员工管理</div> 
+          </div>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -241,19 +261,48 @@
         </el-form-item>-->
         <el-form-item label="所属门店角色：" label-width="130px" :required="true">
             <div class="m_left font_color">
-              <p>如果没有相应角色，请点击“新建”进行添加</p>
+              <p>如果没有相应角色，请点击“<span @click="addrole"> 新建 </span>”进行添加</p>
             </div>
-          <div v-for="(item, index) in form.selectorgId" :key="index" class="flex_row">
-            <div>{{item }}12222222222222222222222222222222222222222222222222222222222222222222</div>
-          <!--  <el-select v-model="form.roleId" placeholder="角色">
+            <!--机构
+              [
+                  { 
+                    orgId:61,
+                    name:'机构1',
+                    roleId:'',
+                    roleList:[
+                        {roleId:21,name:'第一'},
+                        {roleId:22,name:'第二'},
+                    ]
+                  },
+                  {}
+              ]
+
+
+              //
+              [{orgId:'',roleId:''}]
+            -->
+             <div  v-for="(item, index) in form.roleIdList" :key="index">
+                  <div class="flex_row line">
+                      <div class="roleselect "><p class="font_size" :title="item.name">{{item.name}}</p></div>
+                      <el-select v-model="item.roleId" placeholder="角色" @change="Changerole">
+                      <el-option
+                        v-for="(item,index) in item.roleList"
+                        :key="index"
+                        :label="item.name"
+                        :value="item.roleId"
+                      ></el-option>
+                    </el-select> 
+                  </div>
+             </div>
+             <el-select v-model="form.roleId" placeholder="角色">
               <el-option
                 v-for="(item,index) in form.roleList"
                 :key="index"
                 :label="item.name"
                 :value="item.id"
               ></el-option>
-            </el-select>  -->
-          </div>
+            </el-select> 
+        
         </el-form-item>
         <!--如果为老师显示-->
         <div>
@@ -287,7 +336,7 @@
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload"
               >
-                <!-- <img v-if="form.dialogImageUrl" :src="form.dialogImageUrl" class="avatar">  -->
+                 <img v-if="form.imageUrlIdPhone && !iscreate" :src="form.dialogImageUrl" class="avatar"> 
                 <i class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
               <div>
@@ -321,7 +370,7 @@
                 :on-success="handleAvatarSuccess1"
                 :before-upload="beforeAvatarUpload"
               >
-                <!-- <img v-if="form.imageUrlIdPhone" :src="form.imageUrlIdPhone" class="avatar"> -->
+                <img v-if="form.imageUrlIdPhone && !iscreate" :src="form.imageUrlIdPhone" class="avatar"> 
                 <i class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
               <div>
@@ -502,10 +551,11 @@ export default {
         teacherName: "",
         checked: true,
         orgData: [],
+        orgDataList:[],
         selectorgId: [],
         // roletype:[{name:'是',id:1},{name:'否',id:0}],
         orgId: [],
-        role: "",
+        role: [],
         userPwd: ""
       },
       iscreate: true,
@@ -553,10 +603,32 @@ export default {
     this.getUserLists();
   },
   methods: {
+    changetitle(args){
+        //1
+        //2
+        //3
+    },
+    // 跳转新建
+    addrole(){
+      this.$router.push('/role')
+    },
     handleChangese(value, direction, movedKeys) {
       console.log("右边的值", value, "方向", direction, "移除的值", movedKeys);
-      this.selectorgId = value;
-      console.log(this.form.orgId,this.selectorgId)
+      // this.selectorgId = value;
+      // 找到 id对应的value 再找到  id 对应的角色
+
+      console.log(this.form.orgData)
+      let orgId = this.form.orgId;
+      let roleIdList = this.form.orgDataList.filter((item,i)=>
+           // 判断某数组是否包含该元素 arr.find()
+           orgId.indexOf(item.orgId) > -1
+        );
+      this.form.roleIdList = roleIdList;
+      console.log(this.form.orgId,roleIdList);
+
+    },
+    Changerole(e){
+      console.log(e,this.form.roleIdList);
     },
     // 获取列表
     getUserLists() {
@@ -575,9 +647,18 @@ export default {
             };
             this.tableData.push(obj);
           });
-
-          this.form.orgData = [{key:21,label:'啦啦啦啦'}];
-          res.result.orgList.map((item, index) => {
+          let arrs=res.result.orgList;
+          //  arrs=[
+          //    {orgId:61,name:'机构1',roleId:22,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},
+          //    {orgId:62,name:'机构2',roleId:21,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},
+          //    {orgId:63,name:'机构3',roleId:21,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},
+          //    {orgId:64,name:'机构4',roleId:21,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},
+          // ]
+          console.log('原始数据',arrs)
+          
+          this.form.orgDataList = JSON.parse(JSON.stringify(arrs));
+          this.form.orgData = [];
+          arrs.map((item, index) => {
             this.form.orgData.push({
               key: item.orgId,
               label: item.name
@@ -757,6 +838,22 @@ export default {
         // 编辑
         this.iscreate = false;
         this.my_newcourse = true;
+        let obj ={
+          // orgData:[],
+          orgId:[61],
+          userName:'前端开发',
+          userPhone:'17634630230',
+          userPwd : '123456',
+          userId:'123654',
+          roleIdList:[{orgId:61,name:'机构1',roleId:22,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},{orgId:62,name:'机构2',roleId:21,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]}],
+          teacherName:'王老师',
+          dialogImageUrl:"https://qa.oss.iforbao.com/store/63/201908261036409946.png?Expires=4720387001&OSSAccessKeyId=LTAIAjysqrPPyNVJ&Signature=4JyB2IJfEVoeFELFXF%2F81awd9ds%3D",
+          imageUrlIdPhone:'https://qa.oss.iforbao.com/store/63/201908261036541054.png?Expires=4720387014&OSSAccessKeyId=LTAIAjysqrPPyNVJ&Signature=e0R3lKjfK2MUl%2BLFJ4kBzvkMgr8%3D',
+          id:16,
+          duty:'教授',
+        }
+        let {orgId,userName,userPhone,userPwd,userId,roleIdList,teacherName,dialogImageUrl,imageUrlIdPhone,id,duty} =obj
+        this.form =  {orgId,userName,userPhone,userPwd,userId,roleIdList,teacherName,dialogImageUrl,imageUrlIdPhone,id,duty};
       }else if(status == 3){
             // 重置密码
             this.$confirm('此操作将永久重置密码为 123456 ！', '提示', {

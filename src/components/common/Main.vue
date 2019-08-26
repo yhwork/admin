@@ -764,9 +764,7 @@
               this.user_tel = res.data.result.userInfo.account;
               this.id = res.data.result.userInfo.orgId;
               this.orgId = res.data.result.userInfo.orgId;
-              // this.orgType = res.data.result.orgInfo.orgType
-              //   ? res.data.result.orgInfo.orgType
-              //   : 0;
+              
             }
             if (res.data.errorCode == "400000") {
               console.log("用户登录过期，重新登录");
@@ -856,6 +854,7 @@
           })
           .catch(error => {
             console.log("error", error);
+            this.$router.push("/login");
           });
       },
 
@@ -872,8 +871,7 @@
             this.orgId = res.data.result.userInfo.orgId;
             this.orgType = res.data.result.orgInfo.orgType;
             this.ruleForm.legal_name = res.data.result.orgInfo.orgCompanyName;
-            this.ruleForm.license_num =
-              res.data.result.orgInfo.orgCompanyLegalPerson;
+            this.ruleForm.license_num = res.data.result.orgInfo.orgCompanyLegalPerson;
             this.ruleForm.legal_person = res.data.result.orgInfo.orgLicencesNum;
           })
           .catch(error => {

@@ -4,6 +4,7 @@
  */
 // 13716583263 736602
 const ApiUrl ={
+    
     // 编辑保存员工
     updateUser:`/store/user/updateUser`,
     // 添加员工
@@ -12,6 +13,7 @@ const ApiUrl ={
     getUserList:`/store/user/getUserList`,
     // 删除员工
     delUser:`/store/user/delUser`,
+
 
     // 预约详情
     getHotCourseAppointmentInfo:`/store/appointment/getHotCourseAppointmentInfo`,

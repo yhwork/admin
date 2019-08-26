@@ -36,7 +36,7 @@ const mutations = {
     quit:(state,data)=>{
       state.islogin = data
       console.log('啦啦啦啦',data);
-      console.log(router.options.routes.push('/login'))
+      // console.log(router.options.routes.push('/login'))
       // resetRouter()
       // that.$router.push({
       //   path:'/login',

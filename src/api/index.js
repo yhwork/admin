@@ -71,8 +71,9 @@ service.interceptors.response.use(
           store.dispatch('user/asyncQuit',false)
         // })
       }
-      return Promise.reject(new Error(res.errorMessage || 'Error'))
+      return new Promise.reject(new Error(res.errorMessage || 'Error'))
     } else {
+      store.dispatch('user/asyncQuit',true)
       return res
     }
   },

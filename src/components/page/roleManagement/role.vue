@@ -171,7 +171,7 @@ export default {
               {
                 id: 4,
                 label: "店铺概括",
-                children: [
+              },
                   {
                     id: 9,
                     label: "店铺装修"
@@ -184,8 +184,6 @@ export default {
                     id: 11,
                     label: "微页面"
                   }
-                ]
-              }
             ]
           },
           {
