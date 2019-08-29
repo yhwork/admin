@@ -21,6 +21,90 @@ export function demo2(data) {
     params: {data} 
   })
 }
+
+    // // 获取角色列表
+    // getRoleList:`/store/role/getRoleList/`,
+    // // 添加角色：
+    // addRole:`/store/role/addRole`,
+    // // 删除角色：
+    // delRole:`/store/role/delRole`,
+    // // 获取角色详情：
+    // getRoleDetails:`/store/role/getRoleDetails`,
+    // // 更新角色：
+    // updateRole:`/store/role/updateRole`,
+
+
+// 获取角色列表
+export function getRoleList(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getRoleList}`,
+    method: 'get',
+    data
+  })
+}
+// 添加角色
+export function addRole(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.addRole}`,
+    method: 'post',
+    data
+  })
+}
+// 删除角色
+export function delRole(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.delRole}/${data.id}`,
+    method: 'delete',
+    data:data.id
+  })
+}
+// 角色详情
+export function getRoleDetails(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getRoleDetails}/${data.id}`,
+    method: 'get',
+    data:data.id
+  })
+}
+
+// 更新角色
+export function updateRole(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.updateRole}`,
+    method: 'post',
+    data
+  })
+}
+
+
+
+
+
+// 重置密码
+export function resetUserPasswd(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.resetUserPasswd}/${data.id}`,
+    method: 'get',
+    data:data.id
+  })
+}
+
+// 编辑查询id
+export function getUserDetails(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getUserDetails}/${data.id}`,
+    method: 'get',
+    data:data.id
+  })
+}
+
 // 编辑保存员工
 export function updateUser(data) {
   console.log('请求参数',data)
@@ -43,7 +127,7 @@ export function addUser(data) {
 export function getUserList(data) {
   console.log('请求参数',data)
   return axios({
-    url: `${ApiPath.getUserList}`,
+    url: `${ApiPath.getUserList}/?status=${data.status}&roleId=${data.roleId}&account=${data.account}`,
     method: 'get',
     data
   })

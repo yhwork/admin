@@ -38,7 +38,7 @@
   }
   .w_size {
     .el-input {
-      width: 120px; // 直接写固定值
+      width: 140px; // 直接写固定值
     }
     .el-select {
       width: 55%;
@@ -138,16 +138,19 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     background-color: #cae1ff !important;
   }
-  .line{
+  .line {
     margin-bottom: 10px;
   }
-  .roleselect{
+  .roleselect {
     margin-right: 10px;
     max-width: 10rem;
-    p{
+    p {
       font-size: 14px;
       color: #696969;
     }
+  }
+  .hovers:hover {
+    color: #409eff;
   }
 }
 .pointer {
@@ -161,19 +164,29 @@
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
         <el-breadcrumb-item class="pointer">教务管理</el-breadcrumb-item>
-        <el-breadcrumb-item class="pointer">
-          <div v-if="my_newcourse" class="pointer">
-              <div v-if="iscreate" @click="changetitle(0)">
-                 新建员工
-              </div> 
-              <div v-else >
-                  <div @click="changetitle(1)"> 编辑员工</div>
-              </div>
-            </div>
-          <div v-else class="pointer" >
-              <div @click="changetitle(2)">员工管理</div> 
+        <div v-if="my_newcourse">
+          <div v-if="iscreate">
+            <el-breadcrumb-item>
+              <span class="pointer hovers" @click.stop="changetitle(2)">员工管理</span>
+            </el-breadcrumb-item>
+            <el-breadcrumb-item>
+              <span class="pointer hovers">新建员工</span>
+            </el-breadcrumb-item>
           </div>
-        </el-breadcrumb-item>
+          <div v-else>
+            <el-breadcrumb-item @click.stop="changetitle(2)">
+              <span class="pointer hovers" @click.stop="changetitle(2)">员工管理</span>
+            </el-breadcrumb-item>
+            <el-breadcrumb-item>
+              <span class="pointer hovers">编辑员工</span>
+            </el-breadcrumb-item>
+          </div>
+        </div>
+        <div v-else>
+          <el-breadcrumb-item>
+            <span class="pointer hovers">员工管理</span>
+          </el-breadcrumb-item>
+        </div>
       </el-breadcrumb>
     </div>
     <div v-if="my_newcourse">
@@ -181,12 +194,7 @@
       <el-form ref="form" :model="form" label-width="120px" :rules="rules">
         <el-form-item label="员工姓名：" prop="userName">
           <div class="flex_row">
-            <el-input
-              v-model="form.userName"
-              placeholder="请输入员工姓名"
-              maxlength="8"
-              auto-complete="off"
-            ></el-input>
+            <el-input v-model="form.userName" placeholder="请输入员工姓名" maxlength="8"></el-input>
             <div class="m_left font_color">
               <p>建议真实姓名，方便管理</p>
             </div>
@@ -194,7 +202,7 @@
         </el-form-item>
         <el-form-item label="员工账号：" label-width="110px" prop="userPhone">
           <div class="flex_row">
-            <el-select class="w_size" v-model="form.phone" placeholder="中国+86">
+            <el-select :disabled="true" class="w_size" v-model="form.phone" placeholder="中国+86">
               <el-option
                 :class="'w_size'"
                 v-for="(item,index) in form.phoneCity"
@@ -209,7 +217,6 @@
               v-model.number="form.userPhone"
               placeholder="请输入员工手机号"
               maxlength="11"
-              auto-complete="off"
             ></el-input>
           </div>
         </el-form-item>
@@ -221,13 +228,12 @@
               type="password"
               placeholder="为员工设置密码"
               maxlength="16"
-              auto-complete="off"
             ></el-input>
           </div>
         </el-form-item>
         <el-form-item label="员工编号：" prop="userId">
           <div>
-            <el-input v-model="form.userId" placeholder="请输入员工编号" auto-complete="off"></el-input>
+            <el-input v-model="form.userId" placeholder="请输入员工编号"></el-input>
           </div>
         </el-form-item>
         <el-form-item label="所属门店：" :required="true">
@@ -238,8 +244,8 @@
               <el-transfer
                 v-model="form.orgId"
                 :data="form.orgData"
-                :left-default-checked='form.lchecked'
-                :right-default-checked='form.rchecked'
+                :left-default-checked="form.lchecked"
+                :right-default-checked="form.rchecked"
                 :titles="['全部', '已选中']"
                 @change="handleChangese"
               ></el-transfer>
@@ -260,10 +266,13 @@
                 </div>
         </el-form-item>-->
         <el-form-item label="所属门店角色：" label-width="130px" :required="true">
-            <div class="m_left font_color">
-              <p>如果没有相应角色，请点击“<span @click="addrole"> 新建 </span>”进行添加</p>
-            </div>
-            <!--机构
+          <div class="m_left font_color">
+            <p>
+              如果没有相应角色，请点击“
+              <span @click="addrole">新建</span>”进行添加
+            </p>
+          </div>
+          <!--机构
               [
                   { 
                     orgId:61,
@@ -280,40 +289,37 @@
 
               //
               [{orgId:'',roleId:''}]
-            -->
-             <div  v-for="(item, index) in form.roleIdList" :key="index">
-                  <div class="flex_row line">
-                      <div class="roleselect "><p class="font_size" :title="item.name">{{item.name}}</p></div>
-                      <el-select v-model="item.roleId" placeholder="角色" @change="Changerole">
-                      <el-option
-                        v-for="(item,index) in item.roleList"
-                        :key="index"
-                        :label="item.name"
-                        :value="item.roleId"
-                      ></el-option>
-                    </el-select> 
-                  </div>
-             </div>
-             <el-select v-model="form.roleId" placeholder="角色">
-              <el-option
-                v-for="(item,index) in form.roleList"
-                :key="index"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select> 
-        
+          -->
+          <div v-for="(item, index) in form.roleIdList" :key="index">
+            <div class="flex_row line">
+              <div class="roleselect">
+                <p class="font_size" :title="item.name">{{item.name}}</p>
+              </div>
+              <el-select v-model="item.roleId" placeholder="角色" @change="Changerole">
+                <el-option
+                  v-for="(items,index) in item.roleList"
+                  :key="index"
+                  :label="items.name"
+                  :value="items.roleId"
+                ></el-option>
+              </el-select>
+              <div v-if="item.roleId==0" class="roleselect">
+                <p>请选择角色权限</p>
+              </div>
+            </div>
+          </div>
         </el-form-item>
         <!--如果为老师显示-->
         <div>
-          <el-form-item label="教师昵称：" prop="teacherName" :required="true">
+          <el-form-item label="教师职务：" :required="true">
+            <div class="flex_column">
+              <el-input v-model="form.duty" placeholder="请输入教师职务" maxlength="18"></el-input>
+              <p class="font_color">可以输入老师的职位如：清华大学教授，便于用户了解详细信息</p>
+            </div>
+          </el-form-item>
+          <el-form-item label="教师昵称：" :required="true">
             <div class="flex_row">
-              <el-input
-                v-model="form.teacherName"
-                placeholder="请输入教师姓名"
-                maxlength="8"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="form.teacherName" placeholder="请输入教师姓名" maxlength="18"></el-input>
               <div class="m_left font_color flex_row">
                 <p>用于购买课程时，显示老师昵称</p>
                 <el-checkbox class="m_left" v-model="form.checked"></el-checkbox>
@@ -336,7 +342,11 @@
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload"
               >
-                 <img v-if="form.imageUrlIdPhone && !iscreate" :src="form.dialogImageUrl" class="avatar"> 
+                <img
+                  v-if="form.imageUrlIdPhone && !iscreate"
+                  :src="form.dialogImageUrl"
+                  class="avatar"
+                />
                 <i class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
               <div>
@@ -349,12 +359,7 @@
               <p>建议：上传一张 160*160 像素</p>
             </div>
           </el-form-item>
-          <el-form-item label="教师职务：" :required="true">
-            <div class="flex_column">
-              <el-input v-model="form.duty" placeholder="请输入教师职务" auto-complete="off"></el-input>
-              <p class="font_color">可以输入老师的职位如：清华大学教授，便于用户了解详细信息</p>
-            </div>
-          </el-form-item>
+
           <el-form-item label="教师证件：" :required="true">
             <div class="flex_row">
               <el-upload
@@ -370,7 +375,11 @@
                 :on-success="handleAvatarSuccess1"
                 :before-upload="beforeAvatarUpload"
               >
-                <img v-if="form.imageUrlIdPhone && !iscreate" :src="form.imageUrlIdPhone" class="avatar"> 
+                <img
+                  v-if="form.imageUrlIdPhone && !iscreate"
+                  :src="form.imageUrlIdPhone"
+                  class="avatar"
+                />
                 <i class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
               <div>
@@ -419,7 +428,7 @@
               <el-select class="w_size" v-model="newForm.status" placeholder="全部">
                 <el-option
                   :class="'w_size'"
-                  v-for="(item,index) in newForm.phoneCity"
+                  v-for="(item,index) in newForm.stateCity"
                   :key="index"
                   :label="item.name"
                   :value="item.id"
@@ -427,26 +436,18 @@
               </el-select>
             </el-form-item>
             <el-form-item label="角色">
-              <el-select class="w_size" v-model="newForm.role" placeholder="全部">
+              <el-select class="w_size" v-model="newForm.roleId" placeholder="全部">
                 <el-option
                   :class="'w_size'"
                   v-for="(item,index) in newForm.roleList"
                   :key="index"
                   :label="item.name"
-                  :value="item.id"
+                  :value="item.roleId"
                 ></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="员工账号">
-              <el-select class="w_size" v-model="newForm.userPhone" placeholder="全部">
-                <el-option
-                  :class="'w_size'"
-                  v-for="(item,index) in newForm.userPhoneList"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
+              <el-input v-model.number="newForm.account" placeholder="请输入员工账号" maxlength="11"></el-input>
             </el-form-item>
             <div class="flex_row">
               <div class="clearselectall">
@@ -460,7 +461,7 @@
               </div>
               <div class="clearselectall">
                 <el-button
-                  @click="clearchoose('ruleFormwhere')"
+                  @click="selsectdata(1)"
                   class="clearpadding"
                   type="primary"
                   plain
@@ -498,14 +499,14 @@
               <template slot-scope="scope">
                 <div>
                   <el-button size="mini" @click="btnTable(scope.row.id,1)" type="primary">编辑</el-button>
-                  <el-button size="mini" @click="btnTable(scope.row.id,3)" type="warning">重置密码</el-button> 
+                  <el-button size="mini" @click="btnTable(scope.row.id,3)" type="warning">重置密码</el-button>
                   <el-button size="mini" @click="btnTable(scope.row.id,2)" type="danger">删除</el-button>
                 </div>
               </template>
             </el-table-column>
           </el-table>
           <div style="margin-top: 20px">
-            <el-button size="mini" @click="btnTable(1)" type="primary">停用</el-button>
+            <el-button size="mini" @click="btnTablestop()" type="primary">停用</el-button>
           </div>
         </div>
       </div>
@@ -513,7 +514,14 @@
   </div>
 </template>
 <script>
-import { getUserList, addUser, delUser, updateUser } from "@/api/demo";
+import {
+  getUserList,
+  addUser,
+  delUser,
+  updateUser,
+  getUserDetails,
+  resetUserPasswd
+} from "@/api/demo";
 export default {
   name: "usermge",
   data() {
@@ -544,14 +552,14 @@ export default {
         roleList: [],
         userPhone: "",
         id: "",
-        lchecked:[],
-        rchecked:[],
+        lchecked: [],
+        rchecked: [],
         userName: "",
         userId: "",
         teacherName: "",
         checked: true,
         orgData: [],
-        orgDataList:[],
+        orgDataList: [],
         selectorgId: [],
         // roletype:[{name:'是',id:1},{name:'否',id:0}],
         orgId: [],
@@ -560,12 +568,17 @@ export default {
       },
       iscreate: true,
       newForm: {
-        status: "",
-        phoneCity: "",
-        userPhone: "",
+        status: 0,
+        stateCity: [
+          { id: 0, name: "请选择状态" },
+          { id: 1, name: "正常使用" },
+          { id: 2, name: "禁" },
+          { id: 3, name: "离职" }
+        ],
+        account: "",
         userPhoneList: "",
         roleList: [],
-        role: ""
+        roleId: 0
       },
       // 表格
       tableData: [],
@@ -603,36 +616,47 @@ export default {
     this.getUserLists();
   },
   methods: {
-    changetitle(args){
-        //1
-        //2
-        //3
+    changetitle(args) {
+      this.my_newcourse = false;
+      //1
+      //2
+      //3
     },
     // 跳转新建
-    addrole(){
-      this.$router.push('/role')
+    addrole() {
+      this.$router.push("/role");
     },
     handleChangese(value, direction, movedKeys) {
       console.log("右边的值", value, "方向", direction, "移除的值", movedKeys);
       // this.selectorgId = value;
       // 找到 id对应的value 再找到  id 对应的角色
 
-      console.log(this.form.orgData)
+      console.log(this.form.orgData);
       let orgId = this.form.orgId;
-      let roleIdList = this.form.orgDataList.filter((item,i)=>
-           // 判断某数组是否包含该元素 arr.find()
-           orgId.indexOf(item.orgId) > -1
-        );
+      let roleIdList = this.form.orgDataList.filter(
+        (item, i) =>
+          // 判断某数组是否包含该元素 arr.find()
+          orgId.indexOf(item.orgId) > -1
+      );
       this.form.roleIdList = roleIdList;
-      console.log(this.form.orgId,roleIdList);
-
+      console.log(this.form.orgId, roleIdList);
     },
-    Changerole(e){
-      console.log(e,this.form.roleIdList);
+    Changerole(e) {
+      console.log(e, this.form.roleIdList);
     },
     // 获取列表
-    getUserLists() {
-      getUserList().then(res => {
+    getUserLists(args) {
+      let Pparams = {}
+      if(args){
+        Pparams =args
+      }else{
+        Pparams={ 
+          status:0,
+          roleId:0,
+          account:""
+        }
+      }
+      getUserList(Pparams).then(res => {
         console.log(res);
         if (res.errorCode == 0) {
           this.tableData = [];
@@ -646,16 +670,17 @@ export default {
               id: item.id
             };
             this.tableData.push(obj);
+            console.log("table表单数据", this.tableData);
           });
-          let arrs=res.result.orgList;
+          let arrs = res.result.orgList;
           //  arrs=[
           //    {orgId:61,name:'机构1',roleId:22,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},
           //    {orgId:62,name:'机构2',roleId:21,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},
           //    {orgId:63,name:'机构3',roleId:21,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},
           //    {orgId:64,name:'机构4',roleId:21,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},
           // ]
-          console.log('原始数据',arrs)
-          
+          console.log("原始数据", arrs);
+
           this.form.orgDataList = JSON.parse(JSON.stringify(arrs));
           this.form.orgData = [];
           arrs.map((item, index) => {
@@ -664,7 +689,6 @@ export default {
               label: item.name
             });
           });
-
           this.form.roleList = res.result.roleList;
           this.newForm.roleList = res.result.roleList;
         }
@@ -696,25 +720,19 @@ export default {
         userPhone,
         userPwd,
         userId,
-        roleId,
         teacherName,
         dialogImageUrl,
         imageUrlIdPhone,
         id,
         duty,
-        orgId,
+        roleIdList,
         selectorgId
       } = this.form;
       if (userName == "" || userName == undefined) {
         return this.$message({ type: "warning", message: "请输入员工姓名" });
       }
-      if (userPhone == "" || userPhone == undefined) {
-        return this.$message({ type: "warning", message: "请输入员工账号" });
-      }
-      if (userPwd == "" || userPwd == undefined) {
-        return this.$message({ type: "warning", message: "请输入员工密码" });
-      }
-      if (roleId == "" || roleId == undefined) {
+
+      if (roleIdList.length == "" || roleIdList.length == undefined) {
         return this.$message({ type: "warning", message: "请输入角色" });
       }
       if (teacherName == "" || teacherName == undefined) {
@@ -732,19 +750,31 @@ export default {
       if (duty == "" || duty == undefined) {
         return this.$message({ type: "warning", message: "请输入员工职务" });
       }
-
+      let arrrole = [];
+      roleIdList.map(i => {
+        let obj = {
+          orgId: i.orgId,
+          roleId: i.roleId
+        };
+        arrrole.push(obj);
+      });
       // 保存数据
       if (args == 1) {
+        if (userPhone == "" || userPhone == undefined) {
+          return this.$message({ type: "warning", message: "请输入员工账号" });
+        }
+        if (userPwd == "" || userPwd == undefined) {
+          return this.$message({ type: "warning", message: "请输入员工密码" });
+        }
         let params = {
           name: userName,
           phone: userPhone,
           passwd: userPwd,
           employeeID: userId,
-          roleId,
-          teacherName,
+          userRole: arrrole,
+          nickName: teacherName,
           logo: dialogImageUrl,
-          duty,
-          orgId: orgId[0],
+          duties: duty,
           authInfo: imageUrlIdPhone
         };
         addUser(params).then(res => {
@@ -763,17 +793,18 @@ export default {
           phone: userPhone,
           passwd: userPwd,
           employeeID: userId,
-          roleId,
+          userRole: arrrole,
           teacherName,
           logo: dialogImageUrl,
-          duty,
+          duties: duty,
           id,
-          orgId: orgId[0],
           authInfo: imageUrlIdPhone
         };
         updateUser(params).then(res => {
           console.log("编辑", res);
           if (res.errorCode == 0) {
+            this.my_newcourse = false;
+            this.getUserLists();
             this.$message({ type: "success", message: "编辑成功" });
           }
         });
@@ -820,59 +851,104 @@ export default {
     //  筛选全部信息
     selsectdata(args) {
       if (args == 0) {
+        // 参数
+        let { status, roleId, account } = this.newForm;
+        let params = {
+          status,
+          roleId,
+          account
+        };
+        console.log("筛选", params);
+        this.getUserLists(params);
       } else {
+        // 清楚
+        this.newForm.status=0;
+        this.newForm.roleId=0;
+          this.newForm.account="";
       }
     },
-    // 清楚筛选条件
-    clearchoose() {},
+    // 停用
+    btnTablestop() {},
     // 编辑/删除
     btnTable(id, status) {
       console.log(id, status);
       if (status == 2) {
         // 删除
         delUser({ id }).then(res => {
-          if (res.errorCode == 0)
-            return this.$message({ type: "success", message: "删除成功" });
+          if (res.errorCode == 0) this.getUserLists();
+          return this.$message({ type: "success", message: "删除成功" });
         });
       } else if (status == 1) {
-        // 编辑
-        this.iscreate = false;
-        this.my_newcourse = true;
-        let obj ={
-          // orgData:[],
-          orgId:[61],
-          userName:'前端开发',
-          userPhone:'17634630230',
-          userPwd : '123456',
-          userId:'123654',
-          roleIdList:[{orgId:61,name:'机构1',roleId:22,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]},{orgId:62,name:'机构2',roleId:21,roleList:[{roleId:21,name:'角色一'},{roleId:23,name:'角色三'},{roleId:22,name:'角色二'}]}],
-          teacherName:'王老师',
-          dialogImageUrl:"https://qa.oss.iforbao.com/store/63/201908261036409946.png?Expires=4720387001&OSSAccessKeyId=LTAIAjysqrPPyNVJ&Signature=4JyB2IJfEVoeFELFXF%2F81awd9ds%3D",
-          imageUrlIdPhone:'https://qa.oss.iforbao.com/store/63/201908261036541054.png?Expires=4720387014&OSSAccessKeyId=LTAIAjysqrPPyNVJ&Signature=e0R3lKjfK2MUl%2BLFJ4kBzvkMgr8%3D',
-          id:16,
-          duty:'教授',
-        }
-        let {orgId,userName,userPhone,userPwd,userId,roleIdList,teacherName,dialogImageUrl,imageUrlIdPhone,id,duty} =obj
-        this.form =  {orgId,userName,userPhone,userPwd,userId,roleIdList,teacherName,dialogImageUrl,imageUrlIdPhone,id,duty};
-      }else if(status == 3){
-            // 重置密码
-            this.$confirm('此操作将永久重置密码为 123456 ！', '提示', {
-                confirmButtonText: '重置密码',
-                cancelButtonText: '取消',
-                type: 'warning',
-                center: true
-                }).then(() => {
+        getUserDetails({ id }).then(res => {
+          console.log("编辑信息", res);
+          if (res.errorCode == 0) {
+            // 编辑
+            this.iscreate = false;
+            this.my_newcourse = true;
+            let obj = res.result;
 
-                    this.$message({
-                        type: 'success',
-                        message: '重置成功'
+            let {
+              name,
+              phone,
+              employeeID,
+              orgList,
+              nickName,
+              logo,
+              authInfo,
+              id,
+              duties
+            } = JSON.parse(JSON.stringify(obj));
+            let arrorgId = [];
+            orgList.map(i => {
+              if (i.orgId) {
+                arrorgId.push(i.orgId);
+              }
+            });
+            this.form.orgId = arrorgId;
+            this.form.userName = name;
+            this.form.userPhone = phone;
+            this.form.userId = employeeID;
+            this.form.roleIdList = JSON.parse(JSON.stringify(orgList));
+            this.form.teacherName = nickName;
+            this.form.dialogImageUrl = logo;
+            this.form.imageUrlIdPhone = authInfo;
+            this.form.id = id;
+            this.form.duty = duties;
+          }
+          let obj = new Object();
+          obj = JSON.parse(JSON.stringify(this.form));
+          this.form = {};
+          this.form = obj;
+        });
+      } else if (status == 3) {
+        // 重置密码
+        this.$confirm("此操作将永久重置密码为 123456 ！", "提示", {
+          confirmButtonText: "重置密码",
+          cancelButtonText: "取消",
+          type: "warning",
+          center: true
+        })
+          .then(() => {
+            resetUserPasswd({id}).then(res=>{
+                if(res.errorCode == 0){
+                     this.$message({
+                      type: "success",
+                      message: "重置成功"
                     });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消'
+                }else{
+                  this.$message({
+                      type: "warning",
+                      message: "重置失败"
                     });
-                });
+                }
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消"
+            });
+          });
       }
     },
     // 新建

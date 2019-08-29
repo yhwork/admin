@@ -4,7 +4,26 @@
  */
 // 13716583263 736602
 const ApiUrl ={
+
+    // 角色管理
+    // 获取角色列表
+    getRoleList:`/store/role/getRoleList`,
+    // 添加角色：
+    addRole:`/store/role/addRole`,
+    // 删除角色：
+    delRole:`/store/role/delRole`,
+    // 获取角色详情：
+    getRoleDetails:`/store/role/getRoleDetails`,
+    // 更新角色：
+    updateRole:`/store/role/updateRole`,
     
+
+
+
+    // 重置密码
+    resetUserPasswd:`/store/user/resetUserPasswd`,
+    // 编辑查询id
+    getUserDetails:`/store/user/getUserDetails`,
     // 编辑保存员工
     updateUser:`/store/user/updateUser`,
     // 添加员工

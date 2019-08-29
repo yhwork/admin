@@ -43,26 +43,25 @@
   .tenter {
     margin: 50px 50px;
   }
-    .headerclassname {
-        border: 1px solid #ccc !important;
-        color: darkslategrey;
-        background-color: #ccc !important
-    }
+  .headerclassname {
+    border: 1px solid #ccc !important;
+    color: darkslategrey;
+    background-color: #ccc !important;
+  }
 
-    .el-table--enable-row-hover .el-table__body tr:hover>td {
+  .el-table--enable-row-hover .el-table__body tr:hover > td {
+    background-color: #cbd1d8 !important;
+  }
 
-        background-color: #CBD1D8 !important;
-    }
+  .table_border {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    background-color: #a0c6f0 !important;
+  }
 
-    .table_border {
-        border-bottom: 1px solid rgba(0, 0, 0, .5);
-        background-color: #A0C6F0 !important;
-    }
-
-    .table_borders {
-        border-bottom: 1px solid rgba(0, 0, 0, .5);
-        background-color: #CAE1FF !important;
-    }
+  .table_borders {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    background-color: #cae1ff !important;
+  }
 }
 </style>
 <template>
@@ -77,88 +76,104 @@
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-  
-      <!--新建员工-->
-      <div class="new_role" v-if="my_newcourse">
-        <el-form res="newForm" :model="newForm" label-width="100px" :rules="rules">
-          <div class="flex_column m_top">
-            <el-form-item label="角色名称：" prop="roleName">
-              <div class="flex_row">
-                <el-input
-                  v-model="newForm.roleName"
-                  placeholder="请输入需要角色的名称"
-                  maxlength="8"
-                  auto-complete="off"
-                ></el-input>
-              </div>
-            </el-form-item>
-            <el-form-item label="角色描述：" prop="roleTxt">
-              <div class="flex_row">
-                <el-input
-                  type="textarea"
-                  :autosize="{ minRows:6, maxRows: 8}"
-                  v-model="newForm.roleTxt"
-                  placeholder="至多输入50个汉字"
-                  maxlength="50"
-                  auto-complete="off"
-                ></el-input>
-              </div>
-            </el-form-item>
-            <el-form-item label="角色权限：" prop="roleTxt">
-              <div class="flex_row">
-                <el-tree
-                  :data="newForm.roledata"
-                  show-checkbox
-                  node-key="id"
-                  :default-expanded-keys="newForm.unfold"
-                  :default-checked-keys="newForm.checked"
-                  :props="newForm.defaultProps"
-                ></el-tree>
-              </div>
-            </el-form-item>
-          </div>
-        </el-form>
-        <div slot="footer" class="flex_row flex_center">
-          <el-button class="tenter" @click="saveiedData(0)">取 消</el-button>
-          <el-button class="tenter" type="primary" @click="saveiedData()">保存</el-button>
-        </div>
-      </div>
-      <!--表格-->
-      <div v-else class="content_box1">
-        <div class="flex_row tenter">
-          <el-button size="medium" @click="btnnewUser" type="primary">新建角色</el-button>
-        </div>
-        <div class="new_role">
-          <el-table ref="multipleTable" :data="tableData" style="width: 100%">
-            <el-table-column label="员工角色" :show-overflow-tooltip="true">
-              <template slot-scope="scope">{{ scope.row.userType }}</template>
-            </el-table-column>
-            <el-table-column label="描述">
-              <template slot-scope="scope">{{ scope.row.usertxt }}</template>
-            </el-table-column>
 
-            <el-table-column prop="userNum" label="员工数量"></el-table-column>
-            <el-table-column label="操作" :show-overflow-tooltip="true" min-width="150px">
-              <template slot-scope="scope">
-                <div>
-                  <el-button size="mini" @click="btnTable(scope.row.id,1)" type="primary">编辑</el-button>
-                  <el-button size="mini" @click="btnTable(scope.row.id,2)" type="danger">删除</el-button>
-                </div>
-              </template>
-            </el-table-column>
-          </el-table>
+    <!--新建员工-->
+    <div class="new_role" v-if="my_newcourse">
+      <el-form res="newForm" :model="newForm" label-width="100px" :rules="rules">
+        <div class="flex_column m_top">
+          <el-form-item label="角色名称：" prop="roleName">
+            <div class="flex_row">
+              <el-input
+                v-model="newForm.roleName"
+                placeholder="请输入需要角色的名称"
+                maxlength="8"
+                auto-complete="off"
+              ></el-input>
+            </div>
+          </el-form-item>
+          <el-form-item label="角色描述：" prop="roleTxt">
+            <div class="flex_row">
+              <el-input
+                type="textarea"
+                :autosize="{ minRows:6, maxRows: 8}"
+                v-model="newForm.roleTxt"
+                placeholder="至多输入50个汉字"
+                maxlength="50"
+                auto-complete="off"
+              ></el-input>
+            </div>
+          </el-form-item>
+          <el-form-item label="角色权限：" prop="roleTxt">
+            <div class="flex_row">
+              <el-tree
+                 ref="tree"
+                :data="newForm.roledata"
+                show-checkbox
+                node-key="id"
+                 accordion
+                @node-click='changeData'
+                :current-node-key='newForm.currentData'
+                @check-change='setCheckeData'
+                @getCheckedKeys='getCheckeData'
+                :default-expanded-keys="newForm.unfold"
+                :default-checked-keys="newForm.checked"
+                :props="newForm.defaultProps"
+                
+              ></el-tree>
+            </div>
+          </el-form-item>
         </div>
+      </el-form>
+      <div slot="footer" class="flex_row flex_center">
+        <el-button class="tenter" @click="saveiedData(0)">取 消</el-button>
+        <el-button class="tenter" v-if="iscreate" type="primary" @click="saveiedData(1)">保存</el-button>
+        <el-button class="tenter" v-else type="primary" @click="saveiedData(2)">保存</el-button>
       </div>
+    </div>
+    <!--表格-->
+    <div v-else class="content_box1">
+      <div class="flex_row tenter">
+        <el-button size="medium" @click="btnnewUser" type="primary">新建角色</el-button>
+      </div>
+      <div class="new_role">
+        <el-table ref="multipleTable" :data="tableData" style="width: 100%">
+          <el-table-column label="员工角色" :show-overflow-tooltip="true">
+            <template slot-scope="scope">{{ scope.row.userType }}</template>
+          </el-table-column>
+          <el-table-column label="描述">
+            <template slot-scope="scope">{{ scope.row.usertxt }}</template>
+          </el-table-column>
 
+          <el-table-column prop="userNum" label="员工数量"></el-table-column>
+          <el-table-column label="操作" :show-overflow-tooltip="true" min-width="150px">
+            <template slot-scope="scope">
+              <div>
+                <el-button size="mini" @click="btnTable(scope.row.id,1)" type="primary">编辑</el-button>
+                <el-button size="mini" @click="btnTable(scope.row.id,2)" type="danger">删除</el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import {
+  getRoleList,
+  addRole,
+  delRole,
+  getRoleDetails,
+  updateRole
+} from "@/api/demo";
 export default {
   name: "role",
   data() {
     return {
+      iscreate: true,
       my_newcourse: false,
       newForm: {
+        currentData:0,
         roleTxt: "描述",
         roleName: "老师",
         unfold: [], // 默认展开  id
@@ -170,20 +185,20 @@ export default {
             children: [
               {
                 id: 4,
-                label: "店铺概括",
+                label: "店铺概括"
               },
-                  {
-                    id: 9,
-                    label: "店铺装修"
-                  },
-                  {
-                    id: 10,
-                    label: "小程序装修"
-                  },
-                  {
-                    id: 11,
-                    label: "微页面"
-                  }
+              {
+                id: 9,
+                label: "店铺装修"
+              },
+              {
+                id: 10,
+                label: "小程序装修"
+              },
+              {
+                id: 11,
+                label: "微页面"
+              }
             ]
           },
           {
@@ -224,16 +239,122 @@ export default {
       }
     };
   },
+  created() {
+    this.selectRoleLIst();
+  },
   methods: {
+    selectRoleLIst() {
+      console.log("查询");
+      getRoleList().then(res => {
+        if (res.errorCode == 0) {
+          let data = res.result.roleList;
+
+          let tableData = [];
+          data.map(item => {
+            let obj = {
+              userNum: item.userNum,
+              usertxt: item.descr,
+              userType: item.name,
+              id: item.id
+            };
+            tableData.push(obj);
+          });
+          this.tableData = tableData;
+          this.newForm.roledata = res.result.menuTree;
+          // descr: null
+          // id: 82
+          // iedit: "false"
+          // name: "管理员"
+          // userNum: 2
+
+          console.log("角色列表", res);
+          // 赋值
+        }
+      });
+    },
     // 编辑/删除
-    btnTable(id, strtus) {},
+    btnTable(id, status) {
+      if (status == 1) {
+        // 编辑
+        getRoleDetails({ id }).then(res => {
+          console.log("角色详情列表", res);
+          this.iscreate = false;
+        });
+      } else if (status == 2) {
+        // 删除
+        delRole({ id }).then(res => {
+          console.log("删除成功", res);
+        });
+      }
+    },
     // 新建员工
     btnnewUser() {
       this.my_newcourse = true;
+      this.iscreate = true;
     },
+    changeData(data,e){
+      console.log(data,e)
+    },
+    getCheckeData(e){
+        console.log('选中',e,this.newForm.currentData)
+    },
+    setCheckeData(e,data){
+        console.log('选中',e,data);
+        // 添加或者删除
+        if(data){
+          // 添加
+        }else{
+
+        }
+    },
+    getCheckedNodes() {
+        console.log(this.$refs.tree.getCheckedNodes());
+      },
+      getCheckedKeys() {
+        console.log(this.$refs.tree.getCheckedKeys());
+      },
+      setCheckedNodes() {
+        this.$refs.tree.setCheckedNodes([{
+          id: 5,
+          label: '二级 2-1'
+        }, {
+          id: 9,
+          label: '三级 1-1-1'
+        }]);
+      },
+      setCheckedKeys() {
+        this.$refs.tree.setCheckedKeys([3]);
+      },
+      resetChecked() {
+        this.$refs.tree.setCheckedKeys([]);
+      },
     // 保存
-    saveiedData() {
-      this.my_newcourse = false;
+    saveiedData(args) {
+      if (args == 0) {
+        this.getCheckedKeys();
+        // return (this.my_newcourse = false);
+      } else if (args == 1) {
+        // 新建
+        let {roleName,roleTxt} = this.newForm;
+        // 获取保存的数据
+        let params = {};
+        // 发送请求
+        addRole(params).then(res => {
+          if (res.errorCode == 0) {
+            this.$message({ type: "sucess", message: "保存成功" });
+            this.my_newcourse = false;
+          }
+        });
+        // 返回列表页
+      } else if (args == 2) {
+        // 编辑
+        updateRole(params).then(res => {
+          if (res.errorCode == 0) {
+            this.$message({ type: "sucess", message: "保存成功" });
+            this.my_newcourse = false;
+          }
+        });
+      }
     }
   }
 };
