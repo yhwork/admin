@@ -279,6 +279,19 @@ export default {
         getRoleDetails({ id }).then(res => {
           console.log("角色详情列表", res);
           this.iscreate = false;
+          this.my_newcourse = true;
+          // 赋值
+          let data = res.result;
+          this.newForm.roleTxt=data.descr ;
+          this.newForm.roleName =data.name;
+          this.newForm.roledata = data.menuTree;  // 所有的列表
+          this.newForm.checked=data.ownMenu       // 默认选中
+          this.newForm.id = data.id;
+          // descr: null
+          // id: 82
+          // iedit: "false"
+          // name: "管理员"
+          // userNum: 2
         });
       } else if (status == 2) {
         // 删除
@@ -304,7 +317,6 @@ export default {
         if(data){
           // 添加
         }else{
-
         }
     },
     // 获取节点
@@ -336,40 +348,36 @@ export default {
     saveiedData(args) {
       if (args == 0) {
         
-        // return (this.my_newcourse = false);
+        return this.my_newcourse = false;
       } else if (args == 1) {
-        // 新建
-        // {
-        //   "addBy": 0,
-        //   "descr": "string",
-        //   "id": 0,
-        //   "menu": [
-        //     {
-        //       "menuId": 0
-        //     }
-        //   ],
-        //   "name": "string",
-        //   "orgId": 0,
-        //   "status": 0,
-        //   "updateBy": 0
-        // }
         let {roleName,roleTxt} = this.newForm;
         let menu = this.getCheckedKeys();
+         this.selectRoleLIst();
         // 获取保存的数据
-        let params = {addBy:roleTxt,name:roleName,menu};
+        let params = {descr:roleTxt,name:roleName,menu};
         // 发送请求
         addRole(params).then(res => {
           if (res.errorCode == 0) {
-            this.$message({ type: "sucess", message: "保存成功" });
+            this.$message({ type: "success", message: "保存成功" });
             this.my_newcourse = false;
+             this.selectRoleLIst();
+            // 清楚 选项
+            this.newForm.roleTxt= "";
+            this.newForm.roleName = "";
           }
         });
         // 返回列表页
       } else if (args == 2) {
         // 编辑
+        let {roleName,roleTxt,id} = this.newForm;
+        let menu = this.getCheckedKeys();
+        // 获取保存的数据
+        let params = {descr:roleTxt,name:roleName,menu,id};
         updateRole(params).then(res => {
+         
           if (res.errorCode == 0) {
-            this.$message({ type: "sucess", message: "保存成功" });
+            this.$message({ type: "success", message: "保存成功" });
+             this.selectRoleLIst();
             this.my_newcourse = false;
           }
         });
