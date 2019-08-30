@@ -307,12 +307,16 @@ export default {
 
         }
     },
-    getCheckedNodes() {
+    // 获取节点
+      getCheckedNodes() {
         console.log(this.$refs.tree.getCheckedNodes());
       },
+      // 获取key
       getCheckedKeys() {
         console.log(this.$refs.tree.getCheckedKeys());
+        return this.$refs.tree.getCheckedKeys();
       },
+      // 设置选中
       setCheckedNodes() {
         this.$refs.tree.setCheckedNodes([{
           id: 5,
@@ -331,13 +335,28 @@ export default {
     // 保存
     saveiedData(args) {
       if (args == 0) {
-        this.getCheckedKeys();
+        
         // return (this.my_newcourse = false);
       } else if (args == 1) {
         // 新建
+        // {
+        //   "addBy": 0,
+        //   "descr": "string",
+        //   "id": 0,
+        //   "menu": [
+        //     {
+        //       "menuId": 0
+        //     }
+        //   ],
+        //   "name": "string",
+        //   "orgId": 0,
+        //   "status": 0,
+        //   "updateBy": 0
+        // }
         let {roleName,roleTxt} = this.newForm;
+        let menu = this.getCheckedKeys();
         // 获取保存的数据
-        let params = {};
+        let params = {addBy:roleTxt,name:roleName,menu};
         // 发送请求
         addRole(params).then(res => {
           if (res.errorCode == 0) {
