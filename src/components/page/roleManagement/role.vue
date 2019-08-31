@@ -174,8 +174,8 @@ export default {
       my_newcourse: false,
       newForm: {
         currentData:0,
-        roleTxt: "描述",
-        roleName: "老师",
+        roleTxt: "",
+        roleName: "",
         unfold: [], // 默认展开  id
         checked: [], // 默认选中  id
         roledata: [
@@ -222,7 +222,7 @@ export default {
         }
       },
       tableData: [
-        { userNum: 6, usertxt: "描述", userType: "小灰灰管理", id: 0 }
+        { userNum: 6, usertxt: "", userType: "", id: 0 }
       ],
       rules: {
         roleName: [

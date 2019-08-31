@@ -152,11 +152,18 @@ export function getHotCourseAppointmentInfo(data) {
     data
   })
 }
+
+
+//       orgId
+// hotCourseId
+// teacherId
+// startTime
+// endTime
 // 预约列表
 export function getHotCourseAppointmentList(data) {
   console.log('请求参数',data)
   return axios({
-    url: `${ApiPath.getHotCourseAppointmentList}?orgId=${data.orgId}&hotCourseId=${data.hotCourseId}&startTime=${data.startTime}&endTime=${data.endTime}`,
+    url: `${ApiPath.getHotCourseAppointmentList}?orgId=${data.orgId}&hotCourseId=${data.hotCourseId}&startTime=${data.startTime}&endTime=${data.endTime}&teacherId=${data.teacherId}&ifinish=${data.ifinish}`,
     method: 'get',
     data
   })

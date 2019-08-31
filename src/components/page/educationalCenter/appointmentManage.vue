@@ -1,22 +1,23 @@
 <template>
   <div class="content_box1">
-    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="form_box">
-      <el-form-item label="课程名称：" prop="">
-        <el-select v-model="ruleForm.courseId" placeholder="请选择" style="width:400px">
-          <el-option v-for="(item,index) in ruleForm.courseList" :key="index" :label="name" :value="id"></el-option>
+    <div>
+    <el-form :model="ruleForm" ref="ruleForm" label-width="100px" class="form_box">
+      <el-form-item label="课程名称：">
+        <el-select v-model="ruleForm.hotCourseId" placeholder="请选择" style="width:400px">
+          <el-option v-for="(item,index) in ruleForm.courseList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="预约门店：" prop="">
+      <el-form-item label="预约门店：">
         <el-select v-model="ruleForm.orgId" placeholder="请选择" style="width:400px">
-          <el-option v-for="(item,index) in ruleForm.orgList" :key="index" :label="name" :value="id"></el-option>
+          <el-option v-for="(item,index) in ruleForm.orgList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="预约教师：" prop="">
+      <el-form-item label="预约教师：">
         <el-select v-model="ruleForm.teacherId" placeholder="请选择" style="width:300px">
-          <el-option v-for="(item,index) in ruleForm.teacherList" :key="index" :label="name" :value="id"></el-option>
+          <el-option v-for="(item,index) in ruleForm.teacherList" :key="index" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="预约时间：" prop="">
+      <el-form-item label="预约时间：" >
          <el-date-picker
             v-model="ruleForm.startTime"
             type="date"
@@ -34,61 +35,66 @@
           ></el-date-picker>
       </el-form-item>
 
-      <el-form-item label="手机号码：" prop="title">
+      <!--<el-form-item label="手机号码：">
         <el-input placeholder="请输入手机号" type="number" maxlength="11" v-model.number="ruleForm.phone" ></el-input>
-      </el-form-item>
+      </el-form-item>   -->
+       <div class="elrow">
+                            <div class='clearselectall'>
+                                <el-button class="clearpadding" icon="el-icon-search" @click='selsectdata(0)' type="primary" plain>筛选</el-button>
+                            </div>
+                            <div class='clearselectall'>
+                                <el-button @click="selsectdata(1)" class="clearpadding" type="primary" plain>清除筛选条件
+                                </el-button>
+                            </div>
+                        </div>
     </el-form>
+                           
+    </div>
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
       mode="horizontal"
       @select="handleSelect"
-    >
-      <el-menu-item index="1">已预约（1）</el-menu-item>
-      <el-menu-item index="2">已打卡（1）</el-menu-item>
-      <el-menu-item index="3">已取消（1）</el-menu-item>
+     >
+      <el-menu-item index="0">已预约</el-menu-item>
+      <el-menu-item index="1">已打卡</el-menu-item>
+      <el-menu-item index="2">已取消</el-menu-item>
     </el-menu>
 
-    <el-table
-      ref="multipleTable"
-      :data="dataList"
-      tooltip-effect="dark"
-      style="width: 100%"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table :data="tableList" header-row-class-name="headerclassname"  style="width: 100%" 
+      :row-class-name="changetable"
+     >
       <el-table-column label="学员（手机号码）">
-        <template slot-scope="props">
+        <template slot-scope="scope">
           <div class="user_info">
-            <!-- <img :src="props.row.img" alt> -->
-            <div>
-              <div>{{ props.row.childName }}</div>
-              <!-- <div>{{ props.row.phone }}</div> -->
-            </div>
+              <div>{{ scope.row.childName }}</div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="courseName" label="预约课程"></el-table-column>
-
+      <el-table-column prop="courseName" label="预约课程">
+      </el-table-column>
       <el-table-column prop="teacherName" label="预约教师"></el-table-column>
-      <el-table-column prop="time" label="预约时间">
-        <template slot-scope="props">
-          <!-- <div>{{ props.row.date}}</div> -->
-          <div>{{ props.row.apptsStartTime}}~{{props.row.apptsEndTime}}</div>
+      <el-table-column prop="time" label="预约时间" width='180'>
+        <template slot-scope="scope">
+          <div> <p> {{ scope.row.apptsStartTime}} </p>
+         <p> {{scope.row.apptsEndTime}}</p></div>
         </template>
       </el-table-column>
       <el-table-column prop="roomName" label="教室"></el-table-column>
-      <el-table-column prop="verifyCode" label="验证码"></el-table-column>
+      <el-table-column prop="apptsCode" label="验证码"></el-table-column>
       <el-table-column prop="surplusNumber" label="剩余次数"></el-table-column>
+
       <el-table-column label="操作" width="280" align="center">
         <template slot-scope="scope">
           <el-button
             type="text"
             icon="el-icon-edit"
-            @click="listDetail(scope.$index, scope.row)"
+            @click="listDetail( scope.row)"
           >查看详情</el-button>
         </template>
       </el-table-column>
     </el-table>
+
     <el-dialog title="预约用户" :visible.sync="dialogVisible" width="30%" :before-close="closeDialog">
       <el-form ref="dataDetail"  label-width="80px">
         <div class="info_item">
@@ -102,7 +108,7 @@
         </div>
         <div class="info_item">
           <span class="item_title">预约课程：</span>
-          <span>{{ dataDetail.name }}</span>
+          <span>{{ dataDetail.courseName }}</span>
         </div>
         <div class="info_item">
           <span class="item_title">预约门店：</span>
@@ -113,12 +119,8 @@
           <span>{{ dataDetail.apptsStartTime }} ~ {{ dataDetail.apptsEndTime }}</span>
         </div>
         <div class="info_item">
-          <span class="item_title">预约课程：</span>
-          <span>{{ dataDetail.name }}</span>
-        </div>
-        <div class="info_item">
           <span class="item_title">预约时间：</span>
-          <span>{{ dataDetail.name }}</span>
+          <span>{{ dataDetail.apptsStartTime }}</span>
         </div>
         <div class="info_item">
           <span class="item_title">预约教师：</span>
@@ -130,21 +132,22 @@
         </div>
         <div class="info_item">
           <span class="item_title">当前状态：</span>
-          <span>{{ dataDetail.name }}</span>
+          <span>{{ dataDetail.ifinish }}</span>
         </div>
         <div class="info_item">
           <span class="item_title">验证码：</span>
-          <input v-model="dataDetail.name">
+          <span  >{{dataDetail.apptsCode}}</span>
         </div>
         <div class="info_item">
           <span class="item_title">剩余次数：</span>
-          <span>{{ dataDetail.name }}</span>
+          <span>{{ dataDetail.surplusNum }}</span>
         </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogVisible = false">返 回</el-button>
       </span>
     </el-dialog>
+
   </div>
 </template>
 <script>
@@ -154,12 +157,21 @@ export default {
   data() {
     return {
       activeIndex: "1",
-      dataList:[],
+      tableList:[],
       dataDetail:[],
       endTimeArray: [],
       dialogVisible: false,
+      ifinish:0,
       ruleForm: {
-        orgId:'',courseId:'',teacherId:'',startTime:'',endTime:'',phone:''
+        orgId:0,
+        hotCourseId:0,
+        teacherId:0,
+        startTime:'',
+        endTime:'',
+        phone:'',
+        courseList:[{name:'111',id:0},{name:'5222',id:2}],
+        orgList:[],
+        teacherList:[]
       },
       rules: {},
     };
@@ -168,39 +180,78 @@ export default {
     this.getList()
   },
   methods: {
-     getList() {
-      let {orgId,courseId,teacherId,startTime,endTime,phone} = this.ruleForm;
-      let params = {orgId,courseId,teacherId,startTime,endTime,phone}
-      getHotCourseAppointmentList(params)
-        .then(res => {
-          console.log(res)
-          this.dataList = res.result;
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
+      selsectdata(args){
+        if(args == 0){
+          let {orgId,hotCourseId,teacherId,startTime,endTime} = this.ruleForm;
+          let params = {orgId,hotCourseId,teacherId,startTime,endTime,ifinish:this.ifinish};
+          this.getList(params)
+        }else{
+          // 清楚刷选
+        }
+      },
+      // 改变表格
+      changetable(e) {
+          if (e.rowIndex % 2 == 0) {
+              return "table_borders"
+
+          } else {
+              return "table_border"
+          }
+      },
+     getList(args) {
+       var params={};
+       if(args){
+          params = args
+          console.log('刷选',params)
+       }else{
+          params = {orgId:0,hotCourseId:0,teacherId:0,startTime:'',endTime:'',teacherId:0,ifinish:0}
+       }
+
+       getHotCourseAppointmentList(params).then(res => {
+              console.log(res);
+              if(res.errorCode == 0){
+                let data = res.result;
+                  this.ruleForm.courseList = data.courseList;
+                  console.log(data.courseList)
+                  this.ruleForm.teacherList = data.teacherList;
+                  this.ruleForm.orgList = data.orgList;
+                  // 初始化
+                  this.ruleForm.courseList.unshift({name:'请选择',id:0});
+                  this.ruleForm.teacherList.unshift({name:'请选择',id:0});
+                  this.ruleForm.orgList.unshift({name:'请选择',id:0})
+                  // 列表
+
+                  // apptsEndTime: "2019-08-31 15:33:22"
+                  // apptsStartTime: "2019-08-31 15:33:20"
+                  // childId: 100064
+                  // childName: "小豆包"
+                  // courseName: "体验课"
+                  // id: 8
+                  // roomName: "222"
+                  // surplusNumber: 20
+                  // teacherName: "覃老师1"
+                  this.tableList= data.list;
+              }
+              this.dataList = res.result;
+            })
+            .catch(error => {
+              console.log("error", error);
+            });
     },
-    listDetail(index, row) {
+    listDetail(row) {
       this.dialogVisible = true;
-      this.getListDetail(row.id)
+      console.log(row.id)
+      getHotCourseAppointmentInfo({id:row.id}).then(res=>{
+        if(res.errorCode ==  0){
+          console.log(res);
+          this.dataDetail = res.result;
+        }
+      })
     },
-    //  getListDetail(id){
-    //   this.$axios({
-    //     method: "get",
-    //     url: "/store/appointment/getHotCourseAppointmentInfo/" + id,
-    //     headers: { Authorization: sessionStorage.getItem("Authorization") }
-    //   })
-    //     .then(res => {
-    //       this.dataDetail = res.data.result;
-    //     })
-    //     .catch(error => {
-    //       console.log("error", error);
-    //     });
-    // },
     changeStartTime(e){
       this.ruleForm.startTime=e
       // if(this.endTime!==''){
-        this.getList()
+        // this.getList()
       // }else{
       //   this.$message("请选择结束日期")
       // }
@@ -208,7 +259,7 @@ export default {
     changeEndTime(e){
       this.ruleForm.endTime=e
       //  if(this.startTime!==''){
-        this.getList()
+        // this.getList()
       // }else{
       //   this.$message("请选择开始日期")
       // }
@@ -216,8 +267,12 @@ export default {
     closeDialog() {
       this.dialogVisible = false;
     },
+    
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+        let {orgId,hotCourseId,teacherId,startTime,endTime} = this.ruleForm;
+        this.ifinish= parseInt(key);
+        let params = {orgId,hotCourseId,teacherId,startTime,endTime,ifinish:this.ifinish};
+      this.getList(params);
     },
     handleSelectionChange() {}
   }
@@ -230,10 +285,36 @@ export default {
   align-items: center;
   flex-wrap: wrap;
 }
+    .table_border {
+        border-bottom: 1px solid rgba(0, 0, 0, .5);
+        background-color: #A0C6F0 !important;
+    }
+
+    .table_borders {
+        border-bottom: 1px solid rgba(0, 0, 0, .5);
+        background-color: #CAE1FF !important;
+    }
 .user_info {
   display: flex;
   align-items: center;
 }
+    .clearselectall {
+        font-size: 0.6rem;
+        color: #409EFF;
+        height: 40px;
+        line-height: 35px;
+        margin-left: 15px;
+    }
+    .elrow {
+        display: flex;
+        flex-flow: nowrap row;
+    }
+    
+    .clearpadding {
+        margin-top: 2px;
+        padding: 8px 12px !important;
+        margin-left: 15px;
+    }
 .user_info img {
   border-radius: 50%;
   width: 40px;
