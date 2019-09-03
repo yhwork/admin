@@ -584,13 +584,15 @@
                                     })
                                     this.form.orgList= this.ruleForm.orgList=orgList
                                 // 赋值教室
+                                    this.form.roomList=[]
                                     arr.roomList.map(item=>{
                                          this.ruleForm.roomList.push({
                                              name:item.name,
                                              id:item.id
                                          })
                                     })
-                                    this.form.roomList= this.ruleForm.roomList 
+                                    this.form.roomList= this.ruleForm.roomList
+                                    this.form.roomList.unshift({name:'请选择',id:0})
                                     // 赋值老师
                                     let teacherList= [{name:'请选择',id:0}]
                                     arr.teacherList.map(item=>{
@@ -665,6 +667,7 @@
                                     })
                                     this.form.orgList= this.ruleForm.orgList=orgList
                                 // 赋值教室
+                                this.form.roomList=[]
                                     arr.roomList.map(item=>{
                                          this.ruleForm.roomList.push({
                                              name:item.name,
@@ -856,7 +859,9 @@
                         })
                     }
                 }
+
                 this.form.teacherId=0;
+                this.form.className='';
                 this.form.num='';
                 this.form.id='';
                 this.form.orgId=0;
@@ -955,6 +960,8 @@
             btnnewclass() {
                 this.dialogFormVisible = true;
                 this.iscreate = true;
+                // 清空数据
+                // this.form.
             },
             // 新建
             newcourse(i) {

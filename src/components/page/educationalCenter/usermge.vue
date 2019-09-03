@@ -285,8 +285,6 @@
                   },
                   {}
               ]
-
-
               //
               [{orgId:'',roleId:''}]
           -->
@@ -714,6 +712,8 @@ export default {
       if (args == 0) {
         return (this.my_newcourse = false);
       }
+      // 赋值为空
+      
       console.log("添加员工参数", this.form);
       let {
         userName,
@@ -780,6 +780,7 @@ export default {
         addUser(params).then(res => {
           console.log("保存", res);
           if (res.errorCode == 0) {
+            this.forminit()
             this.$message({ type: "success", message: "添加成功" });
             this.my_newcourse = false;
             this.getUserLists();
@@ -805,10 +806,19 @@ export default {
           if (res.errorCode == 0) {
             this.my_newcourse = false;
             this.getUserLists();
+            this.forminit()
             this.$message({ type: "success", message: "编辑成功" });
           }
         });
       }
+     
+    },
+    forminit(){
+       this.form.userName='';
+      this.form.userPhone='';
+      this.form.userPwd= '';
+      this.form.dialogImageUrl='';
+      this.form.imageUrlIdPhone='';
     },
     // 上传文件之前的钩子
     beforeAvatarUpload(file) {

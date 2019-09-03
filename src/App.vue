@@ -32,6 +32,7 @@ export default {
 </script>
 <style lang="scss">
   $bg:red;
+  @import "./assets/css/icon.css";
   @import "./assets/css/main.css";
     #editor_s img{
       width: 100%;

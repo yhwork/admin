@@ -36,6 +36,7 @@ const ApiUrl ={
 
     // 预约详情
     getHotCourseAppointmentInfo:`/store/appointment/getHotCourseAppointmentInfo`,
+    
     // 预约列表
     getHotCourseAppointmentList:`/store/appointment/getHotCourseAppointmentList`,
 
