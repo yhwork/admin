@@ -13,7 +13,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/store':{
-        target: 'http://192.168.1.102:8086',
+        target: 'http://192.168.1.100:8083',
         // target: 'https://qa.xdb.iforbao.com/store/',
         // target: 'https://xdb.iforbao.com/store/',
         changeOrigin:true,
@@ -25,8 +25,8 @@ module.exports = {
 
     // Various Dev Server settings
 
-    host: '192.168.1.101', // can be overwritten by process.env.HOST
-    // host:'127.0.0.1',
+    // host: '192.168.1.101', // can be overwritten by process.env.HOST
+    host:'127.0.0.1',
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

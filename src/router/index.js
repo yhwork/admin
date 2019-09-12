@@ -193,7 +193,7 @@ export default new Router({
           path: '/role',
           component: resolve => require(['../components/page/ueditor_demo.vue'], resolve),
           meta: { title: '百度编辑器' },
-        }, {
+        }, { 
           path: '/online_course',
           component: resolve => require(['../components/page/onlineList.vue'], resolve),
           meta: { title: '线上爆款' },

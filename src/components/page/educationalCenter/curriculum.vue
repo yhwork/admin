@@ -278,6 +278,7 @@
         @cell-mouse-enter="hovertablein"
         @cell-mouse-leave="hovertableout"
         @row-click="tableindex"
+        @cell-click= "clickCell"
         header-row-class-name="headerclassname"
         :row-class-name="changetable"
         @selection-change="handleSelectionChange"
@@ -785,6 +786,19 @@ export default {
     }
   },
   methods: {
+    // 点击单元格的部分内容
+    clickCell(row, column, cell, event){
+      console.log('单元格',row,column);
+      if(column.label == "关联线上销售" && row.relatedpersoncount =='待售'){
+          // 跳转到线下销售
+          this.$router.push({
+            path:'goods_setup',
+            query:row
+          })
+      }else{
+
+      }
+    },
     lieave() {
       if (this.form.courseName.trim() !== "") {
         // this.rules.classname[0].required=false;

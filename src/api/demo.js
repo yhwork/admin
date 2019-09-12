@@ -3,7 +3,6 @@ import ApiPath from './config'
 
 
 
-
 export function getInfo(data) {
   console.log('请求参数',data)
   return axios({
@@ -32,6 +31,29 @@ export function demo2(data) {
     // getRoleDetails:`/store/role/getRoleDetails`,
     // // 更新角色：
     // updateRole:`/store/role/updateRole`,
+
+//
+// getAllCourse:'/store/course/getAllCourse',
+// // 获取班级
+// getCourseClass:'/course/getCourseClass?courseId',
+// 获取班级
+export function getCourseClass(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getCourseClass}?courseId=${data.id}`,
+    method: 'get',
+    data
+  })
+}
+// 获取课程
+export function getAllCourse(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getAllCourse}`,
+    method: 'get',
+    data
+  })
+}
 
 
 // 获取角色列表

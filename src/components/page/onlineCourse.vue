@@ -40,7 +40,7 @@
           </el-form-item>-->
           <el-form-item label="产品图片：" prop="imgVideo">
             <el-upload
-              action="/store/file/img/upload"
+              :action="url_root + img_url"
               multiple
               accept="image/png, image/jpeg"
               list-type="picture-card"
@@ -73,7 +73,7 @@
               <div class="store_box">
                 <el-upload
                   class="upload_box1"
-                  action="/store/file/img/upload"
+                  :action="url_root + img_url"
                   accept=".mp4, .qlv, .qsv, .ogg, .flv, .avi, .wmv, .rmvb"
                   :headers="headers"
                   :data="paramsdata"
@@ -585,7 +585,7 @@
 
                 <el-upload
                   class="upload_box"
-                  action="/store/file/img/upload"
+                 :action="url_root + img_url"
                   :multiple="false"
                   :limit="1"
                   :on-exceed="handleExceed"
@@ -797,6 +797,7 @@
 // import TinymceEditor from "./tinymce-editor";
 // import UE from "@/components/page/UE.vue";
 import UEditor from "@/components/page/ueditor.vue";
+import URL  from '@/api/config';
 export default {
   components: {
     // TinymceEditor,
@@ -807,6 +808,8 @@ export default {
   inject: ["reload"],
   data() {
     return {
+       url_root:'',
+      img_url:'/store/file/img/upload',
       config: {
         //可以在此处定义工具栏的内容
         // toolbars: [
@@ -1214,6 +1217,10 @@ export default {
       filterDate: [],
       editor_content: ""
     };
+  },
+   activated() {
+    console.log('url',URL.root);
+    this.url_root = URL.root;
   },
   created() {
     this.edit_id = this.$route.query.id ? this.$route.query.id : "";

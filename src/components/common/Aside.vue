@@ -132,85 +132,48 @@ export default {
       console.log("侧边栏路由", newVal, oldVal);
       if (this.istrue) {
         this.istrue = false;
-          newVal.push({
-             childMenu: [
-                {
-                  icon: null,
-                  name: "角色管理",
-                  path: "/role"
-                }],
-                 icon: null,
-              name: "角色管理",
-              path: "demo"
-          })
-          newVal.map((items,index)=>{
-            //  console.log('有没有',items.path )
-            if(items.path == 'education'){
-                items.childMenu.push({
-                      icon: null,
-                      name: "班级",
-                      path: "/grade"
-                    },
-                    {
-                      icon: null,
-                      name: "课程",
-                      path: "/curriculum"
-                    },
-                    {
-                      icon: null,
-                      name: "排课",
-                      path: "/scheduling"
-                    },
-                    {
-                      icon: null,
-                      name: "教室",
-                      path: "/classroom"
-                    },
-                    {
-                      icon: null,
-                      name: "员工管理",
-                      path: "/usermge"
-                    })
-                        console.log('有没有',newVal)
-                    }
-                })
           // newVal.push({
-          //     childMenu: [
+          //    childMenu: [
           //       {
           //         icon: null,
-          //         name: "班级",
-          //         path: "/grade"
-          //       },
-          //       {
-          //         icon: null,
-          //         name: "课程",
-          //         path: "/curriculum"
-          //       },
-          //       {
-          //         icon: null,
-          //         name: "排课",
-          //         path: "/scheduling"
-          //       },
-          //       {
-          //         icon: null,
-          //         name: "教室",
-          //         path: "/classroom"
-          //       },
-          //       {
-          //         icon: null,
-          //         name: "课程表",
-          //         path: "/timetable"
-          //       },
-          //       {
-          //         icon: null,
-          //         name: "员工管理",
-          //         path: "/usermge"
-          //       }
-          //     ],
-          //     icon: null,
-          //     name: "教务管理",
+          //         name: "角色管理",
+          //         path: "/role"
+          //       }],
+          //        icon: null,
+          //     name: "角色管理",
           //     path: "demo"
-          // });
+          // })
+          // newVal.map((items,index)=>{
+          //   //  console.log('有没有',items.path )
+          //   if(items.path == 'education'){
+          //       items.childMenu.push({
+          //             icon: null,
+          //             name: "班级",
+          //             path: "/grade"
+          //           },
+          //           {
+          //             icon: null,
+          //             name: "课程",
+          //             path: "/curriculum"
+          //           },
+          //           {
+          //             icon: null,
+          //             name: "排课",
+          //             path: "/scheduling"
+          //           },
+          //           {
+          //             icon: null,
+          //             name: "教室",
+          //             path: "/classroom"
+          //           },
+          //           {
+          //             icon: null,
+          //             name: "员工管理",
+          //             path: "/usermge"
+          //           })
+          //               console.log('有没有',newVal)
+          //           }
+          // })
       }
     }
     // $route(newValue, oldValue) {

@@ -328,7 +328,7 @@
             <div class="flex_row">
               <el-upload
                 class="avatar-uploader"
-                action="/store/file/img/upload"
+                :action="url_root + img_url"
                 accept="image/png, image/jpeg"
                 :show-file-list="true"
                 :limit="1"
@@ -362,7 +362,7 @@
             <div class="flex_row">
               <el-upload
                 class="avatar-uploader"
-                action="/store/file/img/upload"
+                :action="url_root + img_url"
                 accept="image/png, image/jpeg"
                 :show-file-list="true"
                 :limit="1"
@@ -520,6 +520,7 @@ import {
   getUserDetails,
   resetUserPasswd
 } from "@/api/demo";
+import URL  from '@/api/config';
 export default {
   name: "usermge",
   data() {
@@ -534,7 +535,9 @@ export default {
       }
       return data;
     };
-    return {
+    return { 
+      url_root:'',
+      img_url:'/store/file/img/upload',
       headers: {
         Authorization: sessionStorage.getItem("Authorization") //从cookie里获取token，并赋值  Authorization ，而不是token
       },
@@ -612,6 +615,8 @@ export default {
   },
   activated() {
     this.getUserLists();
+    console.log('url',URL.root);
+    this.url_root = URL.root;
   },
   methods: {
     changetitle(args) {
@@ -884,10 +889,16 @@ export default {
       console.log(id, status);
       if (status == 2) {
         // 删除
-        delUser({ id }).then(res => {
+        this.$confirm('此操作将永久删除, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          delUser({ id }).then(res => {
           if (res.errorCode == 0) this.getUserLists();
           return this.$message({ type: "success", message: "删除成功" });
         });
+        })
       } else if (status == 1) {
         getUserDetails({ id }).then(res => {
           console.log("编辑信息", res);

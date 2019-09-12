@@ -666,8 +666,8 @@
                                         })
                                     })
                                     this.form.orgList= this.ruleForm.orgList=orgList
-                                // 赋值教室
-                                this.form.roomList=[]
+                                    // 赋值教室
+                                    this.form.roomList=[];
                                     arr.roomList.map(item=>{
                                          this.ruleForm.roomList.push({
                                              name:item.name,

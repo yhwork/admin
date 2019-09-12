@@ -7,6 +7,7 @@ import axios from 'axios'
 import qs from 'qs'
 import './assets/css/iconfont.css';
 
+import 'babel-polyfill'
 // 引用百度编辑器
 import '../static/ueditor/ueditor.config.js'
 import '../static/ueditor/ueditor.all.js'
@@ -60,6 +61,15 @@ Vue.use(qs)
 
 Vue.component('bml-marker-cluster', BmlMarkerClusterer)
 Vue.config.productionTip = false
+
+var root = process.env.API_ROOT;
+var $http = process.env.VUE_APP_BASE_API;
+var status_http = process.env.NODE_ENV;
+console.log('生产',root,'开发',$http,status_http);
+
+// 设置默认请求地址
+// axios.defaults.baseURL=root
+
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('Authorization') ? sessionStorage.getItem('Authorization') : "";
 // axios.defaults.headers.common['Content-Type'] = 'application/json; charset=UTF-8'

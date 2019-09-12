@@ -7,6 +7,8 @@
       <el-breadcrumb-item>新建爆品</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="content_box1">
+
+
       <!-- <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="选择门店" name="first">
           <div class="select_store" v-if>
@@ -247,7 +249,7 @@
           </el-form-item>-->
           <el-form-item label="产品图片：" prop="imgVideo">
             <el-upload
-              action="/store/file/img/upload"
+              :action="url_root + img_url"
               multiple
               accept="image/png, image/jpeg"
               list-type="picture-card"
@@ -274,12 +276,13 @@
               </div>
             </div>
           </el-form-item>
+          <!--上传视频-->
           <div v-if="course_type">
             <el-form-item label="线上视频：" :required="true">
               <div class="store_box">
                 <el-upload
                   class="upload_box1"
-                  action="/store/file/img/upload"
+                  :action="url_root + img_url"
                   accept=".mp4, .qlv, .qsv, .ogg, .flv, .avi, .wmv, .rmvb"
                   :headers="headers"
                   :data="paramsdata"
@@ -335,10 +338,50 @@
               </el-select>
             </el-form-item>
           </div>
+          <!--课程名称-->
+          <el-form-item label="课程名称：" prop="category">
+            <el-select
+              v-model="ruleForm.courseId"
+              value-key="id"
+              placeholder="请选择"
+              @change="changecourseList"
+            >
+              <el-option
+                v-for="(item,index) in ruleForm.courseLIst"
+                :label="item.name"
+                :key="index"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="班级名称：" prop="category">
+            <el-select
+              v-model="ruleForm.classId"
+              value-key="id"
+              placeholder="请选择"
+              @change="changeClass"
+            >
+              <el-option
+                v-for="item in ruleForm.classList"
+                :label="item.name"
+                :key="item.id"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="产品分类：">
+            <el-radio-group v-model="ruleForm.productTypeId">
+              <el-radio :label="12">随班课程</el-radio>
+              <el-radio :label="13">课程包</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
           <el-form-item label="产品标签：" prop="lable">
             <el-select
               style="width:800px;"
-              v-model="labelArray"
+              v-model="ruleForm.labelArray"
               multiple
               filterable
               allow-create
@@ -364,6 +407,7 @@
             </div>
             <!-- <el-button>确定</el-button> -->
           </el-form-item>
+
           <el-form-item label="产品卖点：" prop="subtitle">
             <el-input
               v-model="ruleForm.subtitle"
@@ -381,6 +425,7 @@
               </div>
             </div>
           </el-form-item>
+
         </div>
         <div>
           <div class="title">价格及售卖信息</div>
@@ -449,7 +494,7 @@
                 ></el-date-picker>-->
 
                 <el-date-picker
-                  v-model="courseStartTime"
+                  v-model="ruleForm.courseStartTime"
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="开始日期"
@@ -458,7 +503,7 @@
                 ></el-date-picker>
                 <span>至</span>
                 <el-date-picker
-                  v-model="courseEndTime"
+                  v-model="ruleForm.courseEndTime"
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="结束日期"
@@ -466,6 +511,30 @@
                   @change="changeCourseEndTime"
                 ></el-date-picker>
               </el-form-item>
+               <el-form-item label="上课门店：" prop>
+                  <template>
+                    <el-time-select
+                      placeholder="起始时间"
+                      v-model="ruleForm.startTime"
+                      :picker-options="{
+                        start: '08:30',
+                        step: '00:15',
+                        end: '18:30'
+                      }">
+                    </el-time-select>
+                    <el-time-select
+                      placeholder="结束时间"
+                      v-model="ruleForm.endTime"
+                      :picker-options="{
+                        start: '08:30',
+                        step: '00:15',
+                        end: '18:30',
+                        minTime:ruleForm.startTime
+                      }">
+                    </el-time-select>
+                  </template>
+               </el-form-item>
+              
 
               <!-- <div class="store_box">
                 <el-form-item label="上课门店：" prop>
@@ -480,23 +549,19 @@
                   <div class="hint_info">如果多个门店通用，则增加其他门店，但用户一旦选择了上课门店，则所有课程都在门店完成</div>
                 </el-form-item>
                 <el-button type="primary" style="margin-left:20px;" @click="addStore">增加上课门店</el-button>
-              </div>-->
+              </div>
 
-              <!-- 上课时间 -->
               <div class="store_box">
                 <el-form-item label="上课时间：" :required="true" style="width:86%">
                   <el-table :data="orglist" :default-expand-all="true">
                     <el-table-column type="expand" :default-expand-all="true">
-                      <!-- <div>{{props.row.courseTime}}</div> -->
                       <template slot-scope="props">
                         <el-form label-position="left" inline class="expand_box">
-                          <!-- <div label v-for="(item,index) in props.row.courseTime" :key="index"> -->
-                          <!-- 问题1  先默认个时间吧 -->
                           <div label v-for="(item,index) in orglist[0].courseTime" :key="index">
                             <el-form-item>{{item.classStartTime}}~{{item.classEndTime}}</el-form-item>
                             <el-form-item>{{item.startTime}}~{{item.endTime}}</el-form-item>
                             <el-form-item class="week_content">
-                              <span v-for="i in item.weekday" :key="index">{{i}}</span>
+                              <span v-for="(i,index) in item.weekday" :key="index">{{i}}</span>
                             </el-form-item>
                             <el-form-item label>
                               <span>{{item.teacherName}}</span>
@@ -529,13 +594,17 @@
 
                     <el-table-column label="操作" width="280" align="center">
                       <template slot-scope="scope">
-                        <!-- 有上课时间不能修改 -->
                         <el-button
                           type="text"
                           v-if="isUpSetClassTime"
                           @click="setClassTime(scope.$index,scope.row)"
                         >设置上课时间</el-button>
-                        <el-button  @click="setClassTime(scope.$index,scope.row)" :class="isUpSetClassTime?'':'isclasscolors'" type="text" v-else>设置上课时间</el-button>
+                        <el-button
+                          @click="setClassTime(scope.$index,scope.row)"
+                          :class="isUpSetClassTime?'':'isclasscolors'"
+                          type="text"
+                          v-else
+                        >设置上课时间</el-button>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -549,7 +618,7 @@
                   >如果选择门店中没有相应门店，则点击设置门店</div>
                 </div>
               </div>
-              <!-- 上课时间列表 -->
+
               <el-dialog title="查看上课日期" :visible.sync="classTimeState" width="30%">
                 <div label-width="65px" size="medium">
                   <div
@@ -562,11 +631,10 @@
                   </el-row>
                 </div>
               </el-dialog>
-              <!-- 上课时间弹窗 -->
+
               <el-dialog title="设置上课时间" :visible.sync="dialogFormVisible" class="dialog_box">
                 <div label-width="65px" size="medium">
                   <div v-if="firstStep">
-                    <!-- 开课时间日期 -->
                     <el-form-item label="开课日期范围：">
                       <el-date-picker
                         v-model="courseStartTime"
@@ -684,7 +752,6 @@
                     </div>
                   </el-row>
 
-
                   <el-row style="display: flex;justify-content: flex-end;">
                     <el-button type @click="cancleDialog">取消</el-button>
                     <el-button type="primary" @click="nextStep" v-if="firstStep">下一步</el-button>
@@ -693,8 +760,8 @@
                   </el-row>
                 </div>
               </el-dialog>
+              -->
             </div>
-
 
             <el-form-item label="有效期：" :required="true">开课日期内都有效</el-form-item>
           </div>
@@ -748,6 +815,7 @@
               </el-radio-group>
               <div class="hint_info">如果按次数收费，则视频不能快进和快退等反复观看</div>
             </el-form-item>
+
             <el-form-item label="观看方式：" prop>
               <el-radio-group v-model="way" @change="changeWay">
                 <el-radio :label="0">在线观看</el-radio>
@@ -787,7 +855,7 @@
               <div v-if="crowd_state">
                 <el-upload
                   class="upload_box"
-                  action="/store/file/img/upload"
+                  :action="url_root + img_url"
                   :multiple="false"
                   :limit="1"
                   :on-exceed="handleExceed"
@@ -909,7 +977,11 @@
                 <div class="goods_title">{{ruleForm.title}}</div>
                 <div class="goods_info">{{ruleForm.subtitle}}</div>
                 <div class="lable_box">
-                  <div class="label_item" v-for="item in this.ruleForm.lable">{{item}}</div>
+                  <div
+                    class="label_item"
+                    v-for="(item,index) in this.ruleForm.lable"
+                    :key="index"
+                  >{{item}}</div>
                 </div>
                 <div>
                   <span class="o_price">¥{{ruleForm.disPrice}}</span>
@@ -967,7 +1039,8 @@
 
 //引入
 import UEditor from "@/components/page/ueditor.vue";
-
+import URL from "@/api/config";
+import {getCourseClass, getAllCourse} from '@/api/demo'
 /**
    * 所有参数
    * {
@@ -1014,6 +1087,8 @@ export default {
   inject: ["reload"],
   data() {
     return {
+      url_root: "",
+      img_url: "/store/file/img/upload",
       //富文本配置设置
       config: {
         autoHeightEnabled: false,
@@ -1234,9 +1309,18 @@ export default {
       saleStartTime: "",
       saleEndTime: "",
       ruleForm: {
-        title: "",
+        startTime:'',
+        endTime:'',
+        productTypeId: 13,
+        title: "",          // 产品名称
         category: "",
         subtitle: "",
+        courseId:0, // 课程id
+        courseTimeList: [], // 课程列表
+        classId:'', // 班级Id
+        classList: [], // 班级列表
+        courseLIst:[],
+        labelArray:[],
         courseNum: "",
         courseTime: "",
         origPrice: "",
@@ -1245,7 +1329,7 @@ export default {
         groupPrice: "",
         memberNum: "",
         lable: [],
-        imgVideo: [],
+        imgVideo: [],   // 图片列表
         tempImgVideo: [],
         limit: 1,
         videoCount: "",
@@ -1301,7 +1385,17 @@ export default {
       tempCourseTime: []
     };
   },
+  activated() {
+    let data = this.$route.query;
+    console.log("接受数据", data);
+    console.log("url", URL.root);
+    this.url_root = URL.root;
+  },
   created() {
+     let data = this.$route.query;
+    console.log("接受数据", data);
+    console.log("url", URL.root);
+    this.url_root = URL.root;
     // console.log('12312',this.data.row);
     // 编辑id
     this.edit_id = this.$route.query.id ? this.$route.query.id : "";
@@ -1341,6 +1435,45 @@ export default {
   // });
   // },
   methods: {
+    // 改变班级
+    changeClass(e) {
+      console.log(e);
+    },
+    // 改变课程
+    changecourseList(e) {
+      console.log('改变的课程',e);
+      let courseLIst = this.ruleForm.courseLIst;
+      // 查询班级
+      if(!e || e==0){
+          this.ruleForm.classList=[{name:'请选择',id:0}]
+          this.ruleForm.classId=0;
+          this.ruleForm.courseNum = '';
+          this.ruleForm.courseTime ='';
+          this.ruleForm.courseStartTime = '';
+          this.ruleForm.courseEndTime=''
+          this.ruleForm.startTime = '';
+          this.ruleForm.endTime = '';
+         return
+      }
+      let [{endDate,endTime,lessonNum,lessonTime,startDate,startTime}]= courseLIst.filter(item=>item.id==e);
+      // 赋值
+      this.ruleForm.courseNum = lessonNum;
+      this.ruleForm.courseTime =lessonTime;
+      this.ruleForm.courseStartTime = startDate;
+      this.ruleForm.courseEndTime=endDate
+      this.ruleForm.startTime = startTime;
+      this.ruleForm.endTime = endTime;
+      console.log('数据',startDate,this.ruleForm.courseStartTime)
+
+      getCourseClass({id:e}).then(res=>{
+        console.log('班级列表',res.result);
+        let data = res.result;
+        if(data){
+          this.ruleForm.classList=data;
+          this.ruleForm.classList.unshift({name:'请选择',id:0})
+        }
+      })
+    },
     //获取文档内容
     getContent: function() {
       let content = this.$refs.ueditor.getUEContent();
@@ -1359,6 +1492,16 @@ export default {
     // /hotProduct/addHotOneLineProduct
     //获取分类
     getCategory() {
+      getAllCourse().then(res=>{
+        console.log('课程列表',res)
+         let data = res.result;
+         if(data){
+           this.ruleForm.courseLIst=data
+           this.ruleForm.courseLIst.unshift({name:'请选择',id:0})
+         }else{
+           return this.message({type:'warning',message:'课程暂无数据'})
+         }
+      })
       this.$axios({
         method: "get",
         url: "/store/org/getOrgSubList",
@@ -1434,22 +1577,24 @@ export default {
       }
     },
 
-    //上传图片
+    //上传图片成功
     uploadImg(response, file, fileList) {
       var temp = fileList;
       var tempArray = {}; //创建一个空对象
       for (var i = 0; i < temp.length; i++) {
         tempArray[i] = temp[i].response.result;
       }
+      console.log('上传成功后的图片列表',tempArray)
       this.ruleForm.imgVideo = tempArray;
       console.log(this.ruleForm.imgVideo);
     },
-
+    // 上传图片后展示
     previewImg(file) {
       this.dialogImageUrl = file.url;
+      console.log('展示',this.dialogImageUrl)
       this.dialogVisible = true;
     },
-
+    // 移除图片
     removeImg(file, fileList) {
       console.log(file, fileList);
       this.ruleForm.imgVideo = fileList;
@@ -1519,7 +1664,7 @@ export default {
     },
     //添加标签
     changeLabel(e) {
-      var temp = this.labelArray;
+      var temp = this.ruleForm.labelArray;
       var tempArray = {}; //创建一个空对象
       for (var i = 0; i < temp.length; i++) {
         tempArray[i] = temp[i];
@@ -1554,7 +1699,7 @@ export default {
     changeCourse(e) {
       this.course_type = !this.course_type;
       this.ruleForm.lable = "";
-      (this.labelArray = ""), (this.ruleForm.subtitle = "");
+      (this.ruleForm.labelArray = ""), (this.ruleForm.subtitle = "");
       this.ruleForm.courseNum = "";
       this.ruleForm.courseTime = "";
       this.ruleForm.origPrice = "";
@@ -1573,8 +1718,9 @@ export default {
     changeStandard(e) {},
 
     //观看方式
-    changeWay(e) {},
+    changeWay(e) {
 
+    },
     changeSaleTime(e) {
       this.saleTime = e;
       if (e == 1) {
@@ -1592,12 +1738,15 @@ export default {
 
     // 开课起始日期
     changeCourseStartTime(e) {
-      this.courseStartTime = e;
+      // this.courseStartTime = e;
+
+      this.ruleForm.courseStartTime =e;
       console.log("起始时间");
     },
     // 开课结束日期
     changeCourseEndTime(e) {
-      this.courseEndTime = e;
+      // this.courseEndTime = e;
+      this.ruleForm.courseEndTime = e;
       console.log("结束时间");
     },
     changeGroupTime(e) {
@@ -1908,8 +2057,8 @@ export default {
         this.classStartTime1 = e;
         console.log("classstarttime", this.classStartTime);
         console.log("classStartTime1", this.classStartTime1);
-      }else{
-        console.log('有时间不能修改')
+      } else {
+        console.log("有时间不能修改");
       }
     },
 
@@ -2223,9 +2372,9 @@ export default {
 
     // 存班级时间
     saveClassTime() {
-      var orglist = this.orglist;           //原数据
-      var count = this.ruleForm.courseNum;  //课程次数
-                                            //计算可不可以排课
+      var orglist = this.orglist; //原数据
+      var count = this.ruleForm.courseNum; //课程次数
+      //计算可不可以排课
       var tempTime = parseInt((this.iDays / 7) * this.checkWeek.length);
       if (tempTime < count) {
         this.$message.error("请重新设置开课日期或重复天");
@@ -2234,12 +2383,11 @@ export default {
         if (this.classStartTime == "") {
           this.$message.error("请设置开课日期");
         } else {
-
           //过滤日期
-          var list = this.filterDate;   
-          console.log('filterDate',filterDate) 
+          var list = this.filterDate;
+          console.log("filterDate", filterDate);
           var templist = this.dateValue;
-           console.log('templist',templist) 
+          console.log("templist", templist);
           let newArr = [];
           // 数组去重
           for (let i = 0; i < list.length; i++) {
@@ -2254,7 +2402,7 @@ export default {
             // includes() 方法用来判断一个数组是否包含一个指定的值，如果是返回 true，否则false。
             if (!newArr.includes(items)) return items;
           });
-          console.log(tempArr);    
+          console.log(tempArr);
 
           // for (let i = 0; i < newArr.length; i++) {
           //   for (let j = 0; j < list.length; j++) {
@@ -2308,9 +2456,9 @@ export default {
     goList() {
       this.$router.go(-1);
     },
-    // 获取请求编辑信息                  1
+    // 获取请求编辑信息             
     getEditInfo() {
-      // 
+      //
       this.$axios({
         method: "get",
         url: "/store/hotProduct/getHotProductInfo/" + this.edit_id,
@@ -2350,7 +2498,10 @@ export default {
           var temp = Object.values(JSON.parse(res.data.result.imgVideo));
           this.tempImgVideo = res.data.result.imgVideo;
           if (temp.length > 0) {
+            // 初始化图片
+            this.imgList = [];
             for (let t = 0; t < temp.length; t++) {
+              // 设置图片
               this.imgList.push({
                 name: "",
                 url: temp[t],
@@ -2361,7 +2512,7 @@ export default {
 
           //重组标签
           var tempLabel = Object.values(JSON.parse(res.data.result.lable));
-          this.labelArray = tempLabel;
+          this.ruleForm.labelArray = tempLabel;
           this.ruleForm.lable = tempLabel;
           //设置拼团状态
           if (res.data.result.igroup == 0) {
@@ -2371,10 +2522,10 @@ export default {
           //处理上课时间
           var orglist = res.data.result.courseTimeList;
           // 如果有时间不能编辑
-          if(orglist.length != 0 || orglist != null){
-            this.isUpSetClassTime = false
-          }else{
-            this.isUpSetClassTime=true
+          if (orglist.length != 0 || orglist != null) {
+            this.isUpSetClassTime = false;
+          } else {
+            this.isUpSetClassTime = true;
           }
           console.log("问题数据1", orglist);
           for (var i in orglist) {
@@ -2403,10 +2554,10 @@ export default {
           //     orglist[i].courseTime.push(courseTime);
           // classStartTime
           this.orglist = orglist;
-          this.courseStartTime = res.data.result.startDate;
-          this.courseEndTime = res.data.result.endDate;
+          this.ruleForm.courseStartTime = res.data.result.startDate;
+          this.ruleForm.courseEndTime = res.data.result.endDate;
           this.ruleForm.title = res.data.result.title;
-          this.ruleForm.category = res.data.result.subjectId;
+          this.ruleForm.productTypeId = res.data.result.subjectId;
           this.ruleForm.subtitle = res.data.result.subtitle;
           this.ruleForm.courseNum = res.data.result.num;
           this.ruleForm.courseTime = res.data.result.time; // 赋值了一个时间
@@ -2469,7 +2620,13 @@ export default {
         } else {
           this.igroup = 0;
         }
-
+        // 判断输入的课程名称
+        let {courseId,classId} =this.ruleForm;
+        if(!courseId){
+          return this.$message({type:'warning',message:'请选择课程'})
+        }else if( !classId){
+          return this.$message({type:'warning',message:'请选择班级'})
+        }
         if (this.edit_id != "") {
           this.tempOrgList(); // 获取列表时间
           //处理上课时间
@@ -2507,7 +2664,7 @@ export default {
         var params = {
           id: parseInt(this.edit_id),
           title: this.ruleForm.title,
-          subjectId: this.ruleForm.category,
+          subjectId: this.ruleForm.productTypeId,
           imgVideo: temp_img,
           lable: JSON.stringify(this.ruleForm.lable),
           subtitle: this.ruleForm.subtitle,
@@ -2522,14 +2679,15 @@ export default {
           count: this.ruleForm.count,
           surplusCount: this.ruleForm.courseTime,
           ishelf: this.iShelf,
-          courseId: this.courseId,
-          course: orglist,
+          courseId: courseId,
+          classId: classId,
+          course: orglist, 
           descr: content, // 文本
           startTime: this.saleStartTime ? this.saleStartTime : null, // 开始时间
           endTime: this.saleEndTime ? this.saleEndTime : null, // 结束时间
           memberNum: this.ruleForm.memberNum,
-          courseEndDate: this.courseEndTime, //  课程结束时间
-          courseStartDate: this.courseStartTime //  课程起始时间
+          courseEndDate: this.ruleForm.courseEndTime, //  课程结束时间
+          courseStartDate: this.ruleForm.courseStartTime //  课程起始时间
         };
 
         console.log("参数2", params);
@@ -2538,7 +2696,7 @@ export default {
          * 问题2  startTime  为null
          */
         // 请求验证
-        if (valid) {
+        // if (valid) {
           // 有id  进行修改
           if (this.edit_id != "") {
             this.$axios({
@@ -2586,31 +2744,32 @@ export default {
                 console.log("error", error);
               });
           }
-        } else {
-          if (this.ruleForm.title == "") {
-            this.$message.error("请输入产品名称");
-          } else if (this.ruleForm.category == "") {
-            this.$message.error("请选择产品分类");
-          } else if (this.ruleForm.imgVideo == "") {
-            this.$message.error("请上传图片");
-          } else if (this.ruleForm.courseNum == "") {
-            this.$message.error("请输入课节数");
-          } else if (this.ruleForm.courseTime == "") {
-            this.$message.error("请输入课程时长");
-          } else if (this.ruleForm.origPrice == "") {
-            this.$message.error("请输入产品原价");
-          } else if (this.ruleForm.disPrice == "") {
-            this.$message.error("请输入产品优惠价格");
-          } else if (this.ruleForm.count == "") {
-            this.$message.error("请输入名额");
-          } else if (this.ruleForm.courseStartTime == "") {
-            this.$message.error("请设置开课日期");
-          } else if (this.ruleForm.groupPrice == "") {
-            this.$message.error("请输入拼团价格");
-          } else if (this.ruleForm.memberNum == "") {
-            this.$message.error("请输入拼团人数");
-          }
-        }
+        // } else {
+
+          // if (this.ruleForm.title == "") {
+          //   this.$message.error("请输入产品名称");
+          // } else if (this.ruleForm.productTypeId == "") {
+          //   this.$message.error("请选择产品分类");
+          // } else if (this.ruleForm.imgVideo == "") {
+          //   this.$message.error("请上传图片");
+          // } else if (this.ruleForm.courseNum == "") {
+          //   this.$message.error("请输入课节数");
+          // } else if (this.ruleForm.courseTime == "") {
+          //   this.$message.error("请输入课程时长");
+          // } else if (this.ruleForm.origPrice == "") {
+          //   this.$message.error("请输入产品原价");
+          // } else if (this.ruleForm.disPrice == "") {
+          //   this.$message.error("请输入产品优惠价格");
+          // } else if (this.ruleForm.count == "") {
+          //   this.$message.error("请输入名额");
+          // } else if (this.ruleForm.courseStartTime == "") {
+          //   this.$message.error("请设置开课日期");
+          // } else if (this.ruleForm.groupPrice == "") {
+          //   this.$message.error("请输入拼团价格");
+          // } else if (this.ruleForm.memberNum == "") {
+          //   this.$message.error("请输入拼团人数");
+          // }
+        // }
       });
     }
   }
@@ -2968,8 +3127,8 @@ export default {
   padding: 8px 0;
 }
 
-.isclasscolors{
-  color: #999
+.isclasscolors {
+  color: #999;
 }
 </style>
 

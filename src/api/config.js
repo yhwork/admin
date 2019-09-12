@@ -2,8 +2,20 @@
  * 接口地址
  * 
  */
+
+const root = process.env.API_ROOT;
 // 13716583263 736602
 const ApiUrl ={
+
+    
+
+    root:root,
+    // 线下活动
+    // 获取所有课程
+    getAllCourse:'/store/course/getAllCourse',
+    // 获取班级
+    getCourseClass:'/store/course/getCourseClass',
+
 
     // 角色管理
     // 获取角色列表
@@ -61,6 +73,9 @@ const ApiUrl ={
 
 
 
+
+    // 新建线下活动
+    
     // 课程上架
     courseUp:'/store/course/courseUp',
     // 课程下架
