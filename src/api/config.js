@@ -15,6 +15,15 @@ const ApiUrl ={
     getAllCourse:'/store/course/getAllCourse',
     // 获取班级
     getCourseClass:'/store/course/getCourseClass',
+    // 获取门店
+    getOrgListByOrgid:'/store/org/getOrgListByOrgid',
+    // 获取分类
+    getOrgSubList:"/store/org/getOrgSubList",
+    // 获取产品详情
+    getHotProductInfo:'/store/hotProduct/getHotProductInfo',
+
+
+
 
 
     // 角色管理

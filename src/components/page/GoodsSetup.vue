@@ -1339,7 +1339,6 @@ export default {
         classType: 0,
         courseStartTime: "",
         course: [],
-        count: ""
       },
       rules: {
         title: [

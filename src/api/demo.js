@@ -54,6 +54,31 @@ export function getAllCourse(data){
     data
   })
 }
+// 获取门店
+export function getOrgListByOrgid(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getOrgListByOrgid}`,
+    method: 'get',
+    data
+  })
+}
+// 获取详情列表
+export function getHotProductInfo(data){
+  console.log('请求参数',data)
+  return axios({
+    url: `${ApiPath.getHotProductInfo}/${data.id}`,
+    method: 'get',
+    data
+  })
+}
+
+
+
+
+
+
+
 
 
 // 获取角色列表
