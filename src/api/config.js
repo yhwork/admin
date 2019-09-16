@@ -9,7 +9,6 @@ const ApiUrl ={
 
 
     // 练习  21
-
     root:root,
     // 线下活动
     // 获取所有课程
