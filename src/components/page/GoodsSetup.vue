@@ -373,7 +373,7 @@
 
           <el-form-item label="产品分类：">
             <el-radio-group v-model="ruleForm.productTypeId">
-              <el-radio :label="12">随班课程</el-radio>
+              <!-- <el-radio :label="12">随班课程</el-radio> -->
               <el-radio :label="13">课程包</el-radio>
             </el-radio-group>
           </el-form-item>
@@ -446,6 +446,7 @@
                         v-model="ruleForm.courseNum"
                         type="number"
                         placeholder="输入课程次数"
+                        :disabled="edit_id"
                         style="width:200px"
                       ></el-input>
                     </el-form-item>
@@ -453,6 +454,7 @@
                       <el-input
                         v-model="ruleForm.courseTime"
                         placeholder="输入每次课时"
+                        :disabled="edit_id"
                         style="width:150px"
                       ></el-input>
                       <span>分钟/次</span>
@@ -483,21 +485,12 @@
               </el-form-item>
 
               <el-form-item label="开课日期：" :required="true">
-                <!-- <el-date-picker
-                  v-model="courseTimeArray"
-                  value-format="yyyy-MM-dd"
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  @change="changeCourseTime"
-                ></el-date-picker>-->
-
                 <el-date-picker
                   v-model="ruleForm.courseStartTime"
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="开始日期"
+                  :disabled="edit_id"
                   :picker-options="pickerOptions0"
                   @change="changeCourseStartTime"
                 ></el-date-picker>
@@ -505,6 +498,7 @@
                 <el-date-picker
                   v-model="ruleForm.courseEndTime"
                   value-format="yyyy-MM-dd"
+                  :disabled="edit_id"
                   type="date"
                   placeholder="结束日期"
                   :picker-options="pickerOptions0"
@@ -516,6 +510,7 @@
                     <el-time-select
                       placeholder="起始时间"
                       v-model="ruleForm.startTime"
+                      :disabled="edit_id"
                       :picker-options="{
                         start: '08:30',
                         step: '00:15',
@@ -524,6 +519,7 @@
                     </el-time-select>
                     <el-time-select
                       placeholder="结束时间"
+                      :disabled="edit_id"
                       v-model="ruleForm.endTime"
                       :picker-options="{
                         start: '08:30',
@@ -1390,9 +1386,11 @@ export default {
     console.log("接受数据", data);
     console.log("url", URL.root);
     this.url_root = URL.root;
+    this.getCategory(); //获取分类
   },
   created() {
-     let data = this.$route.query;
+    this.getCategory(); //获取分类
+    let data = this.$route.query;
     console.log("接受数据", data);
     console.log("url", URL.root);
     this.url_root = URL.root;
@@ -1405,7 +1403,7 @@ export default {
     } else {
       this.getOrgList(); //获取门店
     }
-    this.getCategory(); //获取分类
+   
   },
 
   watch: {
@@ -1417,23 +1415,6 @@ export default {
       }
     }
   },
-  // 页面执行
-  // beforeCreate() {
-  //   console.log('执行了，啊')
-  //   window.addEventListener('beforeunload', function(event) {
-  //       console.log('beforeunload关闭之前',event);
-  //     });
-  //   window.addEventListener('unload', function(event) {
-  //       console.log('unload关闭',event);
-  //     });
-  // },
-  // // 页面销毁
-  // beforeDestroy() {
-  //    console.log('销毁了吗')
-  // window.removeEventListener("unload", (e)=>{
-  //   console.log('unload移除',e)
-  // });
-  // },
   methods: {
     // 改变班级
     changeClass(e) {
@@ -1502,19 +1483,17 @@ export default {
            return this.message({type:'warning',message:'课程暂无数据'})
          }
       })
-      this.$axios({
-        method: "get",
-        url: "/store/org/getOrgSubList",
-        headers: { Authorization: sessionStorage.getItem("Authorization") }
-      })
-        .then(res => {
-          this.categoryList = res.data.result;
-        })
-        .catch(error => {
-          console.log("error", error);
-        });
+      // this.$axios({
+      //   method: "get",
+      //   url: "/store/org/getOrgSubList",
+      //   headers: { Authorization: sessionStorage.getItem("Authorization") }
+      // }).then(res => {
+      //     this.categoryList = res.data.result;
+      //   })
+      //   .catch(error => {
+      //     console.log("error", error);
+      //   });
     },
-
     changeCategory(e) {
       this.ruleForm.category = e;
     },
@@ -2463,31 +2442,7 @@ export default {
         method: "get",
         url: "/store/hotProduct/getHotProductInfo/" + this.edit_id,
         headers: { Authorization: sessionStorage.getItem("Authorization") }
-      })
-        .then(res => {
-          /**
-             * 
-             *  disPrice: 99
-                endDate: "2019-07-23"
-                groupEndTime: null
-                groupPrice: null
-                groupStartTime: null
-                hotCourseId: 155
-                id: 165
-                igroup: 0
-                imgVideo: "{"0":"https://qa.oss.iforbao.com/store/63/201907080203426786.jpg?Expires=4716151422&OSSAccessKeyId=LTAIAjysqrPPyNVJ&Signature=fBGB6c6lXQGwmZemZvIKJJU08Sk%3D"}"
-                lable: "{"0":"所带学生多次在上海全国性美术比赛中获奖","1":"上课认真负责","2":"热爱孩子","3":"热爱教育事业"}"
-                memberNum: 0
-                num: 2
-                origPrice: 300
-                startDate: "2019-07-08"
-                subtitle: "上海师范大学美术专业的崔蓉老师，上海美术家协会会员，8年小学美术教龄+20年美术培训教龄"
-                surplusCount: 2
-                time: 90
-                title: "斑马线社区课堂美术名师课程适合3-16岁儿童零基础小班制"
-
-             */
-          console.log("info", res);
+      }).then(res => {
           //设置富文本内容
           console.log("设置富文本内容", res.data.result.descr);
           setTimeout(() => {
@@ -2509,7 +2464,18 @@ export default {
               });
             }
           }
-
+          let courseId = res.data.result.courseId;
+          this.ruleForm.courseId = courseId;
+           getCourseClass({id:courseId}).then(data=>{
+            console.log('班级列表班级列表',data.result);
+            var data = data.result;
+            if(data){
+              this.ruleForm.classList=data;
+              this.ruleForm.classList.unshift({name:'请选择',id:0});
+              this.ruleForm.classId = res.data.result.classId;
+            }
+          })
+         
           //重组标签
           var tempLabel = Object.values(JSON.parse(res.data.result.lable));
           this.ruleForm.labelArray = tempLabel;
@@ -2519,49 +2485,10 @@ export default {
             this.assemble_state = false;
             this.igroup = 0;
           }
-          //处理上课时间
-          var orglist = res.data.result.courseTimeList;
-          // 如果有时间不能编辑
-          if (orglist.length != 0 || orglist != null) {
-            this.isUpSetClassTime = false;
-          } else {
-            this.isUpSetClassTime = true;
-          }
-          console.log("问题数据1", orglist);
-          for (var i in orglist) {
-            for (var j in orglist[i].courseTime) {
-              orglist[i].courseTime[j].weekday = eval(
-                orglist[i].courseTime[j].weekday
-              );
-              orglist[i].courseTime[j].courseDate = eval(
-                orglist[i].courseTime[j].courseDate
-              );
-            }
-          }
-          console.log("问题数据2", orglist[0].courseTime);
-          //  var courseTime = {};
-          //     courseTime.classStartTime = this.classStartTime;
-          //     courseTime.classEndTime = this.courseEndTime;
-          //     courseTime.startTime = this.startTime;
-          //     courseTime.endTime = this.endTime;
-          //     courseTime.weekday = this.checkWeek;
-          //     courseTime.teacherName = this.teacherName;
-          //     courseTime.roomName = this.roomName;
-          //     courseTime.number = this.number;
-          //     courseTime.courseDate = this.filterDate;
-          //     courseTime.courseDateStr = this.filterDate;
-          //     courseTime.iedit = false;
-          //     orglist[i].courseTime.push(courseTime);
-          // classStartTime
-          this.orglist = orglist;
-          this.ruleForm.courseStartTime = res.data.result.startDate;
-          this.ruleForm.courseEndTime = res.data.result.endDate;
           this.ruleForm.title = res.data.result.title;
           this.ruleForm.productTypeId = res.data.result.subjectId;
           this.ruleForm.subtitle = res.data.result.subtitle;
-          this.ruleForm.courseNum = res.data.result.num;
-          this.ruleForm.courseTime = res.data.result.time; // 赋值了一个时间
-          // this.courseId = res.data.result.courseDetail.courseId;
+
           this.ruleForm.origPrice = res.data.result.origPrice;
           this.ruleForm.disPrice = res.data.result.disPrice;
           this.ruleForm.count = res.data.result.count;
@@ -2569,7 +2496,28 @@ export default {
           this.groupEndTime = res.data.result.groupStartTime;
           this.ruleForm.groupPrice = res.data.result.groupPrice;
           this.ruleForm.memberNum = res.data.result.memberNum;
+
+          getAllCourse().then(res=>{
+              let data = res.result;
+              if(data){
+                let [{endDate,endTime,lessonNum,lessonTime,startDate,startTime}]= data.filter(item=>item.id==courseId);
+                // 赋值
+                this.ruleForm.courseNum = lessonNum;
+                this.ruleForm.courseTime =lessonTime;
+                this.ruleForm.courseStartTime = startDate;
+                this.ruleForm.courseEndTime=endDate
+                this.ruleForm.startTime = startTime;
+                this.ruleForm.endTime = endTime;
+                this.ruleForm.courseLIst.unshift({name:'请选择',id:0})
+              }else{
+                return this.message({type:'warning',message:'课程暂无数据'})
+              }
+          })
+       
           console.log("开始结束时间", this.ruleForm);
+          //处理上课时间
+          this.orglist = res.data.result.courseTimeList;
+         
         })
         .catch(error => {
           console.log("error", error);
@@ -2709,7 +2657,6 @@ export default {
             })
               .then(res => {
                 console.log("编辑信息", res.data);
-
                 if (res.data.errorCode == "2") {
                   this.$message("上课时间设置不能为空"); //courseStartDate  为空
                 } else {
@@ -2734,7 +2681,7 @@ export default {
                 let e = res.data;
 
                 console.log("add-success", res);
-                if (e.errorCode == 200) {
+                if (e.errorCode == 0 ) {
                   // 确认添加成功才返回商品类表
                   this.$router.push("/host_product");
                   this.ruleForm.veryify_code = "";
@@ -2744,6 +2691,7 @@ export default {
                 console.log("error", error);
               });
           }
+          
         // } else {
 
           // if (this.ruleForm.title == "") {
