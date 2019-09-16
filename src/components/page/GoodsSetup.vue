@@ -1088,7 +1088,8 @@ export default {
   data() {
     return {
       url_root: "",
-      img_url: "/store/file/img/upload",
+      // img_url: "/store/file/img/upload",   // 代理
+      img_url: "/file/img/upload",         // 本地配置 config
       //富文本配置设置
       config: {
         autoHeightEnabled: false,

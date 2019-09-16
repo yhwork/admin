@@ -382,7 +382,8 @@ export default {
   data() {
     return {
       url_root:'',
-      img_url:'/store/file/img/upload',
+      // img_url:'/store/file/img/upload',   // 代理配置
+      img_url:'/file/img/upload',
       config: {
         autoHeightEnabled: false,
         autoFloatEnabled: true,

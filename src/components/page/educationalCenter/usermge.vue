@@ -537,7 +537,8 @@ export default {
     };
     return { 
       url_root:'',
-      img_url:'/store/file/img/upload',
+      // img_url:'/store/file/img/upload',   //代理配置
+       img_url:'/file/img/upload',
       headers: {
         Authorization: sessionStorage.getItem("Authorization") //从cookie里获取token，并赋值  Authorization ，而不是token
       },

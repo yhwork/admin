@@ -809,7 +809,8 @@ export default {
   data() {
     return {
        url_root:'',
-      img_url:'/store/file/img/upload',
+      // img_url:'/store/file/img/upload',  // 代理配置 config
+      img_url:'/file/img/upload',
       config: {
         //可以在此处定义工具栏的内容
         // toolbars: [
