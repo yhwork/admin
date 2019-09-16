@@ -8,8 +8,8 @@ const root = process.env.API_ROOT;
 const ApiUrl ={
 
 
-    // 练习  21
-
+    // 练习  2
+    // 对比
     root:root,
     // 线下活动
     // 获取所有课程
