@@ -809,8 +809,8 @@ export default {
   data() {
     return {
        url_root:'',
-      // img_url:'/store/file/img/upload',  // 代理配置 config
-      img_url:'/file/img/upload',
+      img_url:'/store/file/img/upload',  // 代理配置 config
+      // img_url:'/file/img/upload',
       config: {
         //可以在此处定义工具栏的内容
         // toolbars: [
@@ -2447,7 +2447,7 @@ export default {
           videoLevel: this.videoLevel,    // 视频级别
           courseId:this.hotCourseId
         };
-        console.log("保存参数", params);
+        console.log('valid',valid,"保存参数", params);
         if (valid) {
           if (this.edit_id != "") {
             this.$axios({
@@ -2460,7 +2460,8 @@ export default {
             })
               .then(res => {
                 if(res.data.errorCode == 0){
-                   this.$router.go(-1);
+                  //  this.$router.go(-1);
+                   this.$router.push("/online_course");
                    this.ruleForm.veryify_code = "";
                 }else{
                   this.$message(res.data.errorMessage)
@@ -2474,16 +2475,22 @@ export default {
             // 新建活动
             this.$axios({
               method: "post",
-              url: "/store/hotProduct/updateHotOneLineProduct",
+              url: "/store/hotProduct/addHotOneLineProduct",
               data: params,
               headers: {
                 Authorization: sessionStorage.getItem("Authorization")
               }
             })
               .then(res => {
-                console.log("add-success");
-                this.$router.push("/online_course");
-                this.ruleForm.veryify_code = "";
+                if(res.data.errorCode == 0){
+                  // this.$router.go(-1);
+                  this.ruleForm.veryify_code = "";
+                  this.$router.push("/online_course");
+                  this.ruleForm.veryify_code = "";
+                }else{
+                  this.$message(res.data.errorMessage)
+                }
+               
               })
               .catch(error => {
                 console.log("error", error);

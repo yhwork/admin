@@ -17,8 +17,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/store':{
-        target: 'http://192.168.1.105:8083',
-        // target: 'https://qa.xdb.iforbao.com/store/',
+        // target: 'http://192.168.1.105:8083',
+        target: 'https://qa.xdb.iforbao.com/store/',
         // target: 'https://xdb.iforbao.com/store/',
         changeOrigin:true,
         pathRewrite:{

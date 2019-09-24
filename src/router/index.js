@@ -207,6 +207,12 @@ export default new Router({
           component: resolve => require(['../components/page/myDemo.vue'], resolve),
           meta: { title: '我的测试' },
         },
+        // 我的插件
+        {
+          path: '/expleme',
+          component: resolve => require(['../components/page/expleme.vue'], resolve),
+          meta: { title: '我的插件' },
+        },
       ]
     },
     {

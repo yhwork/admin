@@ -4,11 +4,10 @@
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>产品中心</el-breadcrumb-item>
       <el-breadcrumb-item>线下爆款</el-breadcrumb-item>
-      <el-breadcrumb-item>新建爆品</el-breadcrumb-item>
+      <el-breadcrumb-item v-if="edit_id==''">新建爆品</el-breadcrumb-item>
+      <el-breadcrumb-item v-else>编辑爆品</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="content_box1">
-
-
       <!-- <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="选择门店" name="first">
           <div class="select_store" v-if>
@@ -425,7 +424,6 @@
               </div>
             </div>
           </el-form-item>
-
         </div>
         <div>
           <div class="title">价格及售卖信息</div>
@@ -446,7 +444,7 @@
                         v-model="ruleForm.courseNum"
                         type="number"
                         placeholder="输入课程次数"
-                        :disabled="edit_id"
+                        :disabled="edit_id !==''"
                         style="width:200px"
                       ></el-input>
                     </el-form-item>
@@ -454,7 +452,7 @@
                       <el-input
                         v-model="ruleForm.courseTime"
                         placeholder="输入每次课时"
-                        :disabled="edit_id"
+                        :disabled="edit_id !==''"
                         style="width:150px"
                       ></el-input>
                       <span>分钟/次</span>
@@ -490,7 +488,7 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="开始日期"
-                  :disabled="edit_id"
+                  :disabled="edit_id !==''"
                   :picker-options="pickerOptions0"
                   @change="changeCourseStartTime"
                 ></el-date-picker>
@@ -498,39 +496,38 @@
                 <el-date-picker
                   v-model="ruleForm.courseEndTime"
                   value-format="yyyy-MM-dd"
-                  :disabled="edit_id"
+                  :disabled="edit_id !==''"
                   type="date"
                   placeholder="结束日期"
                   :picker-options="pickerOptions0"
                   @change="changeCourseEndTime"
                 ></el-date-picker>
               </el-form-item>
-               <el-form-item label="上课门店：" prop>
-                  <template>
-                    <el-time-select
-                      placeholder="起始时间"
-                      v-model="ruleForm.startTime"
-                      :disabled="edit_id"
-                      :picker-options="{
+              <el-form-item label="上课门店：" prop>
+                <template>
+                  <el-time-select
+                    placeholder="起始时间"
+                    v-model="ruleForm.startTime"
+                    :disabled="edit_id !==''"
+                    :picker-options="{
                         start: '08:30',
                         step: '00:15',
                         end: '18:30'
-                      }">
-                    </el-time-select>
-                    <el-time-select
-                      placeholder="结束时间"
-                      :disabled="edit_id"
-                      v-model="ruleForm.endTime"
-                      :picker-options="{
+                      }"
+                  ></el-time-select>
+                  <el-time-select
+                    placeholder="结束时间"
+                    :disabled="edit_id !==''"
+                    v-model="ruleForm.endTime"
+                    :picker-options="{
                         start: '08:30',
                         step: '00:15',
                         end: '18:30',
                         minTime:ruleForm.startTime
-                      }">
-                    </el-time-select>
-                  </template>
-               </el-form-item>
-              
+                      }"
+                  ></el-time-select>
+                </template>
+              </el-form-item>
 
               <!-- <div class="store_box">
                 <el-form-item label="上课门店：" prop>
@@ -1036,7 +1033,7 @@
 //引入
 import UEditor from "@/components/page/ueditor.vue";
 import URL from "@/api/config";
-import {getCourseClass, getAllCourse} from '@/api/demo'
+import { getCourseClass, getAllCourse } from "@/api/demo";
 /**
    * 所有参数
    * {
@@ -1084,8 +1081,8 @@ export default {
   data() {
     return {
       url_root: "",
-      // img_url: "/store/file/img/upload",   // 代理
-      img_url: "/file/img/upload",         // 本地配置 config
+      img_url: "/store/file/img/upload",   // 代理
+      // img_url: "/file/img/upload", // 本地配置 config
       //富文本配置设置
       config: {
         autoHeightEnabled: false,
@@ -1306,18 +1303,18 @@ export default {
       saleStartTime: "",
       saleEndTime: "",
       ruleForm: {
-        startTime:'',
-        endTime:'',
+        startTime: "",
+        endTime: "",
         productTypeId: 13,
-        title: "",          // 产品名称
+        title: "", // 产品名称
         category: "",
         subtitle: "",
-        courseId:0, // 课程id
+        courseId: 0, // 课程id
         courseTimeList: [], // 课程列表
-        classId:'', // 班级Id
+        classId: "", // 班级Id
         classList: [], // 班级列表
-        courseLIst:[],
-        labelArray:[],
+        courseLIst: [],
+        labelArray: [],
         courseNum: "",
         courseTime: "",
         origPrice: "",
@@ -1326,7 +1323,7 @@ export default {
         groupPrice: "",
         memberNum: "",
         lable: [],
-        imgVideo: [],   // 图片列表
+        imgVideo: [], // 图片列表
         tempImgVideo: [],
         limit: 1,
         videoCount: "",
@@ -1335,7 +1332,7 @@ export default {
         imgList: "",
         classType: 0,
         courseStartTime: "",
-        course: [],
+        course: []
       },
       rules: {
         title: [
@@ -1403,13 +1400,19 @@ export default {
     } else {
       this.getOrgList(); //获取门店
     }
-   
+    if (data.hasOwnProperty("courseId")) {
+      var courseId = data.courseId;
+      console.log("课程Id", courseId);
+      // this.ruleForm.courseId = courseId;
+      this.changecourseList(courseId, true);
+    }
   },
 
   watch: {
     // 监听路由
     $route(to, from) {
       this.edit_id = this.$route.query.id ? this.$route.query.id : "";
+
       if (this.edit_id != "") {
         this.getEditInfo();
       }
@@ -1420,40 +1423,58 @@ export default {
     changeClass(e) {
       console.log(e);
     },
-    // 改变课程
-    changecourseList(e) {
-      console.log('改变的课程',e);
-      let courseLIst = this.ruleForm.courseLIst;
-      // 查询班级
-      if(!e || e==0){
-          this.ruleForm.classList=[{name:'请选择',id:0}]
-          this.ruleForm.classId=0;
-          this.ruleForm.courseNum = '';
-          this.ruleForm.courseTime ='';
-          this.ruleForm.courseStartTime = '';
-          this.ruleForm.courseEndTime=''
-          this.ruleForm.startTime = '';
-          this.ruleForm.endTime = '';
-         return
-      }
-      let [{endDate,endTime,lessonNum,lessonTime,startDate,startTime}]= courseLIst.filter(item=>item.id==e);
-      // 赋值
-      this.ruleForm.courseNum = lessonNum;
-      this.ruleForm.courseTime =lessonTime;
-      this.ruleForm.courseStartTime = startDate;
-      this.ruleForm.courseEndTime=endDate
-      this.ruleForm.startTime = startTime;
-      this.ruleForm.endTime = endTime;
-      console.log('数据',startDate,this.ruleForm.courseStartTime)
-
-      getCourseClass({id:e}).then(res=>{
-        console.log('班级列表',res.result);
-        let data = res.result;
-        if(data){
-          this.ruleForm.classList=data;
-          this.ruleForm.classList.unshift({name:'请选择',id:0})
+    async changeDadara(e, args) {
+      var courseLIst = [];
+      if (args) {
+        let res = await getAllCourse();
+        courseLIst = res.result;
+        if (courseLIst) {
+          this.ruleForm.courseLIst = courseLIst;
+          this.ruleForm.courseLIst.unshift({ name: "请选择", id: 0 });
+          console.log("改变的课程", e, "列表的数据", courseLIst);
+        } else {
+          courseLIst = this.ruleForm.courseLIst;
         }
-      })
+        this.ruleForm.courseId = e;
+        // 查询班级
+        if (!e || e == 0) {
+          this.ruleForm.classList = [{ name: "请选择", id: 0 }];
+          this.ruleForm.classId = 0;
+          this.ruleForm.courseNum = "";
+          this.ruleForm.courseTime = "";
+          this.ruleForm.courseStartTime = "";
+          this.ruleForm.courseEndTime = "";
+          this.ruleForm.startTime = "";
+          this.ruleForm.endTime = "";
+          return;
+        }
+        let [
+          { endDate, endTime, lessonNum, lessonTime, startDate, startTime }
+        ] = courseLIst.filter(item => item.id == e);
+        // 赋值
+        this.ruleForm.courseNum = lessonNum;
+        this.ruleForm.courseTime = lessonTime;
+        this.ruleForm.courseStartTime = startDate;
+        this.ruleForm.courseEndTime = endDate;
+        this.ruleForm.startTime = startTime;
+        this.ruleForm.endTime = endTime;
+        console.log("数据", startDate, this.ruleForm.courseStartTime);
+
+        getCourseClass({ id: e }).then(res => {
+          console.log("班级列表", res.result);
+          let data = res.result;
+          if (data) {
+            this.ruleForm.classList = data;
+            this.ruleForm.classList.unshift({ name: "请选择", id: 0 });
+          }
+        });
+      } else {
+        return this.message({ type: "warning", message: "课程暂无数据" });
+      }
+    },
+    // 改变课程
+    changecourseList(e, args) {
+      this.changeDadara(e,args)
     },
     //获取文档内容
     getContent: function() {
@@ -1473,16 +1494,16 @@ export default {
     // /hotProduct/addHotOneLineProduct
     //获取分类
     getCategory() {
-      getAllCourse().then(res=>{
-        console.log('课程列表',res)
-         let data = res.result;
-         if(data){
-           this.ruleForm.courseLIst=data
-           this.ruleForm.courseLIst.unshift({name:'请选择',id:0})
-         }else{
-           return this.message({type:'warning',message:'课程暂无数据'})
-         }
-      })
+      getAllCourse().then(res => {
+        console.log("课程列表", res);
+        let data = res.result;
+        if (data) {
+          this.ruleForm.courseLIst = data;
+          this.ruleForm.courseLIst.unshift({ name: "请选择", id: 0 });
+        } else {
+          return this.message({ type: "warning", message: "课程暂无数据" });
+        }
+      });
       // this.$axios({
       //   method: "get",
       //   url: "/store/org/getOrgSubList",
@@ -1508,7 +1529,6 @@ export default {
         .then(res => {
           var arr3 = [];
           var temp = res.data.result;
-          console.log("门店id", temp);
           temp.forEach(function(item, index) {
             arr3.push({
               orgName: temp[index].name,
@@ -1563,14 +1583,14 @@ export default {
       for (var i = 0; i < temp.length; i++) {
         tempArray[i] = temp[i].response.result;
       }
-      console.log('上传成功后的图片列表',tempArray)
+      console.log("上传成功后的图片列表", tempArray);
       this.ruleForm.imgVideo = tempArray;
       console.log(this.ruleForm.imgVideo);
     },
     // 上传图片后展示
     previewImg(file) {
       this.dialogImageUrl = file.url;
-      console.log('展示',this.dialogImageUrl)
+      console.log("展示", this.dialogImageUrl);
       this.dialogVisible = true;
     },
     // 移除图片
@@ -1697,9 +1717,7 @@ export default {
     changeStandard(e) {},
 
     //观看方式
-    changeWay(e) {
-
-    },
+    changeWay(e) {},
     changeSaleTime(e) {
       this.saleTime = e;
       if (e == 1) {
@@ -1719,7 +1737,7 @@ export default {
     changeCourseStartTime(e) {
       // this.courseStartTime = e;
 
-      this.ruleForm.courseStartTime =e;
+      this.ruleForm.courseStartTime = e;
       console.log("起始时间");
     },
     // 开课结束日期
@@ -2435,14 +2453,15 @@ export default {
     goList() {
       this.$router.go(-1);
     },
-    // 获取请求编辑信息             
+    // 获取请求编辑信息
     getEditInfo() {
       //
       this.$axios({
         method: "get",
         url: "/store/hotProduct/getHotProductInfo/" + this.edit_id,
         headers: { Authorization: sessionStorage.getItem("Authorization") }
-      }).then(res => {
+      })
+        .then(res => {
           //设置富文本内容
           console.log("设置富文本内容", res.data.result.descr);
           setTimeout(() => {
@@ -2466,16 +2485,16 @@ export default {
           }
           let courseId = res.data.result.courseId;
           this.ruleForm.courseId = courseId;
-           getCourseClass({id:courseId}).then(data=>{
-            console.log('班级列表班级列表',data.result);
+          getCourseClass({ id: courseId }).then(data => {
+            console.log("班级列表班级列表", data.result);
             var data = data.result;
-            if(data){
-              this.ruleForm.classList=data;
-              this.ruleForm.classList.unshift({name:'请选择',id:0});
+            if (data) {
+              this.ruleForm.classList = data;
+              this.ruleForm.classList.unshift({ name: "请选择", id: 0 });
               this.ruleForm.classId = res.data.result.classId;
             }
-          })
-         
+          });
+
           //重组标签
           var tempLabel = Object.values(JSON.parse(res.data.result.lable));
           this.ruleForm.labelArray = tempLabel;
@@ -2497,27 +2516,35 @@ export default {
           this.ruleForm.groupPrice = res.data.result.groupPrice;
           this.ruleForm.memberNum = res.data.result.memberNum;
 
-          getAllCourse().then(res=>{
-              let data = res.result;
-              if(data){
-                let [{endDate,endTime,lessonNum,lessonTime,startDate,startTime}]= data.filter(item=>item.id==courseId);
-                // 赋值
-                this.ruleForm.courseNum = lessonNum;
-                this.ruleForm.courseTime =lessonTime;
-                this.ruleForm.courseStartTime = startDate;
-                this.ruleForm.courseEndTime=endDate
-                this.ruleForm.startTime = startTime;
-                this.ruleForm.endTime = endTime;
-                this.ruleForm.courseLIst.unshift({name:'请选择',id:0})
-              }else{
-                return this.message({type:'warning',message:'课程暂无数据'})
-              }
-          })
-       
+          getAllCourse().then(res => {
+            let data = res.result;
+            if (data) {
+              let [
+                {
+                  endDate,
+                  endTime,
+                  lessonNum,
+                  lessonTime,
+                  startDate,
+                  startTime
+                }
+              ] = data.filter(item => item.id == courseId);
+              // 赋值
+              this.ruleForm.courseNum = lessonNum;
+              this.ruleForm.courseTime = lessonTime;
+              this.ruleForm.courseStartTime = startDate;
+              this.ruleForm.courseEndTime = endDate;
+              this.ruleForm.startTime = startTime;
+              this.ruleForm.endTime = endTime;
+              this.ruleForm.courseLIst.unshift({ name: "请选择", id: 0 });
+            } else {
+              return this.message({ type: "warning", message: "课程暂无数据" });
+            }
+          });
+
           console.log("开始结束时间", this.ruleForm);
           //处理上课时间
           this.orglist = res.data.result.courseTimeList;
-         
         })
         .catch(error => {
           console.log("error", error);
@@ -2569,11 +2596,11 @@ export default {
           this.igroup = 0;
         }
         // 判断输入的课程名称
-        let {courseId,classId} =this.ruleForm;
-        if(!courseId){
-          return this.$message({type:'warning',message:'请选择课程'})
-        }else if( !classId){
-          return this.$message({type:'warning',message:'请选择班级'})
+        let { courseId, classId } = this.ruleForm;
+        if (!courseId) {
+          return this.$message({ type: "warning", message: "请选择课程" });
+        } else if (!classId) {
+          return this.$message({ type: "warning", message: "请选择班级" });
         }
         if (this.edit_id != "") {
           this.tempOrgList(); // 获取列表时间
@@ -2629,7 +2656,7 @@ export default {
           ishelf: this.iShelf,
           courseId: courseId,
           classId: classId,
-          course: orglist, 
+          course: orglist,
           descr: content, // 文本
           startTime: this.saleStartTime ? this.saleStartTime : null, // 开始时间
           endTime: this.saleEndTime ? this.saleEndTime : null, // 结束时间
@@ -2645,78 +2672,79 @@ export default {
          */
         // 请求验证
         // if (valid) {
-          // 有id  进行修改
-          if (this.edit_id != "") {
-            this.$axios({
-              method: "post",
-              url: "/store/hotProduct/updateHotProduct",
-              data: params,
-              headers: {
-                Authorization: sessionStorage.getItem("Authorization")
+        // 有id  进行修改
+        if (this.edit_id != "") {
+          this.$axios({
+            method: "post",
+            url: "/store/hotProduct/updateHotProduct",
+            data: params,
+            headers: {
+              Authorization: sessionStorage.getItem("Authorization")
+            }
+          })
+            .then(res => {
+              console.log("编辑信息", res.data);
+              if (res.data.errorCode == "2") {
+                this.$message("上课时间设置不能为空"); //courseStartDate  为空
+              } else {
+                // this.$router.go(-1);
+                 this.$router.push("/host_product");
+                this.ruleForm.veryify_code = "";
               }
             })
-              .then(res => {
-                console.log("编辑信息", res.data);
-                if (res.data.errorCode == "2") {
-                  this.$message("上课时间设置不能为空"); //courseStartDate  为空
-                } else {
-                  this.$router.go(-1);
-                  this.ruleForm.veryify_code = "";
-                }
-              })
-              .catch(error => {
-                console.log("error", error);
-              });
-          } else {
-            // 没有id   进行添加
-            this.$axios({
-              method: "post",
-              url: "/store/hotProduct/addHotProduct",
-              data: params,
-              headers: {
-                Authorization: sessionStorage.getItem("Authorization")
-              }
-            })
-              .then(res => {
-                let e = res.data;
+            .catch(error => {
+              console.log("error", error);
+            });
+        } else {
+          // 没有id   进行添加
+          this.$axios({
+            method: "post",
+            url: "/store/hotProduct/addHotProduct",
+            data: params,
+            headers: {
+              Authorization: sessionStorage.getItem("Authorization")
+            }
+          })
+            .then(res => {
+              let e = res.data;
 
-                console.log("add-success", res);
-                if (e.errorCode == 0 ) {
-                  // 确认添加成功才返回商品类表
-                  this.$router.push("/host_product");
-                  this.ruleForm.veryify_code = "";
-                }
-              })
-              .catch(error => {
-                console.log("error", error);
-              });
-          }
-          
+              console.log("add-success", res);
+              if (e.errorCode == 0) {
+                // 确认添加成功才返回商品类表
+                this.$router.push("/host_product");
+                this.ruleForm.veryify_code = "";
+              }
+            })
+            .catch(error => {
+              console.log("error", error);
+            });
+        }
+
         // } else {
 
-          // if (this.ruleForm.title == "") {
-          //   this.$message.error("请输入产品名称");
-          // } else if (this.ruleForm.productTypeId == "") {
-          //   this.$message.error("请选择产品分类");
-          // } else if (this.ruleForm.imgVideo == "") {
-          //   this.$message.error("请上传图片");
-          // } else if (this.ruleForm.courseNum == "") {
-          //   this.$message.error("请输入课节数");
-          // } else if (this.ruleForm.courseTime == "") {
-          //   this.$message.error("请输入课程时长");
-          // } else if (this.ruleForm.origPrice == "") {
-          //   this.$message.error("请输入产品原价");
-          // } else if (this.ruleForm.disPrice == "") {
-          //   this.$message.error("请输入产品优惠价格");
-          // } else if (this.ruleForm.count == "") {
-          //   this.$message.error("请输入名额");
-          // } else if (this.ruleForm.courseStartTime == "") {
-          //   this.$message.error("请设置开课日期");
-          // } else if (this.ruleForm.groupPrice == "") {
-          //   this.$message.error("请输入拼团价格");
-          // } else if (this.ruleForm.memberNum == "") {
-          //   this.$message.error("请输入拼团人数");
-          // }
+        // if (this.ruleForm.title == "") {
+        //   this.$message.error("请输入产品名称");
+        // } else if (this.ruleForm.productTypeId == "") {
+        //   this.$message.error("请选择产品分类");
+        // } else if (this.ruleForm.imgVideo == "") {
+        //   this.$message.error("请上传图片");
+        // } else if (this.ruleForm.courseNum == "") {
+        //   this.$message.error("请输入课节数");
+        // } else if (this.ruleForm.courseTime == "") {
+        //   this.$message.error("请输入课程时长");
+        // } else if (this.ruleForm.origPrice == "") {
+        //   this.$message.error("请输入产品原价");
+        // } else if (this.ruleForm.disPrice == "") {
+        //   this.$message.error("请输入产品优惠价格");
+        // } else if (this.ruleForm.count == "") {
+        //   this.$message.error("请输入名额");
+        // } else if (this.ruleForm.courseStartTime == "") {
+        //   this.$message.error("请设置开课日期");
+        // } else if (this.ruleForm.groupPrice == "") {
+        //   this.$message.error("请输入拼团价格");
+        // } else if (this.ruleForm.memberNum == "") {
+        //   this.$message.error("请输入拼团人数");
+        // }
         // }
       });
     }

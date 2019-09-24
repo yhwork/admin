@@ -121,6 +121,10 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     background-color: #a0c6f0 !important;
   }
+  .table_import{
+     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    background-color: rgb(169, 231, 169) !important;
+  }
   .table_borders {
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     background-color: #cae1ff !important;
@@ -160,6 +164,9 @@
   }
   .el-input {
     width: auto;
+  }
+  .pathover:hover{
+    color: #409eff;
   }
 }
 </style>
@@ -284,7 +291,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection"></el-table-column>
-        <el-table-column label="课程名称" :show-overflow-tooltip="true">
+        <el-table-column label="课程名称" >
           <template slot-scope="scope">
             <div>
               <span>{{ scope.row.courseName }}</span>
@@ -323,21 +330,28 @@
         <el-table-column label="开班数" tooltip-effect="dark" :show-overflow-tooltip="true" width="70">
           <template slot-scope="scope">
             <div>
-              <span>{{ scope.row.classNum }}</span>
+              <span>{{ scope.row.classNum  }}</span>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="关联线上销售" width="110">
           <template slot-scope="scope">
             <div>
-              <span>{{ scope.row.relatedpersoncount }}</span>
+              <span class="pathover">{{ scope.row.relatedpersoncount | isSell }}</span>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="状态">
           <template slot-scope="scope">
             <div>
-              <span>{{ scope.row.coursestate }}</span>
+              <span>{{ scope.row.status | isPayState }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否排课">
+          <template slot-scope="scope">
+            <div>
+              <span>{{ scope.row.iArrangeCourse | isSortCourse }}</span>
             </div>
           </template>
         </el-table-column>
@@ -785,15 +799,35 @@ export default {
       console.log("路由不为空");
     }
   },
+  // 局部过滤器的使用
+  filters:{
+    isPayState:(val)=>{
+        if(val && val ==1){
+          return '待开课'
+        }else if(val && val == 2){
+           return '已开课'
+        }else if(val && val ==3){
+            return '已结课'
+        }
+    },
+    isSortCourse:(val)=>{
+
+        if( val =='true'){
+          return '已排课'
+        }else if( val == 'false'){
+           return '待排课'
+        }
+    }
+  },
   methods: {
     // 点击单元格的部分内容
     clickCell(row, column, cell, event){
       console.log('单元格',row,column);
-      if(column.label == "关联线上销售" && row.relatedpersoncount =='待售'){
+      if(column.label == "关联线上销售" && row.relatedpersoncount =='待售' && row.iArrangeCourse == 'true' ){
           // 跳转到线下销售
           this.$router.push({
             path:'goods_setup',
-            query:row
+            query:{courseId:row.id}
           })
       }else{
 
@@ -839,7 +873,7 @@ export default {
           let arr = JSON.parse(JSON.stringify(puts.list));
           let tableDatas = [];
           let gradeList = this.ruleForm.gradeList;
-          console.log(gradeList);
+          // console.log(gradeList);
           arr.map(item => {
             let obj = {};
             obj.cretetime =
@@ -859,6 +893,7 @@ export default {
             obj.courseTypeId = item.courseType; // 课程类别
             obj.courseTypeName = item.courseTypeName; // 课程类型
             obj.id = item.id;
+            obj.iArrangeCourse = item.iArrangeCourse; // 是否排课
             obj.courseType = item.courseSubjectName; // 课程类别
             obj.courseTypeList = res.result.courseSubject;
             obj.relatedpersoncount = item.ishelf; //线上状态
@@ -1181,11 +1216,20 @@ export default {
     },
     // 改变表格
     changetable(e) {
-      // console.log(e);
+      // console.log('高亮显示',e);
       if (e.rowIndex % 2 == 0) {
-        return "table_borders";
+        if(e.row.iArrangeCourse == 'true'){
+          return "table_import";
+        }else{
+           return "table_borders";
+        }
       } else {
-        return "table_border";
+         if(e.row.iArrangeCourse == 'true'){
+          return "table_import";
+        }else{
+           return "table_border";
+        }
+       
       }
     },
     // 计算
@@ -1257,7 +1301,7 @@ export default {
     },
     // 计算分页
     pagination(pageNo, pageSize, array) {
-      console.log(pageNo, pageSize, array);
+      // console.log(pageNo, pageSize, array);
       var offset = (pageNo - 1) * pageSize;
       return offset + pageSize >= array.length
         ? array.slice(offset, array.length)
