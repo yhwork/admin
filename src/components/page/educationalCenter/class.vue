@@ -114,13 +114,13 @@
                         <div v-else>
                             <el-select class="flex3" size='large' v-model="setClassName.classname" value-key="id"
                                 placeholder="请选择" @change="changeClassName">
-                                <el-option v-for="item in setClassName.classlist" :label="item.name" :key="item.id"
+                                <el-option v-for="(item,index) in setClassName.classlist" :label="item.name" :key="index"
                                     :value="item.id">
                                 </el-option>
                             </el-select>
                             <el-select class="flex3" size='large' v-model="setClassName.gradenmae" value-key="id"
                                 placeholder="请选择" @change="changeGradeName">
-                                <el-option v-for="item in setClassName.gradelist" :label="item.name" :key="item.id"
+                                <el-option v-for="(item,index) in setClassName.gradelist" :label="item.name" :key="index"
                                     :value="item.id">
                                 </el-option>
                             </el-select>
@@ -128,11 +128,16 @@
                     </el-form-item>
                     <el-form-item label="教师名称" :label-width="formLabelWidth">
                         <div class="elrow ">
+                            <div>
                                 <el-select v-model="form.teacherId" value-key="id" placeholder="请选择" @change="changeCategory">
-                                        <el-option v-for="item in form.teacherList" :label="item.name" :key="item.id"
+                                        <el-option v-for="(item,index) in form.teacherList" :label="item.name" :key="index"
                                             :value="item.id">
                                         </el-option>
                                 </el-select>
+                            </div>
+                            <div v-if="iscreate" class='flex1 elm-2 c_red'>
+                                <span @click="newcourse(3)" class='elm-1 color'>新建</span>|<span class="elm-1 color" @click='refresh'>刷新</span>
+                            </div>
                         </div>
                     </el-form-item>
                     <el-form-item label="所属门店" :label-width="formLabelWidth">
@@ -140,46 +145,46 @@
                             <div>
                             <el-select :disabled="iscreate?false:true" class="flex3" size='large' v-model="form.orgId"
                                 value-key="id" placeholder="请选择" @change="newchangeCategory">
-                                <el-option v-for="item in form.orgList" :label="item.name" :key="item.id"
+                                <el-option v-for="(item,index) in form.orgList" :label="item.name" :key="index"
                                     :value="item.orgId">
                                 </el-option>
                             </el-select>
                             </div>
                             <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(0)"
-                                    class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div>
+                                    class='elm-1 color'>新建</span>|<span class="elm-1 color" @click='refresh'>刷新</span></div>
                         </div>
                     </el-form-item>
                     <el-form-item label="所属课程" :label-width="formLabelWidth" prop="department">
                         <div class="elrow ">
                             <div>
-                            <el-select :disabled="iscreate?false:true" class="flex3" size='large'
+                            <el-select  class="flex3" size='large'
                                 v-model="form.storeCourseId" value-key="id" placeholder="请选择"
                                 @change="newchangeCategory">
-                                <el-option v-for="item in form.storeCourseList" :label="item.name" :key="item.id"
+                                <el-option v-for="(item,index) in form.storeCourseList" :label="item.name" :key="index"
                                     :value="item.id">
                                 </el-option>
                             </el-select>
                             </div>
                             <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(1)"
-                                    class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span></div>
+                                    class='elm-1 color'>新建</span>|<span class="elm-1 color"  @click='refresh'>刷新</span></div>
                         </div>
                     </el-form-item>
                     <el-form-item label="所属教室" :label-width="formLabelWidth" prop="department">
                         <div class="elrow">
                             <div>
-                                    <el-select :disabled="iscreate?false:true" class="flex3" size='large' v-model="form.roomId"
+                                <el-select  class="flex3" size='large' v-model="form.roomId"
                                     value-key="id" placeholder="请选择" @change="newchangeCategory">
-                                    <el-option v-for="item in form.roomList" :label="item.name" :key="item.id"
+                                    <el-option v-for="(item,index) in form.roomList" :label="item.name" :key="index"
                                         :value="item.id">
                                     </el-option>
                                 </el-select>
                             </div>
                             <div v-if="iscreate" class='flex1 elm-2 c_red'><span @click="newcourse(2)"
-                                    class='elm-1 color'>新建</span>|<span class="elm-1 color">刷新</span>
+                                    class='elm-1 color'>新建</span>|<span class="elm-1 color"  @click='refresh'>刷新</span>
                             </div>
                         </div>
                     </el-form-item>
-                    <el-form-item label="容纳人数" :label-width="formLabelWidth" prop="galleryful">
+                    <el-form-item label="容纳人数" :label-width="formLabelWidth" prop="num">
                         <el-input v-model="form.num" placeholder="请输入班级最大容纳人数" auto-complete="off"></el-input>
                     </el-form-item>
 
@@ -192,7 +197,33 @@
                         </el-form-item> -->
                 </el-form>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogFormVisible = false">取 消</el-button>
+                    <el-button @click="createclass(0)">取 消</el-button>
+                    <el-button style="background:orange;border:1px solid orange;" type="primary" @click="createclass">
+                        确 定</el-button>
+                </div>
+            </el-dialog>
+
+            <!--新建老师-->
+             <el-dialog custom-class='dialogclass' :close-on-click-modal='false' title="创建老师" class="dialog_box" left :visible.sync="dialogteacherVisible">
+                <el-form :model="form" :rules="rules">
+                   <!-- <el-form-item label="命名规则" :label-width="formLabelWidth" >
+
+                    </el-form-item>  -->
+                    
+                    <el-form-item label="教师名称" :label-width="formLabelWidth">
+                        <div class="elrow ">
+                            <div>
+                                <el-select v-model="form.teacherId" value-key="id" placeholder="请选择" @change="changeCategory">
+                                        <el-option v-for="(item,index) in form.teacherList" :label="item.name" :key="index"
+                                            :value="item.id">
+                                        </el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="createclass(0)">取 消</el-button>
                     <el-button style="background:orange;border:1px solid orange;" type="primary" @click="createclass">
                         确 定</el-button>
                 </div>
@@ -211,7 +242,7 @@
                         </el-form-item>
                         <el-form-item label="所属门店" prop="department">
                             <el-select v-model="ruleForm.orgId" value-key="id" placeholder="请选择" @change="changeCategory">
-                                <el-option v-for="item in ruleForm.orgList" :label="item.name" :key="item.id"
+                                <el-option v-for="(item,index) in ruleForm.orgList" :label="item.name" :key="index"
                                     :value="item.orgId">
                                 </el-option>
                             </el-select>
@@ -219,8 +250,8 @@
                     </div>
                     <div class='elrow'>
                         <el-form-item label="教师名称"  prop="department">
-                            <el-select v-model="ruleForm.techerId" value-key="id" placeholder="请选择" @change="changeCategory">
-                                <el-option v-for="item in ruleForm.techerList" :label="item.name" :key="item.id"
+                            <el-select v-model="ruleForm.teacherId" value-key="id" placeholder="请选择" @change="changeCategory">
+                                <el-option v-for="(item,index) in ruleForm.teacherList" :label="item.name" :key="index"
                                     :value="item.id">
                                 </el-option>
                             </el-select>
@@ -228,14 +259,14 @@
                         <el-form-item label="教室" prop="techername">
                             <el-select size="large" v-model="ruleForm.roomId" value-key="id" placeholder="请选择"
                                 @change="changeCategory">
-                                <el-option v-for="item in ruleForm.roomList" :label="item.name" :key="item.id"
+                                <el-option v-for="(item,index) in ruleForm.roomList" :label="item.name" :key="index"
                                     :value="item.id">
                                 </el-option>
                             </el-select>
                         </el-form-item>
                         <div class="elrow">
                             <div class='clearselectall'>
-                                <el-button class="clearpadding" icon="el-icon-search" @click='searchcnt("ruleFormwhere")' type="primary" plain>筛选</el-button>
+                                <el-button class="clearpadding" icon="el-icon-search" @click='selsectdata(0)' type="primary" plain>筛选</el-button>
                             </div>
                             <div class='clearselectall'>
                                 <el-button @click="clearchoose('ruleFormwhere')" class="clearpadding" type="primary" plain>清除筛选条件
@@ -257,17 +288,10 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="可容纳人数" tooltip-effect='dark' :show-overflow-tooltip="true">
-                        <template slot-scope="scope">
-                            <div>
-                                <span style="margin-left: 10px">{{ scope.row.num }}</span>
-                            </div>
-                        </template>
-                    </el-table-column>
                    <el-table-column label="教师名称" tooltip-effect='dark' :show-overflow-tooltip="true" >
                         <template slot-scope="scope">
                             <div>
-                                <span style="margin-left: 10px">{{ scope.row.techerName }}</span>
+                                <span style="margin-left: 10px">{{ scope.row.teacherName }}</span>
                             </div>
                         </template>
                     </el-table-column>
@@ -299,10 +323,24 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="招生状态" :show-overflow-tooltip="true">
+                    <el-table-column label="可容纳人数" tooltip-effect='dark' :show-overflow-tooltip="true">
                         <template slot-scope="scope">
                             <div>
-                                <span style="margin-left: 10px">{{scope.row.states}}</span>
+                                <span style="margin-left: 10px">{{ scope.row.num }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="招生人数" :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                            <div>
+                                <span style="margin-left: 10px">{{scope.row.statusNum}}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                     <el-table-column label="班级状态" :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                            <div>
+                                <span style="margin-left: 10px">{{scope.row.status}}</span>
                             </div>
                         </template>
                     </el-table-column>
@@ -351,24 +389,15 @@
         props: [],
         data() {
             return {
+                dialogteacherVisible:false,
                 // 分页
                 pagesize: 10,
                 currentPage4: 1,
                 total_count: 60,
                 checkList: 3,
                 isclassname: true,  // 命名
-                tablelist: [{
-                    name:'一班',  // 班级名称
-                    num:15,       // 容纳人数
-                    orgName:'机构机构',   // 所属机构
-                    startSchool:'小豆包机构', // 开课校区
-                    startData:'2019-08-25',   //开班日期
-                    startTime:'19:25',     // 上课时间
-                    states:'已满',             // 招生状态
-                    createDataTime:'2019-13-14 13:14',
-                    techerName:'杨老师',
-                    roomName:'101教室'
-                }],
+                tablelist: [
+                ],
                 iscreate: true,
                 formLabelWidth: "120px",
                 dialogFormVisible: false,
@@ -399,113 +428,44 @@
                 },
                 // 弹框
                 form: {
-                    className:'班级名称',
+                    className:'',
                     teacherId:0 ,     // 教师id
-                    teacherName: '杨老师', // 教师名称
-                    teacherList: [
-                        { name: '杨老师', id: 1 },
-                        { name: '请选择', id: 0 }
-                    ],
+                    teacherList: [ {name:'请选择',id:0}],
                     orgId: 0,         // 机构id
-                    orgName: "小豆包机构",// 机构名字
                     orgList: [
-                        { name: '请选择', orgId: 0 },
-                        { name: '小豆包机构', orgId: 63 },
-                        { name: '中豆包机构', orgId: 2 },
-                        { name: '大豆包机构', orgId: 3 }
+                         {name:'请选择',orgId:0}
                     ],
                     storeCourseId:0,  // 课程id
                     storeCourseList: [
-                        { name: '英语课', id: 1 },
-                        {name: '请选择', id: 0 }
+                        {name:'请选择',id:0}
                     ],
                     roomId: 0,        // 教室id
-                    roomName: "1908班",// 教室名称
-                    roomList: [
-                        { name: "1908班", id: 1 },
-                        { name: "请选择", id: 0 }
-                    ],
+                    roomList: [{name:'请选择',id:0}],
                     num: 20,           // 容纳人数
                     id:2,
-                    // "addBy": 0,
-                    // "addByStr": "",//
-                    // "addTime": "", //创建时间
-                   
-                    // "name": "",    // 班级名称
-                    // "clasStartTime":new Date(),  // 开班日期
-                    // "clasEndTime":'',  // 结班日期
-                    // "updateBy": 0,
-                    // "updateByStr": "string",
-                    // "updateTime": "string",
                 },
                 // 筛选条件
                 ruleForm: {
-                    className: '班级名称', // 班级名称
+                    teacherId:0 ,     // 教师id
+                    teacherList: [ {name:'请选择',id:0}],
+                    className: '', // 班级名称
                     orgId:0,        // 机构id
-                    orgList:[{
-                        name:'请选择',
-                        orgId:0,
-                    },{
-                        name:'小豆包测试2',
-                        orgId:2,
-                    }],
+                    orgList:[
+                        {name:'请选择',orgId:0}
+                    ],
                     techerId: 0,    // 老师id
-                    techerList:[{
-                        name:'杨老师',
-                        id:1
-                    },{
-                        name:'李老师',
-                        id:2
-                    },{
-                        name:'请选择',
-                        id:0
-                    }],
+                    techerList:[ {name:'请选择',id:0}],
                     roomId: 0,      // 教室id
-                    roomList: [
-                        {
-                            name: "教室1",
-                            id: 1
-                        },{
-                            name: "请选择",
-                            id: 0
-                        }, {
-                            name: '教室2',
-                            id: 2
-                        }, {
-                            name: '教室3',
-                            id: 3
-                        },
-                    ],  // 多选列表
+                    roomList: [ {name:'请选择',id:0}],
                 },  // 所有数据
                 tableData: [   //表格数据
-                    {
-                        classname: '教室名称',
-                        galleryful: '容纳人数',
-                        department: '所属门店',
-                        founder: "创建人",
-                        foundertime: '创建时间'
-                    },
-                    {
-                        classname: '教室名称',
-                        galleryful: '容纳人数',
-                        department: '所属门店',
-                        founder: "创建人",
-                        foundertime: '创建时间'
-                    },
-                    {
-                        classname: '教室名称',
-                        galleryful: '容纳人数',
-                        department: '所属门店',
-                        founder: "创建人",
-                        foundertime: '创建时间'
-                    },
                 ],
                 rules: {
                     title: [
                         { required: true, message: "请输入产品名称", trigger: "blur" },
                         { max: 50, message: "最多50字" }
                     ],
-                    galleryful: [{ required: true, message: "请输入容纳人数", trigger: "blur" }],
+                    num: [{ required: true, message: "请输入容纳人数", trigger: "blur" }],
                     className: [{ required: true, message: "请输入班级名称", trigger: "blur" }],
                     department: [{ required: true, message: "请输入所属门店", trigger: "blur" }]
                 },
@@ -548,6 +508,7 @@
             //     })
         },
         activated(){
+             this.selsectdata()
             console.log(this.$route.params);
             let params = this.$route.params;
             if(params.hasOwnProperty('isnewcouse')){
@@ -589,81 +550,187 @@
               console.log(a)
 
             },
+            // 刷新
+            refresh(){
+                this.selsectdata()
+            },
             // 查询数据
-            selsectdata() {
-                getClassList().then(res => {
+            selsectdata(ars) {
+                if(ars == 0){
+                    // 搜索
+                    let a = { ...this.ruleForm };
+                    let { className,orgId,techerId,roomId } = a;
+                    if(className==undefined){className='' }
+                    if(orgId==undefined){ orgId=''}
+                    if(techerId==undefined){techerId='' }
+                    if(roomId==undefined){roomId='' }
+                    var params={ className, orgId,techerId,roomId 
+                    }
+                    console.log('参数',params)
+                    getClassList(params).then(res => {
                     console.log('info', res);
                     if (res.errorCode == 0) {
                         if (res.result !== null) {
                             let arr = JSON.parse(JSON.stringify(res.result));
-                            if (arr) {
-                                console.log(arr)
-                                // name:'一班',  // 班级名称
-                                // num:15,       // 容纳人数
-                                // orgName:'机构机构',   // 所属机构
-                                // startSchool:'小豆包机构', // 开课校区
-                                // startData:'2019-08-25',   //开班日期
-                                // startTime:'19:25',     // 上课时间
-                                // states:'已满',             // 招生状态
-                                // createDataTime:'2019-13-14 13:14'
-
-                                    // addBy: null
-                                    // addByStr: "电子琴管理员"
-                                    // addTime: "2019-08-02 19:52:26.0"
-                                    // id: 2
-                                    // name: "一一班"
-                                    // num: 0
-                                    // orgId: 0
-                                    // orgName: "上海音乐家协会电子键盘专业委员会"
-                                    // roomId: 0
-                                    // roomName: "205教师"
-                                    // storeCourseId: 1
-                                    // teacherId: 0
-                                    // teacherName: "电子琴管理员"
-                                    // updateBy: null
-                                    // updateByStr: null
-                                    // updateTime: null
-                                
+                            if (arr !== null && arr !=='' && arr !== undefined) {
                                 // 赋值门店
                                     // 设置默认值 arr.push({name:'',orgId})
-                                    // this.ruleForm.orgList = 
-                                    // this.form.orgList = 
+                                    let orgList = [{name:'请选择',orgId:0}]
+                                    arr.orgList.map(item=>{
+                                        orgList.push({
+                                            name:item.name,
+                                            orgId:item.orgId
+                                        })
+                                    })
+                                    this.form.orgList= this.ruleForm.orgList=orgList
                                 // 赋值教室
-                                     // this.ruleForm.roomList = 
-                                     // this.form.roomList = 
-                                // 赋值老师
-                                    // this.ruleForm.teacherList = 
-                                    // this.form.teacherList = 
-                                // 赋值课程
-                                    //  this.form.courseList = 
-                                    let tabledatas = [];
-                                    arr.map((item)=>{
+                                    this.form.roomList=[]
+                                    arr.roomList.map(item=>{
+                                         this.ruleForm.roomList.push({
+                                             name:item.name,
+                                             id:item.id
+                                         })
+                                    })
+                                    this.form.roomList= this.ruleForm.roomList
+                                    this.form.roomList.unshift({name:'请选择',id:0})
+                                    // 赋值老师
+                                    let teacherList= [{name:'请选择',id:0}]
+                                    arr.teacherList.map(item=>{
+                                        teacherList.push({
+                                            name:item.name,
+                                            id:item.id
+                                        })
+                                    })
+                                    this.form.teacherList = this.ruleForm.teacherList=teacherList
+                                    
+                                // 赋值课程   {name:'',id:''}
+                                    let storeCourseList =[{name:'请选择',id:0}]
+                                    arr.courseList.map(item=>{
+                                        storeCourseList.push({
+                                            name:item.name,
+                                            id:item.id
+                                        })
+                                    })
+                                    this.form.storeCourseList=storeCourseList
+                                    let tableData = [];
+                                    arr.list.forEach((item)=>{
+                                        // console.log('lalala',item)
                                         let o={};
+                                        o.id =item.id;
                                         o.name=item.name;
                                         o.num=item.num;
                                         o.startSchool=item.orgName;
                                         o.teacherName =item.teacherName;
+                                        o.status = item.status;
                                         o.roomName= item.roomName;
                                         o.createDataTime=item.addTime;
-                                        o.states = item.teacherId;
-                                    })
-                                // arr.map(item => {
-                                //     item.addTime = item.addTime.split(' ')[0];
-                                // })
-                                // for (let i = 0; i < 100; i++) {
-                                //     arr.push(arr[i])
-                                // }
-                                this.tableData = JSON.parse(JSON.stringify(arr))
-                                // 计算分页
-                                this.tablelist = this.pagination(this.currentPage4, this.pagesize, arr);
-                                this.total_count = arr.length;
-                            }
-                        }
-                    } else {
-                        this.$message('暂无数据');
-                    }
+                                        o.status = item.status;
+                                        o.startDate= item.startDate;
+                                        o.startTime = item.startTime;
+                                        o.statusNum = item.classSignUpNum; // 招生状态
+                                        // 编辑的内容
+                                        o.roomId = item.roomId;
+                                        o.orgId = item.orgId;
+                                        o.storeCourseId = item.storeCourseId;
+                                        o.teacherId = item.teacherId
+                                        tableData.push(o);
 
-                })
+                                        
+                                    })
+                                    this.tableData = JSON.parse(JSON.stringify(tableData))
+                                    // // 计算分页
+                                    this.tablelist = this.pagination(this.currentPage4, this.pagesize, tableData);
+                                    this.total_count = tableData.length;
+                                }
+                            }
+                        } else {
+                            this.$message('暂无数据');
+                        }
+
+                    })
+
+                }else{
+                    getClassList().then(res => {
+                    console.log('info', res);
+                    if (res.errorCode == 0) {
+                        if (res.result !== null) {
+                            let arr = JSON.parse(JSON.stringify(res.result));
+                            if (arr !== null && arr !=='' && arr !== undefined) {
+                                // 赋值门店
+                                    // 设置默认值 arr.push({name:'',orgId})
+                                    let orgList = [{name:'请选择',orgId:0}]
+                                    arr.orgList.map(item=>{
+                                        orgList.push({
+                                            name:item.name,
+                                            orgId:item.orgId
+                                        })
+                                    })
+                                    this.form.orgList= this.ruleForm.orgList=orgList
+                                    // 赋值教室
+                                    this.form.roomList=[];
+                                    arr.roomList.map(item=>{
+                                         this.ruleForm.roomList.push({
+                                             name:item.name,
+                                             id:item.id
+                                         })
+                                    })
+                                    this.form.roomList= this.ruleForm.roomList 
+                                    // 赋值老师
+                                    let teacherList= [{name:'请选择',id:0}]
+                                    arr.teacherList.map(item=>{
+                                        teacherList.push({
+                                            name:item.name,
+                                            id:item.id
+                                        })
+                                    })
+                                    this.form.teacherList = this.ruleForm.teacherList=teacherList
+                                    
+                                // 赋值课程   {name:'',id:''}
+                                    let storeCourseList =[{name:'请选择',id:0}]
+                                    arr.courseList.map(item=>{
+                                        storeCourseList.push({
+                                            name:item.name,
+                                            id:item.id
+                                        })
+                                    })
+                                    this.form.storeCourseList=storeCourseList
+                                    let tableData = [];
+                                    arr.list.forEach((item)=>{
+                                        // console.log('lalala',item)
+                                        let o={};
+                                        o.id =item.id;
+                                        o.name=item.name;
+                                        o.num=item.num;
+                                        o.startSchool=item.orgName;
+                                        o.teacherName =item.teacherName;
+                                        o.status = item.status;
+                                        o.roomName= item.roomName;
+                                        o.createDataTime=item.addTime;
+                                        o.status = item.status;
+                                        o.startDate= item.startDate;
+                                        o.startTime = item.startTime;
+                                        o.statusNum = item.classSignUpNum; // 招生状态
+                                        // 编辑的内容
+                                        o.roomId = item.roomId;
+                                        o.orgId = item.orgId;
+                                        o.storeCourseId = item.storeCourseId;
+                                        o.teacherId = item.teacherId
+                                        tableData.push(o);
+
+                                        
+                                    })
+                                    this.tableData = JSON.parse(JSON.stringify(tableData))
+                                    // // 计算分页
+                                    this.tablelist = this.pagination(this.currentPage4, this.pagesize, tableData);
+                                    this.total_count = tableData.length;
+                                }
+                            }
+                        } else {
+                            this.$message('暂无数据');
+                        }
+
+                    })
+                }
             },
             // 计算分页
             pagination(pageNo, pageSize, array) {
@@ -673,15 +740,25 @@
             },
             // 编辑
             handleEdit(index, row) {
-                console.log(index, row);
+                // console.log(index, row);
                 let arr = JSON.parse(JSON.stringify(this.tablelist));
-                if (arr) {
+                if (arr.length !==0) {
                     // 打开新建框
                     this.dialogFormVisible = true;
                     this.iscreate = false   //编辑班级
-                    // 赋值
-                    this.form = arr[index];
-                    console.log('编辑', this.form)
+                    console.log('编辑',arr[index])
+                    arr.map((item,i)=>{
+                        if(i == index){
+                            this.form.className = item.name;              // 班级
+                            this.form.storeCourseId = item.storeCourseId; // 课程
+                            this.form.teacherId = item.teacherId;
+                            // this.from.teacherName = item.teacherName;
+                            this.form.orgId = item.orgId;
+                            this.form.roomId =item.roomId;
+                            this.form.id = item.id;
+                            this.form.num = item.num;
+                        }
+                    })
                 }
             },
             //删除
@@ -694,7 +771,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    let params =2;
+                    let params =id;
                     deleteClass(params).then(res => {
                         if (res.errorCode == 0) {
                             this.selsectdata()
@@ -717,125 +794,79 @@
                 });
             },
             //保存  创建教室or编辑教室
-            createclass() {
-                console.log('保存信息', this.form);
-
-                //     className:'班级名称',
-
-                //     teacherId:1 ,     // 教师id
-                //     teacherName: '杨老师', // 教师名称
-                //     teacherList: [
-                //         { name: '杨老师', id: 1 }
-                //     ],
-
-                //     orgId: 1,         // 机构id
-                //     orgName: "小豆包机构",// 机构名字
-                //     orgList: [
-                //         { name: '小豆包机构', orgId: 1 },
-                //         { name: '中豆包机构', orgId: 2 },
-                //         { name: '大豆包机构', orgId: 3 }
-                //     ],
-
-                //     storeCourseId:1,  // 课程id
-                //     storeCourseList: [
-                //         { name: '英语课', id: 1 }
-                //     ],
-
-                //     roomId: 1,        // 教室id
-                //     roomName: "1908班",// 教室名称
-                //     roomList: [
-                //         { name: "1908班", id: 1 }
-                //     ],
-                // num: 20,           // 容纳人数
-                var data = JSON.parse(JSON.stringify(this.form))
-                var { teacherId, num, orgId, className, storeCourseId, roomId,id } = data;
-                if (this.checkList == 6) {
-                    className = this.setClassName.classname + this.setClassName.gradenmae
-                }
-                if(className==undefined || className==''){return this.$message({type:'warning',message:'请输入班级名称'})}
-                if(teacherId==undefined || teacherId==''){return this.$message({type:'warning',message:'请输入老师姓名'})}
-                if(num==undefined || num==''){return this.$message({type:'warning',message:'请输入容纳人数'})}
-                if(storeCourseId==undefined || storeCourseId==''){return this.$message({type:'warning',message:'请选择课程名称'})}
-                if(roomId==undefined || roomId==''){return this.$message({type:'warning',message:'请输入班级名称'})}
-                if(orgId==undefined || orgId==''){return this.$message({type:'warning',message:'请选择所属机构'})}
-                if (this.iscreate) {
-
-
-                        // {
-                        // "addBy": 0,
-                        // "addByStr": "string",
-                        // "addTime": "string",
-                        // "id": 0,
-                        // "name": "string",
-                        // "num": 0,
-                        // "orgId": 0,
-                        // "orgName": "string",
-                        // "roomId": 0,
-                        // "roomName": "string",
-                        // "storeCourseId": 0,
-                        // "teacherId": 0,
-                        // "teacherName": "string",
-                        // "updateBy": 0,
-                        // "updateByStr": "string",
-                        // "updateTime": "string"
-                        // }
-                    let params = {
-                        teacherId, 
-                        num, 
-                        orgId,
-                        name:className, 
-                        storeCourseId, 
-                        roomId
+            createclass(ars) {
+                if(ars==0){
+                    this.dialogFormVisible=false;
+                }else{
+                    console.log('保存信息', this.form);
+                    var data = JSON.parse(JSON.stringify(this.form))
+                    var { teacherId, num, orgId, className, storeCourseId, roomId,id } = data;
+                    if (this.checkList == 6) {
+                        className = this.setClassName.classname + this.setClassName.gradenmae
                     }
-                    console.log('创建参数',params);         
-                    addClass(params).then(res => {
-                        if (res.errorCode == 0) {
-                            this.selsectdata()
-                            console.log('info', res)
-                            this.dialogFormVisible = false;
-                            this.$message('创建教室成功');
-                            // this.form.name="";
-                            // this.form.sum="";
-                            // this.from.orgId="";
-
+                    if(className==undefined || className==''){return this.$message({type:'warning',message:'请输入班级名称'})}
+                    if(teacherId==undefined || teacherId==''){return this.$message({type:'warning',message:'请输入老师姓名'})}
+                    if(num==undefined || num==''){return this.$message({type:'warning',message:'请输入容纳人数'})}
+                    if(storeCourseId==undefined || storeCourseId==''){return this.$message({type:'warning',message:'请选择课程名称'})}
+                    if(roomId==undefined || roomId==''){return this.$message({type:'warning',message:'请输入班级名称'})}
+                    if(orgId==undefined || orgId==''){return this.$message({type:'warning',message:'请选择所属机构'})}
+                    if (this.iscreate) {
+                        let params = {
+                            teacherId, 
+                            num, 
+                            orgId,
+                            name:className, 
+                            storeCourseId, 
+                            roomId
                         }
-                    }).catch(err => {
-                        this.$message('请求失败')
-                    })
-                } else {
-                     let params = {
-                        teacherId, 
-                        num, 
-                        orgId,
-                        className, 
-                        storeCourseId, 
-                        roomId,
-                        id
-                    }
-                    console.log('编辑参数',params)
-                     addClass(params).then(res => {
-                        if (res.errorCode == 0) {
-                            this.selsectdata()
-                            console.log('info', res)
-                            this.dialogFormVisible = false
-                            this.$message('编辑教室成功');
-                            // this.form.name="";
-                            // this.form.sum="";
-                            // this.from.orgId="";
+                        console.log('创建参数',params);         
+                        addClass(params).then(res => {
+                            if (res.errorCode == 0) {
+                                this.selsectdata()
+                                console.log('info', res)
+                                this.dialogFormVisible = false;
+                                this.$message({type:'success',message:'创建班级成功'});
+                                // this.form.name="";
+                                // this.form.sum="";
+                                // this.from.orgId="";
 
-                        } else {
+                            }
+                        }).catch(err => {
                             this.$message('请求失败')
+                        })
+                    } else {
+                        let params = {
+                            teacherId, 
+                            num, 
+                            orgId,
+                            className, 
+                            storeCourseId, 
+                            roomId,
+                            id
                         }
-                    }).catch(err => {
+                        console.log('编辑参数',params)
+                        updateClass(params).then(res => {
+                            if (res.errorCode == 0) {
+                                this.selsectdata()
+                                console.log('info', res)
+                                this.dialogFormVisible = false
+                                this.$message('编辑教室成功');
+                            } else {
+                                this.$message('请求失败')
+                            }
+                        }).catch(err => {
 
-                    })
+                        })
+                    }
                 }
-                this.form.teacherId='';
-                this.form.num='';
+
+                this.form.teacherId=0;
                 this.form.className='';
-                this.form.orgId='';
-                this.form.storeCourseId='';
-                this.form.courroomIdseCount='';
+                this.form.num='';
+                this.form.id='';
+                this.form.orgId=0;
+                this.form.storeCourseId=0;
+                this.form.roomId= 0;
             },
             // 
             sumEndTime(){
@@ -859,10 +890,10 @@
                 // this.$refs[voids].validate(valid => {
                 //     this.$refs[voids].clearValidate();
                 // })
-                this.ruleForm.orgId='';
-                this.ruleForm.techerId="";
-                this.ruleForm.techerId="";
-                this.ruleForm.roomId="";
+                this.ruleForm.orgId=0;
+                this.ruleForm.techerId=0;
+                this.ruleForm.techerId=0;
+                this.ruleForm.roomId=0;
                 this.ruleForm.className="";
                 console.log('清楚筛选');
                 // className: '班级名称', // 班级名称
@@ -922,22 +953,15 @@
             },
             // 搜索
             searchcnt() {
-                
-                let a = { ...this.ruleForm };
-                let { className, orgId,techerId,roomId } = a;
-                if(className==undefined){className='' }
-                if(orgId==undefined){ orgId=''}
-                if(techerId==undefined){techerId='' }
-                if(roomId==undefined){roomId='' }
-                var params={ className, orgId,techerId,roomId 
-                }
-                console.log('参数',params)
+               
             },
 
             // 新建课表
             btnnewclass() {
                 this.dialogFormVisible = true;
                 this.iscreate = true;
+                // 清空数据
+                // this.form.
             },
             // 新建
             newcourse(i) {
@@ -979,6 +1003,10 @@
                         params,
                     })
                 }
+                if(i==3){    // 新建老师
+                    // 打开对话框
+
+                }
                 
             },
             // 改变表格
@@ -989,7 +1017,6 @@
                 } else {
                     return "table_border"
                 }
-
             },
             hovertablein(row, column, cell, event) {
                 console.log(row, column, cell, event)

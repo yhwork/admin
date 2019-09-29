@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie'
+import router from '@/router'
 
 const state = {
   sidebar: {
@@ -6,10 +7,12 @@ const state = {
     withoutAnimation: false
   },
   allowBack:false,
-  token: sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization"):"",
-  demo: '测试内容'
+  // token: sessionStorage.getItem("Authorization") ? sessionStorage.getItem("Authorization"):"",
+  token:'',
+  demo: '测试内容',
+  islogin:false
 }
-
+var that =this
 const mutations = {
     gettoken:state=>{
         console.log(state.token)
@@ -18,9 +21,26 @@ const mutations = {
         state.demo=data
         console.log('修改后内容为',state.demo)
     },
+
     stopBack:(state,data)=>{
       state.allowBack=data
       // console.log('修改后内容为',state.allowBack)
+    },
+    login(state,data){
+      state.islogin=data
+    },
+    SetToken(state,data){
+       state.token=data
+       console.log(state.token,data)
+    },
+    quit:(state,data)=>{
+      state.islogin = data
+      console.log('啦啦啦啦',data);
+      // console.log(router.options.routes.push('/login'))
+      // resetRouter()
+      // that.$router.push({
+      //   path:'/login',
+      // })
     }
 }
 
@@ -28,9 +48,15 @@ const actions = {
     asyncgettoken({commit}){
         commit("gettoken")
     },
+    asyncSetToken({commit},data){
+      commit('SetToken',data)
+    },
+    asyncQuit({commit},data){
+      commit('quit',data)
+    },
     updateAppSetting({commit},{state}){
       // console.log('你是个啥？',state)
-      commit("stopBack",state)
+    commit("stopBack",state)
     },
     // 获取兄弟模块中的方法和store
     getdemofun:(store,data)=>{

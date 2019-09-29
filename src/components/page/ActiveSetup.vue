@@ -45,7 +45,7 @@
           </div>-->
           <el-form-item label="产品图片：" prop="imgVideo">
             <el-upload
-              action="/store/file/img/upload"
+               :action="url_root + img_url"
               multiple
               accept="image/png, image/jpeg"
               list-type="picture-card"
@@ -372,7 +372,7 @@
 import TinymceEditor from "./tinymce-editor";
 import UE from "@/components/page/UE.vue";
 import UEditor from "@/components/page/ueditor.vue";
-
+import URL  from '@/api/config';
 export default {
   components: {
     UEditor
@@ -381,6 +381,9 @@ export default {
   inject: ["reload"],
   data() {
     return {
+      url_root:'',
+      img_url:'/store/file/img/upload',   // 代理配置
+      // img_url:'/file/img/upload',
       config: {
         autoHeightEnabled: false,
         autoFloatEnabled: true,
@@ -528,6 +531,10 @@ export default {
         ]
       }
     };
+  },
+   activated() {
+    console.log('url',URL.root);
+    this.url_root = URL.root;
   },
   created() {
     this.edit_id = this.$route.query.id ? this.$route.query.id : "";
@@ -1136,7 +1143,8 @@ export default {
                     message: '保存成功',
                     type: 'success'
                   });
-                    this.$router.go(-1);
+                    // this.$router.go(-1);
+                     this.$router.push("/activity");
                 } else {
                    this.$message({
                       message: res.data.errorMessage,

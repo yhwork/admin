@@ -7,13 +7,17 @@ const path = require('path')
 module.exports = {
   dev: {
 
+
+    // 1
+
+
     // Paths
     env: require('./dev.env'),
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
       '/store':{
-        // target: 'http://192.168.1.100:8083',
+        // target: 'http://192.168.1.105:8083',
         target: 'https://qa.xdb.iforbao.com/store/',
         // target: 'https://xdb.iforbao.com/store/',
         changeOrigin:true,

@@ -86,7 +86,18 @@
         border-bottom: 1px solid rgba(0, 0, 0, .5);
         background-color: #CAE1FF !important;
     }
-
+      .clearselectall {
+    font-size: 0.6rem;
+    color: #409eff;
+    height: 40px;
+    line-height: 35px;
+    margin-left: 15px;
+  }
+    .clearpadding {
+    margin-top: 2px;
+    padding: 8px 12px !important;
+    margin-left: 15px;
+  }
     .myclassroom .el-input {
         width: auto
     }
@@ -117,9 +128,19 @@
                             </div>
 
                         </el-form-item>
-                        <div class="searchcnt">
-                            <el-button type="primary" icon="el-icon-search" @click='searchcnt'>搜索</el-button>
+
+                        <div class="elrow">
+                            <div class='clearselectall'>
+                                <el-button class="clearpadding" icon="el-icon-search" @click='searchcnt(0)' type="primary" plain>筛选</el-button>
+                            </div>
+                            <div class='clearselectall'>
+                                <el-button @click="searchcnt(1)" class="clearpadding" type="primary" plain>清除筛选条件
+                                </el-button>
+                            </div>
                         </div>
+                        <!--<div class="searchcnt">
+                            <el-button type="primary" icon="el-icon-search" @click='searchcnt'>搜索</el-button>
+                        </div>  -->
                     </div>
                 </el-form>
             </div>
@@ -286,8 +307,9 @@
 
         },
         created() {
-            this.selsectdata()  // 查询
             this.getorglist()   // 获取门店
+            this.selsectdata()  // 查询
+            
           
         },
         activated(){
@@ -472,49 +494,49 @@
                 })
             },
             // 搜索
-            searchcnt() {
-                var techername = this.ruleForm.techername;
-                var orgId = this.ruleForm.orgId;
-                console.log(techername, orgId);
-                if (techername == "" || techername == null || techername == undefined) {
-                    techername = ''
-                }
-                if (orgId == "" || orgId == null || orgId == undefined) {
-                    orgId = ''
-                }
-                var params = {
-                    techername, orgId
-                }
-                this.$axios({
-                    method: "get",
-                    url: `/store/room/getRoomList?orgId=${orgId}&name=${techername}`,
-                    data: params,
-                    headers: {
-                        Authorization: sessionStorage.getItem("Authorization")
+            searchcnt(args) {
+                if(args==0){
+                    var techername = this.ruleForm.techername;
+                    var orgId = this.ruleForm.orgId;
+                    console.log(techername, orgId);
+                    if (techername == "" || techername == null || techername == undefined) {
+                        techername = ''
                     }
-                }).then(res => {
-                    console.log('info', res.data);
-                    if (res.data.errorCode == 0) {
-                        let arr = res.data.result;
-                        if (arr) {
-                            arr.map(item => {
-                                item.addTime = item.addTime.split(' ')[0];
-                            })
-                            for (let i = 0; i < 100; i++) {
-                                arr.push(arr[i])
+                    if (orgId == "" || orgId == null || orgId == undefined) {
+                        orgId = ''
+                    }
+                    var params = {
+                        techername, orgId
+                    }
+                    this.$axios({
+                        method: "get",
+                        url: `/store/room/getRoomList?orgId=${orgId}&name=${techername}`,
+                        data: params,
+                        headers: {
+                            Authorization: sessionStorage.getItem("Authorization")
+                        }
+                    }).then(res => {
+                        console.log('info', res.data);
+                        if (res.data.errorCode == 0) {
+                            let arr = res.data.result;
+                            if (arr) {
+                                this.tableData = JSON.parse(JSON.stringify(arr))
+                                this.tablelist = this.pagination(this.currentPage4, this.pagesize, arr);
+                                this.total_count = arr.length;
+                            } else {
+                                return this.$message('没有该门店')
                             }
-                            this.tableData = JSON.parse(JSON.stringify(arr))
-                            this.tablelist = this.pagination(this.currentPage4, this.pagesize, arr);
-                            this.total_count = arr.length;
+
                         } else {
-                            return this.$message('没有该门店')
+                            this.$message('暂无数据');
                         }
 
-                    } else {
-                        this.$message('暂无数据');
-                    }
-
-                })
+                    })
+                }else{
+                    // 清除
+                    this.ruleForm.orgId="";
+                    this.ruleForm.techername=''
+                }
             },
             //查询教室
             selsectdata() {
@@ -566,7 +588,7 @@
                         if (res.data.errorCode == 0) {
                            
                             if(this.router_back){
-                                this.$message('创建教室成功,即将返回');
+                                this.$message({type:'success',message:'创建教室成功,即将返回'});
                                 let route =this.router;
                                 let params ={
                                     mycontent:this.mycontent,  // 带着内容
@@ -582,7 +604,7 @@
                                     })
                                 },500)
                             }else{
-                                this.$message('创建教室成功');
+                                this.$message({type:'success',message:'创建教室成功'});
                                 this.selsectdata()
                             }
                                 this.dialogFormVisible = false;
@@ -590,7 +612,7 @@
                                 this.form.sum = "";
                                 this.from.orgId = "";
                         } else {
-                            return this.$message('请求失败1')
+                            return this.$message({type:'error',message:'请求失败1'})
                         }
                     })
                 } else {
@@ -606,7 +628,7 @@
                             this.selsectdata()
                             console.log('info', res.data)
                             this.dialogFormVisible = false
-                            this.$message('编辑教室成功');
+                            this.$message({type:'success',message:'编辑教室成功'});
                             this.form.name = "";
                             this.form.sum = "";
                             this.from.orgId = "";

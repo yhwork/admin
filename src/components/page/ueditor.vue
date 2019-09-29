@@ -1,7 +1,6 @@
 <template>
   <div>
     <script id="editor" type="text/plain"></script>
-    
   </div>
 </template>
 <script>
@@ -24,7 +23,7 @@ export default {
     //初始化UE
     const _this = this;
     this.editor = UE.delEditor("editor");
-    console.log('富文本传入的值',this.config)
+    console.log('富文本传入的值',this.config);
     this.editor = UE.getEditor("editor", this.config);
     // this.setContent(this.config.initialContent)
     // 隐藏图片拉伸框

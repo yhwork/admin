@@ -1,9 +1,9 @@
 <template>
   <div class="campus">
-    <!-- <el-tabs v-model="activeName" @tab-click="handleClick"> -->
-    <!-- <el-tab-pane label="全部" name="first">
+    <!-- <el-tabs v-model="activeName" @tab-click="handleClick"> 
+    <el-tab-pane label="全部" name="first">
           <div>
-            <!-- <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"@selection-change="handleSelectionChange">
+            <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" style="width: 100%"@selection-change="handleSelectionChange">
               <el-table-column type="selection"></el-table-column>
               <el-table-column prop="number" label="产品名称"></el-table-column>
               <el-table-column prop="room_num" label="价格"></el-table-column>
@@ -35,9 +35,9 @@
               <el-button @click="toggleSelection()">取消选择</el-button>
             </div>
           </div>
-    </el-tab-pane>-->
+    </el-tab-pane>
 
-    <!-- <el-tab-pane label="销售中" name="second">
+    < <el-tab-pane label="销售中" name="second">
           <div>
             <el-table
               ref="multipleTable"
@@ -144,8 +144,8 @@
               </el-table-column>
             </el-table>
           </div>
-    </el-tab-pane>-->
-    <!-- <el-tab-pane label="待确认" name="5">
+    </el-tab-pane>
+     <el-tab-pane label="待确认" name="5">
           <div>
             <el-table
               ref="multipleTable"
@@ -180,8 +180,8 @@
               </el-table-column>
             </el-table>
           </div>
-    </el-tab-pane>-->
-    <!-- </el-tabs> -->
+    </el-tab-pane>
+   </el-tabs> -->
 
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
@@ -266,7 +266,8 @@ export default {
       productList: [],
       multipleSelection: [],
       isdisable: false,
-      goods_id: ""
+      goods_id: "",
+      courseList:[],
     };
   },
 
@@ -293,12 +294,10 @@ export default {
         method: "get",
         url: "/store/hotProduct/getHotProductList/" + this.activeIndex,
         headers: { Authorization: sessionStorage.getItem("Authorization") }
-      })
-        .then(res => {
+      }).then(res => {
           // console.log(res)
           this.productList = res.data.result;
-        })
-        .catch(error => {
+        }).catch(error => {
           console.log("error", error);
         });
     },
@@ -318,8 +317,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(res => {
+      }).then(res => {
           this.$axios({
             method: "post",
             url: "/store/hotProduct/deleteHotProduct",
@@ -351,9 +349,15 @@ export default {
           });
         });
     },
+
     goodsSetup() {
       this.$router.push({ path: "/goods_setup" });
+      // this.$router.push({
+      //   path: "/goods_setup",
+      //   query:{courseList:this.courseList}
+      // });
     },
+
     handleClick(tab, event) {
       console.log(tab, event);
     },
@@ -411,6 +415,7 @@ export default {
           console.log("error", error);
         });
     },
+    
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
       this.activeIndex = key;
@@ -420,7 +425,7 @@ export default {
 };
 </script >
 
-<style scoped>
+<style scoped >
 .campus {
   padding: 20px 15px;
   box-sizing: border-box;
@@ -428,18 +433,18 @@ export default {
 .el-table {
   width: 100%;
   overflow: scroll;
-  // border: 2px solid red;
+
 }
 .el-table >>> .el-table__body-wrapper {
   overflow-x: scroll;
-  //  border: 2px solid red;
+
 }
 .el-table >>> .el-table__body-wrapper .is-scrolling-none {
   overflow: scroll !important;
-  //  border: 2px solid darkgoldenrod!important;
+
 }
 .el-table >>> .el-table__body {
-  //  border-collapse:collapse!important;
+
 }
 </style>
 

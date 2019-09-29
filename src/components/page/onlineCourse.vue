@@ -40,7 +40,7 @@
           </el-form-item>-->
           <el-form-item label="产品图片：" prop="imgVideo">
             <el-upload
-              action="/store/file/img/upload"
+              :action="url_root + img_url"
               multiple
               accept="image/png, image/jpeg"
               list-type="picture-card"
@@ -73,7 +73,7 @@
               <div class="store_box">
                 <el-upload
                   class="upload_box1"
-                  action="/store/file/img/upload"
+                  :action="url_root + img_url"
                   accept=".mp4, .qlv, .qsv, .ogg, .flv, .avi, .wmv, .rmvb"
                   :headers="headers"
                   :data="paramsdata"
@@ -197,7 +197,7 @@
           <!-- 
           <div>
             <div v-if="!course_type">
-              <!-- <el-form-item label="课程规格：" :required="true"> 
+              <!<el-form-item label="课程规格：" :required="true"> 
                 <div class="rule_title">
                   <div>课程次数</div>
                   <div>每次课时</div>
@@ -443,14 +443,14 @@
                   <el-row v-else>
                     <el-alert title="预约时间再次确认" type="warning" :closable="false"></el-alert>
                     <div class="campus_title">所在校区：{{className}}</div>
-                    <!-- <el-table border :data="classInfo" style="width: 100%">
+                    <! <el-table border :data="classInfo" style="width: 100%">
                       <el-table-column prop="date" label="上课时间" width="180"></el-table-column>
                       <el-table-column prop="name" label="教师名称" width="180"></el-table-column>
                       <el-table-column prop="address" label="教室"></el-table-column>
                       <el-table-column prop="num" label="预约人数"></el-table-column>
                     </el-table>
                     <div>
-                      <!-- <el-alert
+                      <!<el-alert
                         style="margin-top:20px;"
                         title="预约时间再次确认"
                         type="warning"
@@ -541,7 +541,7 @@
           </div>
           <!-- <el-form-item v-if="!course_type" label="生效时间：" :required="true">
             首次上课签到后生效
-            <!-- <el-input v-model="ruleForm.legal_name" placeholder="首次上课签到后生效" ></el-input> 
+             <el-input v-model="ruleForm.legal_name" placeholder="首次上课签到后生效" ></el-input> 
           </el-form-item>-->
           <!-- v-else -->
           <el-form-item label="有效时间：" prop="effectiveTime">
@@ -585,7 +585,7 @@
 
                 <el-upload
                   class="upload_box"
-                  action="/store/file/img/upload"
+                 :action="url_root + img_url"
                   :multiple="false"
                   :limit="1"
                   :on-exceed="handleExceed"
@@ -637,7 +637,7 @@
               </el-form-item>
               <!-- <el-form-item label="拼团日期：" prop style="margin-bottom:20px;margin-left:10px;">
                 <div class="info_box">
-                  <!-- <el-date-picker
+                  <!<el-date-picker
                     v-model="groupTimeArray"
                     type="datetimerange"
                     range-separator="至"
@@ -797,6 +797,7 @@
 // import TinymceEditor from "./tinymce-editor";
 // import UE from "@/components/page/UE.vue";
 import UEditor from "@/components/page/ueditor.vue";
+import URL  from '@/api/config';
 export default {
   components: {
     // TinymceEditor,
@@ -807,6 +808,9 @@ export default {
   inject: ["reload"],
   data() {
     return {
+       url_root:'',
+      img_url:'/store/file/img/upload',  // 代理配置 config
+      // img_url:'/file/img/upload',
       config: {
         //可以在此处定义工具栏的内容
         // toolbars: [
@@ -1214,6 +1218,10 @@ export default {
       filterDate: [],
       editor_content: ""
     };
+  },
+   activated() {
+    console.log('url',URL.root);
+    this.url_root = URL.root;
   },
   created() {
     this.edit_id = this.$route.query.id ? this.$route.query.id : "";
@@ -2439,7 +2447,7 @@ export default {
           videoLevel: this.videoLevel,    // 视频级别
           courseId:this.hotCourseId
         };
-        console.log("保存参数", params);
+        console.log('valid',valid,"保存参数", params);
         if (valid) {
           if (this.edit_id != "") {
             this.$axios({
@@ -2452,7 +2460,8 @@ export default {
             })
               .then(res => {
                 if(res.data.errorCode == 0){
-                   this.$router.go(-1);
+                  //  this.$router.go(-1);
+                   this.$router.push("/online_course");
                    this.ruleForm.veryify_code = "";
                 }else{
                   this.$message(res.data.errorMessage)
@@ -2466,16 +2475,22 @@ export default {
             // 新建活动
             this.$axios({
               method: "post",
-              url: "/store/hotProduct/updateHotOneLineProduct",
+              url: "/store/hotProduct/addHotOneLineProduct",
               data: params,
               headers: {
                 Authorization: sessionStorage.getItem("Authorization")
               }
             })
               .then(res => {
-                console.log("add-success");
-                this.$router.push("/online_course");
-                this.ruleForm.veryify_code = "";
+                if(res.data.errorCode == 0){
+                  // this.$router.go(-1);
+                  this.ruleForm.veryify_code = "";
+                  this.$router.push("/online_course");
+                  this.ruleForm.veryify_code = "";
+                }else{
+                  this.$message(res.data.errorMessage)
+                }
+               
               })
               .catch(error => {
                 console.log("error", error);

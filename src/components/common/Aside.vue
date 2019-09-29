@@ -1,7 +1,16 @@
 <template>
   <div class="sidebar" :class="{'sidebar2':collapse}">
-    <el-menu class="sidebar-el-menu" :default-active="$route.path" :collapse="collapse" background-color="#324157" text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router >
-<!-- 左边菜单栏 -->
+    <el-menu
+      class="sidebar-el-menu"
+      :default-active="$route.path"
+      :collapse="collapse"
+      background-color="#324157"
+      text-color="#bfcbd9"
+      active-text-color="#20a0ff"
+      unique-opened
+      router
+    >
+      <!-- 左边菜单栏 -->
       <template v-for="item in menuList">
         <!-- 判断是否有嵌套的子路由-->
         <template v-if="item.childMenu">
@@ -113,47 +122,60 @@ export default {
           ]
         }
       ],
-      istrue:true,
-      activeIndex:'',
+      istrue: true,
+      activeIndex: ""
     };
   },
   watch: {
     // 监听props值
-    menuList: function(newVal,oldVal){
-          console.log('侧边栏路由',newVal,oldVal)
-          if(this.istrue){
-            this.istrue=false;
-             newVal.push({
-            childMenu:[
-              {
-                icon: null,
-                name: "班级",
-                path: "/grade"
-              },{
-                icon: null,
-                name: "课程",
-                path: "/curriculum"
-              },{
-                icon: null,
-                name: "排课",
-                path: "/scheduling"
-              },{
-                icon:null,
-                name:"教室",
-                path:"/classroom"
-              },
-              {
-                icon: null,
-                name: "课程表",
-                path: "/timetable"
-              }
-            ],
-            icon: null,
-            name: "教务管理",
-            path: "demo",
-      })
-          }
-    },
+    menuList: function(newVal, oldVal) {
+      console.log("侧边栏路由", newVal, oldVal);
+      if (this.istrue) {
+        this.istrue = false;
+          // newVal.push({
+          //    childMenu: [
+          //       {
+          //         icon: null,
+          //         name: "角色管理",
+          //         path: "/role"
+          //       }],
+          //        icon: null,
+          //     name: "角色管理",
+          //     path: "demo"
+          // })
+          // newVal.map((items,index)=>{
+          //   //  console.log('有没有',items.path )
+          //   if(items.path == 'education'){
+          //       items.childMenu.push({
+          //             icon: null,
+          //             name: "班级",
+          //             path: "/grade"
+          //           },
+          //           {
+          //             icon: null,
+          //             name: "课程",
+          //             path: "/curriculum"
+          //           },
+          //           {
+          //             icon: null,
+          //             name: "排课",
+          //             path: "/scheduling"
+          //           },
+          //           {
+          //             icon: null,
+          //             name: "教室",
+          //             path: "/classroom"
+          //           },
+          //           {
+          //             icon: null,
+          //             name: "员工管理",
+          //             path: "/usermge"
+          //           })
+          //               console.log('有没有',newVal)
+          //           }
+          // })
+      }
+    }
     // $route(newValue, oldValue) {
     //   // console.log('路由变换啦',newValue)
     //   this.activeIndex = newValue.path.replace("/",'')
@@ -165,21 +187,20 @@ export default {
     //   //  var a= this.$route.path.replace("/", "")
     //   //  console.log('当前激活菜单的',a);
     //    return this.activeIndex;
-     
     // }
   },
   created() {
     // this.activeIndex=this.$route.path.replace("/", "");
     // 通过 Event Bus 进行组件间通信，来折叠侧边栏
     bus.$on("collapse", msg => {
-      console.log(msg)
+      console.log(msg);
       this.collapse = msg;
     });
-    bus.$on('tagindex',(path)=>{
-      var a= path.replace("/",'')
-      console.log('兄弟收到',path)
-      this.activeIndex =a;
-    })
+    bus.$on("tagindex", path => {
+      var a = path.replace("/", "");
+      console.log("兄弟收到", path);
+      this.activeIndex = a;
+    });
   }
 };
 </script>
